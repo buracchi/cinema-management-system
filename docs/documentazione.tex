@@ -1,0 +1,49 @@
+\documentclass[12pt]{article}
+\usepackage[a4paper, left=1.9cm, right=1.9cm, top=2.5cm, bottom=2.5cm]{geometry}
+\usepackage{tabularx}
+\usepackage{graphicx}
+\usepackage[export]{adjustbox}
+\graphicspath{ {./media/} }
+\input{style.tex}
+\input{title.tex}
+\input{header.tex}
+
+\title{TEMPLATE PROGETTO}
+\authorid{Matricola}
+\authorname{Nome}
+\authorsurname{Cognome}
+
+\begin{document}
+\includegraphics[width=2.1cm, valign=t]{image1}
+\hfill
+\includegraphics[width=3.55cm, valign=t]{image2}
+{\let\newpage\relax\maketitle}
+\tableofcontents
+\
+\begin{templateblock}
+    Tutto il testo su sfondo grigio, all’interno di questo template,
+    deve essere eliminato prima della consegna.
+    Viene utilizzato per fornire informazioni sulla corretta compilazione
+    del report di progetto.
+
+    Non modificare il formato del documento:
+    \begin{enumerate}
+        \item Carattere: Times New Roman, 12pt
+        \item Dimensione pagina: A4
+        \item Margini: superiore/inferiore 2,5cm, sinistro/destro: 1,9cm
+    \end{enumerate}
+
+    L’assegnazione della tesina può essere effettuata online, visitando il
+    sito \href{https://www.pellegrini.tk/progetti/}
+    {https://www.pellegrini.tk/progetti/} ed inserendo i propri dati.
+    Per qualsiasi problema, contattare il docente via email all’indirizzo
+    \url{pellegrini@diag.uniroma1.it}.
+\end{templateblock}
+\include{chapters/descrizione_minimondo.tex}
+\include{chapters/analisi_requisiti.tex}
+\include{chapters/progettazione_concettuale.tex}
+\include{chapters/progettazione_logica.tex}
+\include{chapters/progettazione_fisica.tex}
+\appendix
+\include{chapters/implementazione.tex}
+\end{document}

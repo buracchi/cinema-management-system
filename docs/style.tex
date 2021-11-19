@@ -1,0 +1,51 @@
+\usepackage[italian]{babel}
+\usepackage{tocloft}
+\usepackage[table]{xcolor}
+\usepackage{pagecolor}
+\usepackage{parskip}
+\usepackage{environ}
+\usepackage[most]{tcolorbox}
+\usepackage{hyperref}
+\usepackage{lineno}
+
+\renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
+\addto\captionsitalian{
+  \renewcommand{\contentsname}%
+  {Indice}%
+}
+
+%---------------------------------------
+% Dark theme
+%
+\definecolor{textcolor}{RGB}{255,255,255}
+\definecolor{bcolor}{RGB}{41,41,41}
+\definecolor{tgray}{gray}{0.3}
+%---------------------------------------
+%Light theme
+%
+%\definecolor{textcolor}{RGB}{0,0,0}
+%\definecolor{bcolor}{RGB}{255,255,255}
+%\definecolor{tgray}{gray}{0.7}
+%---------------------------------------
+
+\pagecolor{bcolor}
+\color{textcolor}
+
+\newtcolorbox{templateblock}{
+  colupper=textcolor,
+  colback=tgray,
+  boxrule=0pt,
+  boxsep=0pt,
+  breakable}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=textcolor,
+  filecolor=cyan,
+  urlcolor=cyan}
+
+\urlstyle{same}
+
+\renewcommand{\linenumberfont}{\normalfont\bfseries\small}
+
+\newcolumntype{Y}{>{\centering\arraybackslash}X}

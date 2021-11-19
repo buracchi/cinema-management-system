@@ -1,0 +1,12 @@
+{
+    "editor.rulers": [80],
+    "latex-workshop.latex.outDir": "build",
+    "cSpell.words": [
+        "dall’applicazione",
+        "disambiguata",
+        "istanziare",
+        "istanziati",
+        "istanziazione",
+        "Minimondo"
+    ]
+}

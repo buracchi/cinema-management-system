@@ -1,0 +1,87 @@
+\section{Progettazione logica}
+
+\subsection*{Volume dei dati}
+
+\begin{templateblock}
+    Questa sezione serve ad illustrare qual è il carico che la base di dati
+    dovrà sopportare.
+    A tal fine, è necessario prevedere un volume di dati attesi.
+    Compilare la tabella sottostante, per ciascun concetto identificato nello
+    schema E-R. I volumi devono essere stimati dallo studente in maniera
+    ragionevole rispetto all’operatività presunta dell’applicativo.
+\end{templateblock}
+
+\begin{tabularx}{\linewidth}{|Y|c|Y|}
+    \hline
+    \rowcolor{tgray}
+    \textbf{Concetto nello schema} & \textbf{Tipo}\footnote{Indicare con E le entità, con R le relazioni} & \textbf{Volume atteso} \\\hline
+                                   &                                                                      &                        \\ \hline
+\end{tabularx}
+
+\subsection*{Tavola delle operazioni}
+
+\begin{templateblock}
+    Rappresentare nella tabella sottostante tutte le operazioni sulla base
+    di dati che devono essere supportate dall’applicazione, con la
+    frequenza attesa.
+    Le operazioni da supportare devono essere desunte dalle specifiche raccolte.
+\end{templateblock}
+
+\begin{tabularx}{\linewidth}{|c|Y|Y|}
+    \hline
+    \rowcolor{tgray}
+    \textbf{Cod.} & \textbf{Descrizione} & \textbf{Frequenza attesa} \\\hline
+                  &                      &                           \\ \hline
+\end{tabularx}
+
+\subsection*{Costo delle operazioni}
+
+\begin{templateblock}
+    In riferimento a tutte le operazioni precedentemente indicate che
+    coinvolgono delle scritture (inserimenti e/o aggiornamenti), calcolarne
+    il costo supponendo, per questa fase del progetto, che il costo in
+    scrittura di un dato sia doppio rispetto a quello in lettura.
+\end{templateblock}
+
+\subsection*{Ristrutturazione dello schema E-R}
+
+\begin{templateblock}
+    Descrivere (laddove necessario fornendo anche degli schemi) quali passi
+    vengono adottati per ristrutturare lo schema E-R, ad esempio in
+    termini di:
+    \begin{enumerate}
+        \item Analisi delle ridondanze
+        \item Eliminazione delle generalizzazioni
+        \item Scelta degli identificatori primari
+    \end{enumerate}
+    Si noti che in questa fase è possibile fare riferimento al costo delle
+    operazioni precedentemente realizzato per guidare le scelte.
+    Ad esempio, un leggero spreco di memoria legato alla non rimozione di
+    ridondanze può essere facilmente giustificato da un guadagno in termini
+    di prestazioni.
+\end{templateblock}
+
+\subsection*{Trasformazione di attributi e identificatori}
+
+\begin{templateblock}
+    Qualora siano presenti, in questa fase della progettazione, attributi
+    ripetuti o identificatori esterni, descrivere quali trasformazioni
+    vengono realizzate sul modello per facilitare la traduzione nello
+    schema relazionale.
+\end{templateblock}
+
+\subsection*{Traduzione di entità e associazioni}
+
+\begin{templateblock}
+    Riportare in questa sezione la traduzione di entità ed associazioni
+    nello schema relazionale.
+
+    Fornire una rappresentazione grafica del modello relazionale completo.
+\end{templateblock}
+
+\subsection*{Normalizzazione del modello relazionale}
+
+\begin{templateblock}
+    Effettuare la normalizzazione del modello relazionale precedentemente
+    descritto (in forma grafica) andando a mostrare le forme 1NF, 2NF, 3NF.
+\end{templateblock}

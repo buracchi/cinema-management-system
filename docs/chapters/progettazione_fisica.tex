@@ -1,0 +1,77 @@
+\section{Progettazione fisica}
+
+\subsection*{Utenti e privilegi}
+
+\begin{templateblock}
+    Descrivere, all’interno dell’applicazione, quali utenti sono stati previsti
+    con quali privilegi di accesso su quali tabelle, giustificando le scelte
+    progettuali.
+\end{templateblock}
+
+\subsection*{Strutture di memorizzazione}
+
+\begin{templateblock}
+    Compilare la tabella seguente indicando quali tipi di dato vengono
+    utilizzati per memorizzare le informazioni di interesse nelle tabelle,
+    per ciascuna tabella.
+\end{templateblock}
+
+\begin{tabularx}{\linewidth}{|Y|Y|Y|}
+    \hline
+    \rowcolor{tgray}
+    \multicolumn{3}{|X|}{\textbf{Tabella <nome>}}                                                                                                                                                                                            \\\hline
+    \rowcolor{tgray}
+    \textbf{Attributo} & \textbf{Tipo di dato} & \textbf{Attributi}\footnote{PK = primary key, NN = not null, UQ = unique, UN = unsigned, AI = auto increment. È ovviamente possibile specificare più di un attributo per ciascuna colonna.} \\\hline
+                       &                       &                                                                                                                                                                                             \\ \hline
+\end{tabularx}
+
+\subsection*{Strutture di memorizzazione}
+
+\begin{templateblock}
+    Compilare la seguente tabella, per ciascuna tabella del database in cui
+    sono presenti degli indici.
+    Descrivere le motivazioni che hanno portato alla creazione di un indice.
+\end{templateblock}
+
+\begin{tabularx}{\linewidth}{|X|X|}
+    \hline
+    \rowcolor{tgray}
+    \multicolumn{2}{|X|}{\textbf{Tabella <nome>}}                                                             \\\hline
+    \rowcolor{tgray}
+    \textbf{Indice <nome>} & \textbf{Tipo\footnote{IDX = index, UQ = unique, FT = full text, PR = primary.}:} \\\hline
+    Colonna 1              & <nome>                                                                           \\ \hline
+\end{tabularx}
+
+\subsection*{Trigger}
+
+\begin{templateblock}
+    Descrivere quali trigger sono stati implementati, mostrando il codice SQL
+    per la loro istanziazione. Si faccia riferimento al fatto che il DBMS di
+    riferimento richiede di utilizzare trigger anche per realizzare vincoli di
+    check ed asserzioni.
+\end{templateblock}
+
+\subsection*{Eventi}
+
+\begin{templateblock}
+    Descrivere quali eventi sono stati implementati, mostrando il codice SQL
+    per la loro istanziazione. Si descriva anche se gli eventi sono
+    istanziati soltanto in fase di configurazione del sistema, o se alcuni
+    eventi specifici vengono istanziati in maniera effimera durante
+    l’esecuzione di alcune procedure.
+\end{templateblock}
+
+\subsection*{Viste}
+
+\begin{templateblock}
+    Mostrare e commentare il codice SQL necessario a creare tutte le viste
+    necessarie per l’implementazione dell’applicazione.
+\end{templateblock}
+
+\subsection*{Stored Procedures e transazioni}
+
+\begin{templateblock}
+    Mostrare e commentare le stored procedure che sono state realizzate per
+    implementare la logica applicativa delle operazioni sui dati, evidenziando
+    quando (e perché) sono state realizzate operazioni transazionali complesse.
+\end{templateblock}
