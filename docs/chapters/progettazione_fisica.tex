@@ -18,14 +18,13 @@
 
 \begin{tabularx}{\linewidth}{|Y|Y|Y|}
     \hline
-    \rowcolor{tgray}
-    \multicolumn{3}{|X|}{\textbf{Tabella <nome>}}                                                                                                                                                                                            \\\hline
-    \rowcolor{tgray}
-    \textbf{Attributo} & \textbf{Tipo di dato} & \textbf{Attributi}\footnote{PK = primary key, NN = not null, UQ = unique, UN = unsigned, AI = auto increment. È ovviamente possibile specificare più di un attributo per ciascuna colonna.} \\\hline
-                       &                       &                                                                                                                                                                                             \\ \hline
+    \multicolumn{3}{|>{\columncolor{tblhdrcolor}}l|}{\textbf{Tabella \textlangle{}nome\textrangle{}}}                                                                                                                                      \\\hline
+    \rowcolor{tblhdrcolor}
+    \textbf{Colonna} & \textbf{Tipo di dato} & \textbf{Attributi}\footnote{PK = primary key, NN = not null, UQ = unique, UN = unsigned, AI = auto increment. È ovviamente possibile specificare più di un attributo per ciascuna colonna.} \\\hline
+                     &                       &                                                                                                                                                                                             \\ \hline
 \end{tabularx}
 
-\subsection*{Strutture di memorizzazione}
+\subsection*{Indici}
 
 \begin{templateblock}
     Compilare la seguente tabella, per ciascuna tabella del database in cui
@@ -35,11 +34,10 @@
 
 \begin{tabularx}{\linewidth}{|X|X|}
     \hline
-    \rowcolor{tgray}
-    \multicolumn{2}{|X|}{\textbf{Tabella <nome>}}                                                             \\\hline
-    \rowcolor{tgray}
-    \textbf{Indice <nome>} & \textbf{Tipo\footnote{IDX = index, UQ = unique, FT = full text, PR = primary.}:} \\\hline
-    Colonna 1              & <nome>                                                                           \\ \hline
+    \multicolumn{2}{|>{\columncolor{tblhdrcolor}}l|}{\textbf{Tabella \textlangle{}nome\textrangle{}}}                                 \\\hline
+    \rowcolor{tblhdrcolor}
+    \textbf{Indice \textlangle{}nome\textrangle{}} & \textbf{Tipo\footnote{IDX = index, UQ = unique, FT = full text, PR = primary.}:} \\\hline
+    Colonna 1                                      & \textlangle{}nome\textrangle{}                                                   \\ \hline
 \end{tabularx}
 
 \subsection*{Trigger}

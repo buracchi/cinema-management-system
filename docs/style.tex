@@ -15,17 +15,23 @@
 }
 
 %---------------------------------------
-% Dark theme
+%% Dark theme
 %
-\definecolor{textcolor}{RGB}{255,255,255}
-\definecolor{bcolor}{RGB}{41,41,41}
-\definecolor{tgray}{gray}{0.3}
-%---------------------------------------
-%Light theme
-%
-%\definecolor{textcolor}{RGB}{0,0,0}
-%\definecolor{bcolor}{RGB}{255,255,255}
-%\definecolor{tgray}{gray}{0.7}
+%\definecolor{bcolor}{RGB}{41,41,41}
+%\definecolor{textcolor}{RGB}{255,255,255}
+%\definecolor{linkcolor}{RGB}{0, 167, 255}
+%\definecolor{hftext}{RGB}{255,255,255}
+%\definecolor{tblhdrcolor}{RGB}{69, 69, 69}
+%\definecolor{tmpltbcolot}{RGB}{69, 69, 69}
+%%---------------------------------------
+% Light theme
+
+\definecolor{bcolor}{RGB}{255,255,255}
+\definecolor{textcolor}{RGB}{0,0,0}
+\definecolor{linkcolor}{RGB}{0, 0, 255}
+\definecolor{hftext}{gray}{0.6}
+\definecolor{tblhdrcolor}{gray}{0.8}
+\definecolor{tmpltbcolot}{gray}{0.9}
 %---------------------------------------
 
 \pagecolor{bcolor}
@@ -33,7 +39,7 @@
 
 \newtcolorbox{templateblock}{
   colupper=textcolor,
-  colback=tgray,
+  colback=tmpltbcolot,
   boxrule=0pt,
   boxsep=0pt,
   breakable}
@@ -41,8 +47,7 @@
 \hypersetup{
   colorlinks=true,
   linkcolor=textcolor,
-  filecolor=cyan,
-  urlcolor=cyan}
+  urlcolor=linkcolor}
 
 \urlstyle{same}
 
