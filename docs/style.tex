@@ -5,8 +5,6 @@
 \usepackage{parskip}
 \usepackage{environ}
 \usepackage[most]{tcolorbox}
-\usepackage{hyperref}
-\usepackage{lineno}
 
 \renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
 \addto\captionsitalian{
@@ -14,23 +12,19 @@
   {Indice}%
 }
 
-%---------------------------------------
-%% Dark theme
-%
-%\definecolor{bcolor}{RGB}{41,41,41}
-%\definecolor{textcolor}{RGB}{255,255,255}
-%\definecolor{linkcolor}{RGB}{0, 167, 255}
-%\definecolor{tblhdrcolor}{RGB}{69, 69, 69}
-%\definecolor{tmpltbcolot}{RGB}{69, 69, 69}
-%%---------------------------------------
-% Light theme
-
-\definecolor{bcolor}{RGB}{255,255,255}
-\definecolor{textcolor}{RGB}{0,0,0}
-\definecolor{linkcolor}{RGB}{0, 0, 255}
-\definecolor{tblhdrcolor}{gray}{0.8}
-\definecolor{tmpltbcolot}{gray}{0.9}
-%---------------------------------------
+\ifx\darktheme\undefined
+  \definecolor{bcolor}{RGB}{255,255,255}
+  \definecolor{textcolor}{RGB}{0,0,0}
+  \definecolor{linkcolor}{RGB}{0, 0, 255}
+  \definecolor{tblhdrcolor}{gray}{0.8}
+  \definecolor{tmpltbcolot}{gray}{0.9}
+\else
+  \definecolor{bcolor}{RGB}{41,41,41}
+  \definecolor{textcolor}{RGB}{255,255,255}
+  \definecolor{linkcolor}{RGB}{0, 167, 255}
+  \definecolor{tblhdrcolor}{RGB}{69, 69, 69}
+  \definecolor{tmpltbcolot}{RGB}{69, 69, 69}
+\fi
 
 \pagecolor{bcolor}
 \color{textcolor}
