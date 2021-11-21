@@ -1,14 +1,69 @@
 \section{Descrizione del Minimondo}
 
-\begin{templateblock}
-    Inserire all’interno del riquadro la specifica così come è stata
-    fornita. Nella colonna a sinistra è riportata la numerazione delle righe.
-    Questi numeri dovranno essere utilizzati per riferirsi al testo nelle
-    sezioni successive.
-\end{templateblock}
-
 \begin{tabularx}{\linewidth}{r|>{\internallinenumbers}X|}
     \cline{2-2} &
-    ... inserire qui la specifica ricevuta ...\hfill
+    %
+    % Inserire all’interno di questo riquadro la specifica così come è stata
+    % fornita. Nella colonna a sinistra è riportata la numerazione delle righe.
+    % Questi numeri dovranno essere utilizzati per riferirsi al testo nelle
+    % sezioni successive.
+    %
+    Si vuole realizzare il sistema informativo di una catena di cinema,
+    che si occupi anche della gestione delle prenotazioni.
+    \newline
+    \newline
+    L’amministrazione della catena gestisce i cinema.
+    Ciascun cinema ha un numero arbitrario di sale, identificato da un
+    numero di sala.
+    In ogni sala c’è un numero arbitrario di posti, ciascun individuato
+    da una lettera per la fila ed un numero di posto.
+    \newline
+    \newline
+    In ogni sala vengono proiettati più film quotidianamente.
+    Ciascun cinema può proiettare lo stesso film più volte in una giornata,
+    in sale differenti. Ogni film ha una durata, un nome, è associato
+    al cast degli attori protagonisti e una casa cinematografica.
+    Lo stesso film, proiettato in orari differenti e in sale differenti,
+    può avere un costo per il biglietto differente, proprio in relazione
+    alla sala e all’orario in cui esso viene proiettato.
+    \newline
+    \newline
+    Il sistema di prenotazione è tale per cui gli utenti possono prenotarsi
+    per una visione, scegliendo un posto disponibile. Dal momento dell’inizio
+    della procedura di prenotazione, un cliente ha a disposizione 10 minuti
+    per perfezionare la prenotazione.
+    Dopo aver scelto il  posto, al cliente è data la possibilità di inserire
+    i dati relativi alla propria carta di credito
+    (numero, intestatario, data di scadenza, codice CVV).
+    Una volta inseriti questi dati, il sistema restituisce all’utente
+    un codice di prenotazione.
+    Fino a 30 minuti dall'inizio della proiezione, il cliente ha la possibilità
+    di annullare la sua prenotazione fornendo al sistema il codice
+    di prenotazione.
+    \newline
+    \newline
+    La catena di cinema gestisce anche i propri dipendenti, divisi in
+    maschere e proiezionisti.
+    Gli amministratori della catena definiscono i turni di lavoro,
+    di otto ore massimo. I turni sono gestiti su base settimanale.
+    Un report permette di sapere agli amministratori della catena se qualche
+    spettacolo è sprovvisto di proiezionista o se qualche cinema, in qualche
+    fascia oraria di apertura, è sprovvisto di almeno due maschere per la
+    verifica dei biglietti all’ingresso.
+    \newline
+    \newline
+    La verifica dei biglietti avviene da parte delle maschere mediante
+    l’utilizzo del codice di prenotazione.
+    Un biglietto utilizzato viene associato nel sistema al fatto che quel
+    determinato posto, per quella determinata proiezione, è stato occupato
+    dallo spettatore.
+    Non è possibile utilizzare più volte lo stesso codice di prenotazione
+    per accedere al cinema.
+    \newline
+    \newline
+    A fini statistici, gli amministratori possono generare dei report mensili
+    che mostrano per ciascun cinema e ciascuna sala quante prenotazioni sono
+    state confermate, quante sono state annullate, e quante prenotazioni
+    confermate non sono state utilizzate per accedere al cinema.
     \\\cline{2-2}
 \end{tabularx}
