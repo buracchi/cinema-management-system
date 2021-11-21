@@ -5,6 +5,20 @@
 \usepackage{parskip}
 \usepackage{environ}
 \usepackage[most]{tcolorbox}
+\usepackage{titlesec}
+\usepackage[dotinlabels]{titletoc}
+
+\titleformat{\section}[hang]{\bfseries\Large}{\thesection.}{0.5em}{}
+
+\appto\appendix{%
+  \setcounter{secnumdepth}{-2}
+  \addtocontents{toc}{%
+    \unexpanded{\unexpanded{%
+      \cftpagenumbersoff{section}%
+      \setlength\cftsecindent{\cftsecnumwidth}%
+    }}%
+  }%
+}
 
 \renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
 \addto\captionsitalian{
