@@ -20,6 +20,13 @@
      & \multicolumn{1}{|c|}{\textbf{Nuovo termine}}
      & \multicolumn{1}{|c|}{\textbf{Motivo correzione}}
     \\\hline
+    1, 23
+     & catena di cinema
+     & catena cinematografica
+     & Il termine "cinema" viene utilizzato per descrivere un’entità nel
+    dominio di riferimento, il suo utilizzo nel descrivere un elemento
+    differente crea pertanto un’ambiguità.
+    \\ \hline
     4
      & amministrazione della catena
      & amministratori
@@ -57,17 +64,34 @@
      & Il termine "spettacolo" viene utilizzato come sinonimo di
     "proiezione" generando un'ambiguità.
     \\ \hline
+    24
+     & turni di lavoro
+     & turni
+     & I termini "di lavoro" sono pleonastici.
+    \\ \hline
+    10
+     & cast degli attori protagonisti
+     & cast
+     & Utilizziamo per semplicità il termine "cast" per riferirsi al
+    "cast degli attori protagonisti".
+    \\ \hline
     16
      & perfezionare
      & completare
      & Il termine "perfezionare" è utilizzato come sinonimo di "completare"
     rendendo più difficile la comprensione del testo.
     \\ \hline
+    27
+     & verifica
+     & validazione
+     & Il termine "verifica" è utilizzato come sinonimo di "validazione"
+    generando un'ambiguità.
+    \\ \hline
     10
      & è associato al
      & [ha] un
      & Il termine "è associato al" ha un significato omologo a
-    "[ha] un" rendendo più difficile la comprensione del testo.
+    "[ha] un" ma rende più difficile la comprensione del testo.
     \\ \hline
 \end{tabularx}
 
@@ -85,8 +109,8 @@
     "L'amministrazione della catena gestisce i cinema."
 
     La frase in questione è circostanziale o con il termine "gestisce" si vuole
-    far riferimento a delle operazioni specifiche sui cinema che non sono
-    state definite?
+    far riferimento a delle operazioni specifiche sui cinema che non sono state
+    definite e che si richiede di mettere a disposizione degli amministratori?
      & \hfill
     \\\hline
     La specifica presenta un'ambiguità:
@@ -134,7 +158,6 @@
      & \hfill
     \\\hline
 \end{tabularx}
-\pagebreak
 
 \subsubsection*{Specifica disambiguata}
 
@@ -146,19 +169,20 @@
         \item Ogni cinema ha un numero arbitrario di sale.
         \item Ogni sala è identificata da un numero di sala.
         \item Ogni sala ha un numero arbitrario di posti.
-        \item Ogni posto è identificato da una lettera per la fila ed un numero.
+        \item Ogni posto è identificato da una lettera per la fila ed un numero
+              di posto.
         \item In ogni sala si possono proiettare più film nello stesso giorno.
         \item Ogni film può essere proiettato più volte nello stesso giorno ed
               in sale differenti.
-        \item Ogni film ha una durata, un nome, un cast degli attori
-              protagonisti e una casa cinematografica.
+        \item Ogni film ha una durata, un nome, un cast e una
+              casa cinematografica.
         \item Il costo del biglietto per una proiezione dipende dal film
               proiettato, dalla sala e dall'orario in cui avviene la proiezione.
         \item I clienti possono prenotare un posto per una proiezione
               completando la procedura di prenotazione.
         \item I clienti hanno a disposizione 10 minuti per completare la
               procedura di prenotazione.
-        \item La procedura di prenotazione è composta dai seguenti passaggi:
+        \item La procedura di prenotazione è formata dai seguenti passaggi:
               \begin{enumerate}
                   \item il cliente deve scegliere un posto disponibile
                   \item il cliente deve inserire i dati relativi alla carta
@@ -167,17 +191,18 @@
                   \item il sistema deve restituire al cliente un codice di
                         prenotazione
               \end{enumerate}
-        \item I clienti possono annullare la sua prenotazione usando il codice
-              di prenotazione entro 30 minuti dall'inizio della proiezione.
+        \item I clienti possono annullare la propria prenotazione usando il
+              codice di prenotazione entro 30 minuti dall'inizio della
+              proiezione.
         \item I dipendenti sono divisi in maschere e proiezionisti.
-        \item Gli amministratori definiscono i turni di lavoro.
-        \item I turni di lavoro devono essere di massimo otto ore.
+        \item Gli amministratori definiscono i turni.
+        \item I turni devono essere di massimo otto ore.
         \item I turni sono gestiti su base settimanale.
         \item Gli amministratori possono generare un report che permette di
               sapere se qualche proiezione è sprovvista di proiezionista o se
               qualche cinema, in qualche fascia oraria di apertura, è sprovvisto
               di almeno due maschere.
-        \item Le maschere verificano i biglietti all'ingresso mediante il codice
+        \item Le maschere validano i biglietti mediante il codice
               di prenotazione.
         \item Un biglietto utilizzato viene associato al fatto che quel
               determinato posto, per quella determinata proiezione, è stato
@@ -185,19 +210,21 @@
         \item Non è possibile utilizzare più volte lo stesso codice di
               prenotazione per accedere al cinema.
         \item Gli amministratori possono generare dei report mensili che
-              mostrano per ciascun cinema e ciascuna sala quante prenotazioni
+              mostrano per ogni cinema e per ogni sala quante prenotazioni
               sono state confermate, quante sono state annullate, e quante
               prenotazioni confermate non sono state utilizzate.
     \end{itemize}
     \\\hline
 \end{tabularx}
 
+\pagebreak
+
 \subsection*{Glossario dei Termini}
 %
 % Realizzare un dizionario dei termini, compilando la tabella qui sotto,
 % a partire dalle specifiche precedentemente disambiguate
 %
-\begin{tabularx}{\linewidth}{|X|X|X|X|}
+\begin{longtable}{|p{3.86cm}|p{3.86cm}|p{3.86cm}|p{3.86cm}|}
     \hline
     \rowcolor{tblhdrcolor}
     \multicolumn{1}{|c|}{\textbf{Termine}}
@@ -205,12 +232,148 @@
      & \multicolumn{1}{|c|}{\textbf{Sinonimi}}
      & \multicolumn{1}{|c|}{\textbf{Collegamenti}}
     \\\hline
-    \hfill
-     & \hfill
-     & \hfill
-     & \hfill
+    Cinema
+     & Un cinema facente parte della catena cinematografica.
+     &
+     & Sala, Fascia oraria di apertura
+    \\\hline
+    Sala
+     & Una sala di un cinema in cui vengono effettuate proiezioni.
+     &
+     & Numero di sala, Posto
+    \\\hline
+    Numero di sala
+     & Numero intero identificante una sala in un cinema. (?)
+     &
+     &
+    \\\hline
+    Posto
+     & Sedia, poltrona e sim. in una sala su cui un cliente acquisisce
+    il diritto di sedere acquistando il relativo biglietto.
+     &
+     & Numero di posto
+    \\\hline
+    Numero di posto
+     & Numero intero identificante la colonna del posto. (?)
+     &
+     &
+    \\\hline
+    Film
+     & Produzione cinematografica proiettabile in una sala di un cinema.
+     &
+     & Cast, Casa cinematografica
+    \\\hline
+    Cast
+     & Insieme degli attori principali che lavora nella produzione di un film.
+     & Cast degli attori protagonisti
+     &
+    \\\hline
+    Casa cinematografica
+     & Impresa che produce film.
+     &
+     &
     \\ \hline
-\end{tabularx}
+    Biglietto
+     & Titolo di accesso per una proiezione rilasciato al termine di una
+    procedura di prenotazione al cliente, ha un prezzo.
+     &
+     & Codice di prenotazione
+    \\ \hline
+    Proiezione
+     & Trasmissione di un Film in una sala in un certo orario.
+     & Visione, Spettacolo
+     & Sala, Film
+    \\ \hline
+    Cliente
+     & Persona che può acquistare un biglietto completando la procedura di
+    prenotazione.
+     & Utente, Spettatore
+     &
+    \\ \hline
+    Prenotazione
+     & Diritto a sedere sul posto prenotato per una certa proiezione di un
+    cliente che ha completato la procedura di prenotazione.
+     &
+     & Cliente, Proiezione, Posto, Codice di Prenotazione, Carta di credito
+    \\ \hline
+    Procedura di prenotazione
+     & Insieme di azioni che costituiscono il processo in cui un cliente può
+    effettuare una prenotazione.
+     &
+     & Cliente, Prenotazione, Posto disponibile, Codice di prenotazione,
+    Carta di credito
+    \\ \hline
+    Posto disponibile
+     & Posto non prenotato durante una certa proiezione.
+     &
+     & Posto, Proiezione, Prenotazione
+    \\ \hline
+    Carta di credito
+     & Strumento che consente all’intestatario di ottenere l'addebitamento
+    del prezzo di beni e servizi con enti convenzionati con l’emittente.
+     &
+     &
+    \\ \hline
+    Codice di prenotazione
+     & Codice univoco rilasciato al termine della procedura di prenotazione
+    che permette di validare il relativo biglietto o di annullare la
+    relativa prenotazione.
+     &
+     &
+    \\ \hline
+    Dipendente
+     & Un dipendente della catena cinematografica.
+     &
+     & Turno
+    \\ \hline
+    Maschera
+     & Un tipo di dipendente.
+     &
+     &
+    \\ \hline
+    Proiezionista
+     & Un tipo di dipendente.
+     &
+     &
+    \\ \hline
+    Amministratore
+     & Un amministratore della catena cinematografica.
+     & Amministrazione della catena, Amministratori della catena
+     &
+    \\ \hline
+    Turno
+     & Un turno lavorativo di un dipendete.
+     & Turno di lavoro
+     &
+    \\ \hline
+    Fascia oraria di apertura
+     & Periodo temporale (?) durante il quale il relativo cinema è aperto.
+     &
+     &
+    \\ \hline
+    Biglietto utilizzato
+     & Un biglietto validato da un maschera.
+     &
+     & Biglietto, Codice di prenotazione
+    \\ \hline
+    Prenotazione confermata
+     & Una prenotazione il cui codice di prenotazione corrisponde a quello di
+    un biglietto utilizzato.
+     &
+     & Prenotazione, Biglietto utilizzato
+    \\ \hline
+    Prenotazione annullata
+     & Una prenotazione che è stata annullata dal cliente.
+     &
+     & Prenotazione
+    \\ \hline
+    Prenotazione confermata non utilizzata
+     & Una prenotazione il cui codice di prenotazione corrisponde a quello di
+    un biglietto non utilizzato.
+     &
+     & Prenotazione, Biglietto
+    \\ \hline
+\end{longtable}
 
 \subsection*{Raggruppamento dei requisiti in insiemi omogenei}
 %
