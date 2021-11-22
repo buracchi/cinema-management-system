@@ -1,7 +1,7 @@
 \section{Analisi dei Requisiti}
 %
 % Lo scopo di questa sezione è raffinare la specifica fornita, andando ad
-% effettuare un’operazione preliminare di disambiguazione.
+% effettuare un'operazione preliminare di disambiguazione.
 %
 \subsection*{Identificazione dei termini ambigui e correzioni possibili}
 %
@@ -12,7 +12,7 @@
 % si intende adottare nella specifica, ed indicare il motivo del cambiamento
 % che si propone.
 %
-\begin{tabularx}{\linewidth}{|l|l|l|X|}
+\begin{tabularx}{\linewidth}{|p{1.5cm}|p{3cm}|p{3cm}|X|}
     \hline
     \rowcolor{tblhdrcolor}
     \multicolumn{1}{|c|}{\textbf{Linea}}
@@ -20,12 +20,121 @@
      & \multicolumn{1}{|c|}{\textbf{Nuovo termine}}
      & \multicolumn{1}{|c|}{\textbf{Motivo correzione}}
     \\\hline
-    \hfill
-     & \hfill
-     & \hfill
-     & \hfill
+    4
+     & amministrazione della catena
+     & amministratori
+     & Il termine "amministrazione" viene utilizzato come sinonimo di
+    "amministratori" generando un'ambiguità.
+
+    I termini "della catena" sono pleonastici.
+    \\ \hline
+    24, 25
+     & amministratori della catena
+     & amministratori
+     & I termini "della catena" sono pleonastici.
+    \\ \hline
+    14, 19
+     & utente
+     & cliente
+     & Il termine "utente" viene utilizzato come sinonimo di
+    "cliente" generando un'ambiguità.
+    \\ \hline
+    32
+     & spettatore
+     & cliente
+     & Il termine "spettatore" viene utilizzato come sinonimo di
+    "cliente" generando un'ambiguità.
+    \\ \hline
+    14
+     & visione
+     & proiezione
+     & Il termine "visione" viene utilizzato come sinonimo di
+    "proiezione" generando un'ambiguità.
+    \\ \hline
+    26
+     & spettacolo
+     & proiezione
+     & Il termine "spettacolo" viene utilizzato come sinonimo di
+    "proiezione" generando un'ambiguità.
+    \\ \hline
+    16
+     & perfezionare
+     & completare
+     & Il termine "perfezionare" è utilizzato come sinonimo di "completare"
+    rendendo più difficile la comprensione del testo.
+    \\ \hline
+    10
+     & è associato al
+     & [ha] un
+     & Il termine "è associato al" ha un significato omologo a
+    "[ha] un" rendendo più difficile la comprensione del testo.
     \\ \hline
 \end{tabularx}
+
+\pagebreak
+\subsubsection*{Interlocuzione con il cliente}
+
+\begin{tabularx}{\linewidth}{|X|X|}
+    \hline
+    \rowcolor{tblhdrcolor}
+    \multicolumn{1}{|c|}{\textbf{Messaggio}}
+     & \multicolumn{1}{|c|}{\textbf{Risposta}}
+    \\\hline
+    Non è chiaro il significato di questo periodo nella specifica:
+
+    "L'amministrazione della catena gestisce i cinema."
+
+    La frase in questione è circostanziale o con il termine "gestisce" si vuole
+    far riferimento a delle operazioni specifiche sui cinema che non sono
+    state definite?
+     & \hfill
+    \\\hline
+    La specifica presenta un'ambiguità:
+
+    "Ciascun cinema ha un numero arbitrario di sale,
+    identificato da un numero di sala."
+
+    Dal genere del termine "identificato" si evince che il soggetto della
+    subordinata può essere il numero o il cinema.
+
+    Dalle mie conoscenze del dominio sospetto che si intenda tuttavia
+    che sia la sala ad essere identificata dal numero di sala,
+    cosa si intende?
+     & \hfill
+    \\\hline
+    La specifica presenta un'ambiguità:
+
+    "In ogni sala vengono proiettati più film quotidianamente."
+
+    Si vuole affermare che
+    "in ogni sala devono essere proiettati almeno due film ogni giorno"
+    o
+    "in ogni sala si possono proiettare più film nello stesso giorno"?
+     & \hfill
+    \\\hline
+    La specifica presenta un'ambiguità:
+
+    "Dopo aver scelto il posto, al cliente è data la possibilità di inserire
+    i dati relativi alla propria carta di credito [...] Una volta inseriti
+    questi dati, il sistema restituisce all’utente un codice di prenotazione."
+
+    Con questa frase si vuole affermare che l'inserimento dei dati della carta
+    di credito è un passaggio opzionale, ed è quindi concesso al cliente
+    di pagare la prenotazione alla cassa successivamente,
+    o è invece obbligatorio l'inserimento dei dati della carta di credito per
+    completare la procedura?
+     & \hfill
+    \\\hline
+    Non è chiaro il significato di questo periodo nella specifica:
+
+    "Gli amministratori della catena definiscono i turni di lavoro[...]"
+
+    Quali operazioni specifiche sui turni di lavoro si richiede di mettere
+    a disposizione degli amministratori?
+     & \hfill
+    \\\hline
+\end{tabularx}
+\pagebreak
 
 \subsubsection*{Specifica disambiguata}
 
@@ -33,7 +142,53 @@
     \hline
     % Riportare in questo riquadro la specifica di progetto corretta,
     % applicando le disambiguazioni proposte.
-    \hfill
+    \begin{itemize}
+        \item Ogni cinema ha un numero arbitrario di sale.
+        \item Ogni sala è identificata da un numero di sala.
+        \item Ogni sala ha un numero arbitrario di posti.
+        \item Ogni posto è identificato da una lettera per la fila ed un numero.
+        \item In ogni sala si possono proiettare più film nello stesso giorno.
+        \item Ogni film può essere proiettato più volte nello stesso giorno ed
+              in sale differenti.
+        \item Ogni film ha una durata, un nome, un cast degli attori
+              protagonisti e una casa cinematografica.
+        \item Il costo del biglietto per una proiezione dipende dal film
+              proiettato, dalla sala e dall'orario in cui avviene la proiezione.
+        \item I clienti possono prenotare un posto per una proiezione
+              completando la procedura di prenotazione.
+        \item I clienti hanno a disposizione 10 minuti per completare la
+              procedura di prenotazione.
+        \item La procedura di prenotazione è composta dai seguenti passaggi:
+              \begin{enumerate}
+                  \item il cliente deve scegliere un posto disponibile
+                  \item il cliente deve inserire i dati relativi alla carta
+                        di credito (numero, intestatario, data di scadenza,
+                        codice CVV)
+                  \item il sistema deve restituire al cliente un codice di
+                        prenotazione
+              \end{enumerate}
+        \item I clienti possono annullare la sua prenotazione usando il codice
+              di prenotazione entro 30 minuti dall'inizio della proiezione.
+        \item I dipendenti sono divisi in maschere e proiezionisti.
+        \item Gli amministratori definiscono i turni di lavoro.
+        \item I turni di lavoro devono essere di massimo otto ore.
+        \item I turni sono gestiti su base settimanale.
+        \item Gli amministratori possono generare un report che permette di
+              sapere se qualche proiezione è sprovvista di proiezionista o se
+              qualche cinema, in qualche fascia oraria di apertura, è sprovvisto
+              di almeno due maschere.
+        \item Le maschere verificano i biglietti all'ingresso mediante il codice
+              di prenotazione.
+        \item Un biglietto utilizzato viene associato al fatto che quel
+              determinato posto, per quella determinata proiezione, è stato
+              occupato dal cliente.
+        \item Non è possibile utilizzare più volte lo stesso codice di
+              prenotazione per accedere al cinema.
+        \item Gli amministratori possono generare dei report mensili che
+              mostrano per ciascun cinema e ciascuna sala quante prenotazioni
+              sono state confermate, quante sono state annullate, e quante
+              prenotazioni confermate non sono state utilizzate.
+    \end{itemize}
     \\\hline
 \end{tabularx}
 
@@ -59,7 +214,7 @@
 
 \subsection*{Raggruppamento dei requisiti in insiemi omogenei}
 %
-% Per ciascun elemento “più importante” della specifica
+% Per ciascun elemento "più importante" della specifica
 % (riportata anche nel glossario precedente), estrapolare dalla specifica
 % disambiguata le frasi ad esso associate.
 % Compilare una tabella separata per ciascun elemento individuato.
