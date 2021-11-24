@@ -98,7 +98,7 @@
 \pagebreak
 \subsubsection*{Interlocuzione con il cliente}
 
-\begin{tabularx}{\linewidth}{|X|X|}
+\begin{longtable}{|p{8.15cm}|p{8.15cm}|}
     \hline
     \rowcolor{tblhdrcolor}
     \multicolumn{1}{|c|}{\textbf{Messaggio}}
@@ -111,43 +111,53 @@
     La frase in questione è circostanziale o con il termine "gestisce" si vuole
     far riferimento a delle operazioni specifiche sui cinema che non sono state
     definite e che si richiede di mettere a disposizione degli amministratori?
-     & \hfill
+     & Definisce, ad esempio, chi è che può decidere il palinsesto dei cinema,
+    ossia l'amministrazione della catena può cambiare ad esempio la
+    programmazione
+
+    Così come anche i turni di lavoro dei dipendenti
     \\\hline
-    La specifica presenta un'ambiguità:
-
-    "Ciascun cinema ha un numero arbitrario di sale,
-    identificato da un numero di sala."
-
-    Dal genere del termine "identificato" si evince che il soggetto della
-    subordinata può essere il numero o il cinema.
-
-    Dalle mie conoscenze del dominio sospetto che si intenda tuttavia
-    che sia la sala ad essere identificata dal numero di sala,
-    cosa si intende?
-     & \hfill
+    Quando gli amministratori modificano la programmazione delle proiezioni
+    dovrebbe essere il sistema ad aggiornare coerentemente tutti i palinsesti
+    o la modifica manuale dei palinsesti è un'operazione che si richiede
+    di mettere a disposizione degli amministratori?
+     & Non ho capito sinceramente in cosa potrebbe consistere l'automatismo...
     \\\hline
-    La specifica presenta un'ambiguità:
+    Attraverso la procedura di aggiornamento della programmazione delle
+    proiezioni gli amministratori possono aggiornare le proiezioni in programma.
 
-    "In ogni sala vengono proiettati più film quotidianamente."
+    Durante la procedura di prenotazione il cliente ha la possibilità di
+    verificare il palinsesto di un cinema per decidere quale proiezione
+    prenotare.
 
-    Si vuole affermare che
-    "in ogni sala devono essere proiettati almeno due film ogni giorno"
-    o
-    "in ogni sala si possono proiettare più film nello stesso giorno"?
-     & \hfill
+    Queste due informazioni sono corrette?
+     & Si
     \\\hline
-    La specifica presenta un'ambiguità:
+    Il palinsesto di un cinema mostrato al cliente durante la procedura di
+    prenotazione dev'essere generato dal sistema o dev'essere possibile per
+    gli amministratori modificarlo manualmente?
+     & Credo ci sia un equivoco: come può un sistema generare automaticamente
+    qualcosa se non ha le informazioni per farlo? Il palinsesto è solo la
+    lista dei film con gli orari. Se gli amministratori non inseriscono i
+    film con gli orari, cosa può generare il sistema in automatico?
+    \\\hline
+    Nel caso in cui il sistema non contenga le informazioni necessarie per
+    generare il palinsesto il sistema informerà il cliente che non sono
+    presenti proiezioni in programma.
+    Durante la procedura di aggiornamento della programmazione delle
+    proiezioni gli amministratori dovranno inserire nel sistema i dati relativi
+    alle proiezioni, che comprendono i film e gli orari di proiezione.
+    Queste informazioni risiederanno dunque nel sistema al termine della prima
+    procedura di aggiornamento della programmazione delle proiezioni.
+     & Continuo a non capire qual è il punto di tutta questa discussione...
+    U+1F601
 
-    "Dopo aver scelto il posto, al cliente è data la possibilità di inserire
-    i dati relativi alla propria carta di credito [...] Una volta inseriti
-    questi dati, il sistema restituisce all’utente un codice di prenotazione."
+    Se non ci sono film, i film prenotabili sono zero, non vedo cosa cosa ci
+    sia di diverso nell'"informare il cliente" di questo dal mostrare i film
+    che può prenotare U+1F914
 
-    Con questa frase si vuole affermare che l'inserimento dei dati della carta
-    di credito è un passaggio opzionale, ed è quindi concesso al cliente
-    di pagare la prenotazione alla cassa successivamente,
-    o è invece obbligatorio l'inserimento dei dati della carta di credito per
-    completare la procedura?
-     & \hfill
+    In ultimo sì: sono gli amministratori che possono decidere la
+    programmazione dei film, come dicevamo già prima!
     \\\hline
     Non è chiaro il significato di questo periodo nella specifica:
 
@@ -157,7 +167,7 @@
     a disposizione degli amministratori?
      & \hfill
     \\\hline
-\end{tabularx}
+\end{longtable}
 
 \subsubsection*{Specifica disambiguata}
 
@@ -166,6 +176,9 @@
     % Riportare in questo riquadro la specifica di progetto corretta,
     % applicando le disambiguazioni proposte.
     \begin{itemize}
+        \item Gli amministratori possono modificare la programmazione delle
+              proiezioni.
+        \item Gli amministratori possono modificare la programmazione dei turni.
         \item Ogni cinema ha un numero arbitrario di sale.
         \item Ogni sala è identificata da un numero di sala.
         \item Ogni sala ha un numero arbitrario di posti.
@@ -184,18 +197,22 @@
               procedura di prenotazione.
         \item La procedura di prenotazione è formata dai seguenti passaggi:
               \begin{enumerate}
-                  \item il cliente deve scegliere un posto disponibile
-                  \item il cliente deve inserire i dati relativi alla carta
+                  \item il cliente seleziona un cinema
+                  \item il sistema permette al cliente di verificare
+                        il palinsesto del cinema selezionato
+                  \item il cliente seleziona una proiezione
+                  \item il cliente seleziona un posto disponibile
+                  \item il cliente inserire i dati relativi alla carta
                         di credito (numero, intestatario, data di scadenza,
                         codice CVV)
-                  \item il sistema deve restituire al cliente un codice di
+                  \item il sistema restituisce al cliente un codice di
                         prenotazione
               \end{enumerate}
         \item I clienti possono annullare la propria prenotazione usando il
               codice di prenotazione entro 30 minuti dall'inizio della
               proiezione.
         \item I dipendenti sono divisi in maschere e proiezionisti.
-        \item Gli amministratori definiscono i turni.
+        \item Gli amministratori definiscono i turni. (?)
         \item I turni devono essere di massimo otto ore.
         \item I turni sono gestiti su base settimanale.
         \item Gli amministratori possono generare un report che permette di
@@ -243,7 +260,7 @@
      & Numero di sala, Posto
     \\\hline
     Numero di sala
-     & Numero intero identificante una sala in un cinema. (?)
+     & Numero intero identificante una sala in un cinema.
      &
      &
     \\\hline
@@ -254,7 +271,7 @@
      & Numero di posto
     \\\hline
     Numero di posto
-     & Numero intero identificante la colonna del posto. (?)
+     & Numero intero identificante la colonna del posto.
      &
      &
     \\\hline
@@ -372,6 +389,18 @@
     un biglietto non utilizzato.
      &
      & Prenotazione, Biglietto
+    \\ \hline
+    Programmazione delle proiezioni
+     & La pianificazione delle proiezioni future.
+     & Palinsesto
+     &
+    \\ \hline
+    Palinsesto
+     & Prospetto della programmazione delle proiezioni di un cinema,
+    aggiornato periodicamente.
+    (?)
+     &
+     & Programmazione
     \\ \hline
 \end{longtable}
 
