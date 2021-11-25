@@ -64,6 +64,18 @@
      & Il termine "spettacolo" viene utilizzato come sinonimo di
     "proiezione" generando un'ambiguità.
     \\ \hline
+    11, 28, 30
+     & biglietto
+     & prenotazione
+     & Il termine "biglietto" viene utilizzato come sinonimo di
+    "prenotazione" generando un'ambiguità.
+    \\ \hline
+    10
+     & biglietto utilizzato
+     & prenotazione validata
+     & Il termine "biglietto" viene utilizzato come sinonimo di
+    "prenotazione" generando un'ambiguità.
+    \\ \hline
     24
      & turni di lavoro
      & turni
@@ -86,12 +98,6 @@
      & validazione
      & Il termine "verifica" è utilizzato come sinonimo di "validazione"
     generando un'ambiguità.
-    \\ \hline
-    10
-     & è associato al
-     & [ha] un
-     & Il termine "è associato al" ha un significato omologo a
-    "[ha] un" ma rende più difficile la comprensione del testo.
     \\ \hline
 \end{tabularx}
 
@@ -159,13 +165,43 @@
     In ultimo sì: sono gli amministratori che possono decidere la
     programmazione dei film, come dicevamo già prima!
     \\\hline
-    Non è chiaro il significato di questo periodo nella specifica:
+    Nella specifica si fa riferimento al fatto che i cinema hanno delle
+    fasce orarie d'apertura. Può fornirmi più dettagli su quest'ultime?
+    Devono rispettare dei vincoli?
+     & Non è necessario che il sistema imponga dei vincoli, anzi è preferibile
+    che non ne imponga affatto, poiché non sappiamo oggi quali orari potremo
+    avere nei nostri cinema in futuro.
+    Quindi, la cosa migliore è lasciare la libertà agli amministratori di
+    definire gli orari di apertura come meglio credono.
+    \\\hline
+    Nella specifica si fa riferimento a delle prenotazioni "confermate".
 
-    "Gli amministratori della catena definiscono i turni di lavoro[...]"
+    Cosa si intende per "confermate"?
+     & Si fa riferimento a questo
+    "Dal momento dell’inizio della procedura di prenotazione, un cliente ha
+    a disposizione 10 minuti per perfezionare la prenotazione"
 
-    Quali operazioni specifiche sui turni di lavoro si richiede di mettere
-    a disposizione degli amministratori?
-     & \hfill
+    e a questo "Fino a 30 minuti dall'inizio della proiezione, il cliente ha
+    la possibilità di annullare la sua prenotazione fornendo al sistema il
+    codice di prenotazione."
+    \\\hline
+    Nella specifica si fa poi riferimento a delle
+    prenotazioni confermate " non  [...] utilizzate per accedere al cinema".
+
+    Cosa si intende per "non utilizzate"? Che non sono ancora state
+    validate o che sono scadute?
+     & Sì, sono i biglietti venduti a persone che poi non sono andate al cinema
+    \\\hline
+    Nella specifica si fa riferimento al fatto che
+    "I turni sono gestiti su base settimanale".
+
+    Cosa si intende con questo?
+     & Che ogni settimana si fanno i turni
+    \\\hline
+    Lo stesso dipendente può lavorare in cinema diversi in turni diversi o
+    lavora unicamente in un cinema?
+     & Questo non è detto, può essere, non vorrei che ci fossero vincoli dal
+    sistema: ce la gestiamo noi quando facciamo i turni
     \\\hline
 \end{longtable}
 
@@ -176,9 +212,7 @@
     % Riportare in questo riquadro la specifica di progetto corretta,
     % applicando le disambiguazioni proposte.
     \begin{itemize}
-        \item Gli amministratori possono modificare la programmazione delle
-              proiezioni.
-        \item Gli amministratori possono modificare la programmazione dei turni.
+        \item Gli amministratori gestiscono la programmazione delle proiezioni.
         \item Ogni cinema ha un numero arbitrario di sale.
         \item Ogni sala è identificata da un numero di sala.
         \item Ogni sala ha un numero arbitrario di posti.
@@ -189,8 +223,8 @@
               in sale differenti.
         \item Ogni film ha una durata, un nome, un cast e una
               casa cinematografica.
-        \item Il costo del biglietto per una proiezione dipende dal film
-              proiettato, dalla sala e dall'orario in cui avviene la proiezione.
+        \item Il prezzo di una prenotazione dipende dal film proiettato,
+              dalla sala e dall'orario in cui avviene la proiezione.
         \item I clienti possono prenotare un posto per una proiezione
               completando la procedura di prenotazione.
         \item I clienti hanno a disposizione 10 minuti per completare la
@@ -212,24 +246,31 @@
               codice di prenotazione entro 30 minuti dall'inizio della
               proiezione.
         \item I dipendenti sono divisi in maschere e proiezionisti.
-        \item Gli amministratori definiscono i turni. (?)
+        \item Ogni dipendente può effettuare un turno in un qualunque cinema.
+        \item Gli amministratori gestiscono la programmazione dei turni.
         \item I turni devono essere di massimo otto ore.
         \item I turni sono gestiti su base settimanale.
         \item Gli amministratori possono generare un report che permette di
-              sapere se qualche proiezione è sprovvista di proiezionista o se
-              qualche cinema, in qualche fascia oraria di apertura, è sprovvisto
-              di almeno due maschere.
-        \item Le maschere validano i biglietti mediante il codice
-              di prenotazione.
-        \item Un biglietto utilizzato viene associato al fatto che quel
-              determinato posto, per quella determinata proiezione, è stato
-              occupato dal cliente.
+              sapere se:
+              \begin{itemize}
+                  \item qualche proiezione è sprovvista di proiezionista
+                  \item qualche cinema, in qualche fascia oraria di apertura,
+                        è sprovvisto di almeno due maschere
+              \end{itemize}
+        \item Le maschere validano le prenotazioni mediante il codice
+              di prenotazione presente sui biglietti.
+        \item Una prenotazione validata viene associata al fatto che quel
+              determinato posto, per quella determinata proiezione,
+              è stato occupato dal cliente.
         \item Non è possibile utilizzare più volte lo stesso codice di
               prenotazione per accedere al cinema.
         \item Gli amministratori possono generare dei report mensili che
-              mostrano per ogni cinema e per ogni sala quante prenotazioni
-              sono state confermate, quante sono state annullate, e quante
-              prenotazioni confermate non sono state utilizzate.
+              mostrano per ogni cinema e per ogni sala:
+              \begin{itemize}
+                  \item quante sono le prenotazioni confermate
+                  \item quante sono le prenotazioni annullate
+                  \item quante sono le prenotazioni scadute
+              \end{itemize}
     \end{itemize}
     \\\hline
 \end{tabularx}
@@ -254,6 +295,11 @@
      &
      & Sala, Fascia oraria di apertura
     \\\hline
+    Fascia oraria di apertura
+     & Periodo temporale durante il quale il relativo cinema è aperto. [...]
+     &
+     &
+    \\ \hline
     Sala
      & Una sala di un cinema in cui vengono effettuate proiezioni.
      &
@@ -265,8 +311,8 @@
      &
     \\\hline
     Posto
-     & Sedia, poltrona e sim. in una sala su cui un cliente acquisisce
-    il diritto di sedere acquistando il relativo biglietto.
+     & Sedia, poltrona e sim. in una sala prenotabile da un cliente
+    per una proiezione.
      &
      & Numero di posto
     \\\hline
@@ -290,38 +336,56 @@
      &
      &
     \\ \hline
-    Biglietto
-     & Titolo di accesso per una proiezione rilasciato al termine di una
-    procedura di prenotazione al cliente, ha un prezzo.
-     &
-     & Codice di prenotazione
-    \\ \hline
     Proiezione
-     & Trasmissione di un Film in una sala in un certo orario.
+     & Riproduzione di un film in una sala in una certa data e in un
+    certo orario.
      & Visione, Spettacolo
      & Sala, Film
     \\ \hline
+    Programmazione delle proiezioni
+     & La pianificazione delle proiezioni future.
+     & Palinsesto
+     &
+    \\ \hline
+    Palinsesto
+     & Prospetto della programmazione delle proiezioni di un cinema,
+    aggiornato periodicamente.
+     &
+     & Programmazione
+    \\ \hline
     Cliente
-     & Persona che può acquistare un biglietto completando la procedura di
-    prenotazione.
+     & Utente che può effettuare la procedura di prenotazione.
      & Utente, Spettatore
      &
     \\ \hline
-    Prenotazione
-     & Diritto a sedere sul posto prenotato per una certa proiezione di un
-    cliente che ha completato la procedura di prenotazione.
+    Biglietto
+     & Titolo di accesso ad un cinema associato ad una prenotazione,
+    contiene i dati della prenotazione ed è valido per la relativa proiezione.
      &
+     & Prenotazione, Codice di prenotazione
+    \\ \hline
+    Prenotazione
+     & Diritto a sedere su un certo posto per una certa proiezione acquisibile
+    completando la procedura di prenotazione, il suo prezzo varia in base alla
+    proiezione.
+     & Biglietto
      & Cliente, Proiezione, Posto, Codice di Prenotazione, Carta di credito
     \\ \hline
+    Codice di prenotazione
+     & Codice univoco identificante una prenotazione.
+    Permette di validare il relativo biglietto o di annullare la
+    relativa prenotazione.
+     &
+     &
+    \\ \hline
     Procedura di prenotazione
-     & Insieme di azioni che costituiscono il processo in cui un cliente può
-    effettuare una prenotazione.
+     & Processo tramite cui un cliente può effettuare una prenotazione.
      &
      & Cliente, Prenotazione, Posto disponibile, Codice di prenotazione,
     Carta di credito
     \\ \hline
     Posto disponibile
-     & Posto non prenotato durante una certa proiezione.
+     & In riferimento ad una certa proiezione, posto non prenotato.
      &
      & Posto, Proiezione, Prenotazione
     \\ \hline
@@ -331,11 +395,34 @@
      &
      &
     \\ \hline
-    Codice di prenotazione
-     & Codice univoco rilasciato al termine della procedura di prenotazione
-    che permette di validare il relativo biglietto o di annullare la
-    relativa prenotazione.
+    Biglietto utilizzato
+     & Un biglietto associato ad una prenotazione confermata utilizzata.
      &
+     & Biglietto, Codice di prenotazione
+    \\ \hline
+    Prenotazione confermata
+     & Una prenotazione non annullata.
+     &
+     & Prenotazione
+    \\ \hline
+    Prenotazione annullata
+     & Una prenotazione che è stata annullata dal cliente.
+     &
+     & Prenotazione
+    \\ \hline
+    Prenotazione confermata utilizzata
+     & Una prenotazione confermata validata da una maschera.
+     &
+     & Prenotazione, Biglietto
+    \\ \hline
+    Prenotazione confermata non utilizzata
+     & Una prenotazione confermata non validata da una maschera.
+     &
+     & Prenotazione, Biglietto
+    \\ \hline
+    Amministratore
+     & Un amministratore della catena cinematografica.
+     & Amministrazione della catena, Amministratori della catena
      &
     \\ \hline
     Dipendente
@@ -353,54 +440,16 @@
      &
      &
     \\ \hline
-    Amministratore
-     & Un amministratore della catena cinematografica.
-     & Amministrazione della catena, Amministratori della catena
-     &
-    \\ \hline
     Turno
-     & Un turno lavorativo di un dipendete.
+     & Un'intervallo di tempo di massimo otto ore all'interno di una giornata
+     che definisce il periodo lavorativo di un dipendete.
      & Turno di lavoro
      &
     \\ \hline
-    Fascia oraria di apertura
-     & Periodo temporale (?) durante il quale il relativo cinema è aperto.
-     &
-     &
-    \\ \hline
-    Biglietto utilizzato
-     & Un biglietto validato da un maschera.
-     &
-     & Biglietto, Codice di prenotazione
-    \\ \hline
-    Prenotazione confermata
-     & Una prenotazione il cui codice di prenotazione corrisponde a quello di
-    un biglietto utilizzato.
-     &
-     & Prenotazione, Biglietto utilizzato
-    \\ \hline
-    Prenotazione annullata
-     & Una prenotazione che è stata annullata dal cliente.
-     &
-     & Prenotazione
-    \\ \hline
-    Prenotazione confermata non utilizzata
-     & Una prenotazione il cui codice di prenotazione corrisponde a quello di
-    un biglietto non utilizzato.
-     &
-     & Prenotazione, Biglietto
-    \\ \hline
-    Programmazione delle proiezioni
-     & La pianificazione delle proiezioni future.
+    Programmazione dei turni
+     & La pianificazione dei turni dei dipendenti svolta settimanalmente.
      & Palinsesto
      &
-    \\ \hline
-    Palinsesto
-     & Prospetto della programmazione delle proiezioni di un cinema,
-    aggiornato periodicamente.
-    (?)
-     &
-     & Programmazione
     \\ \hline
 \end{longtable}
 
