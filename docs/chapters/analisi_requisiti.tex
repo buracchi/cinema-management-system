@@ -212,8 +212,8 @@
     % Riportare in questo riquadro la specifica di progetto corretta,
     % applicando le disambiguazioni proposte.
     \begin{itemize}
-        \item Gli amministratori gestiscono la programmazione delle proiezioni.
         \item Ogni cinema ha un numero arbitrario di sale.
+        \item Ogni cinema ha una fascia oraria di apertura.
         \item Ogni sala è identificata da un numero di sala.
         \item Ogni sala ha un numero arbitrario di posti.
         \item Ogni posto è identificato da una lettera per la fila ed un numero
@@ -225,6 +225,7 @@
               casa cinematografica.
         \item Il prezzo di una prenotazione dipende dal film proiettato,
               dalla sala e dall'orario in cui avviene la proiezione.
+        \item Gli amministratori gestiscono la programmazione delle proiezioni.
         \item I clienti possono prenotare un posto per una proiezione
               completando la procedura di prenotazione.
         \item I clienti hanno a disposizione 10 minuti per completare la
@@ -348,8 +349,7 @@
      &
     \\ \hline
     Palinsesto
-     & Prospetto della programmazione delle proiezioni di un cinema,
-    aggiornato periodicamente.
+     & Prospetto della programmazione delle proiezioni di un cinema.
      &
      & Programmazione
     \\ \hline
@@ -359,8 +359,8 @@
      &
     \\ \hline
     Biglietto
-     & Titolo di accesso ad un cinema associato ad una prenotazione,
-    contiene i dati della prenotazione ed è valido per la relativa proiezione.
+     & Titolo di accesso ad un cinema, contiene i dati di una prenotazione
+    ed è valido per la relativa proiezione.
      &
      & Prenotazione, Codice di prenotazione
     \\ \hline
@@ -396,7 +396,7 @@
      &
     \\ \hline
     Biglietto utilizzato
-     & Un biglietto associato ad una prenotazione confermata utilizzata.
+     & Un biglietto associato ad una prenotazione validata.
      &
      & Biglietto, Codice di prenotazione
     \\ \hline
@@ -410,13 +410,14 @@
      &
      & Prenotazione
     \\ \hline
-    Prenotazione confermata utilizzata
+    Prenotazione validata
      & Una prenotazione confermata validata da una maschera.
      &
      & Prenotazione, Biglietto
     \\ \hline
-    Prenotazione confermata non utilizzata
-     & Una prenotazione confermata non validata da una maschera.
+    Prenotazione scaduta
+     & Una prenotazione confermata non validata da una maschera
+    relativa ad proiezione effettuata.
      &
      & Prenotazione, Biglietto
     \\ \hline
@@ -442,7 +443,7 @@
     \\ \hline
     Turno
      & Un'intervallo di tempo di massimo otto ore all'interno di una giornata
-     che definisce il periodo lavorativo di un dipendete.
+    che definisce il periodo lavorativo di un dipendete.
      & Turno di lavoro
      &
     \\ \hline
@@ -463,7 +464,262 @@
 \begin{tabularx}{\linewidth}{|X|}
     \hline
     \rowcolor{tblhdrcolor}
-    \textbf{Frasi relative a ...} \\\hline
-    %
+    \textbf{Frasi relative ai cinema} \\\hline
+    Ogni cinema ha un numero arbitrario di sale.
+
+    Ogni cinema ha una fascia oraria di apertura.
+
+    Ogni dipendente può effettuare un turno in un qualunque cinema.
+
+    Gli amministratori possono generare un report che permette di
+    sapere se:
+    \begin{itemize}
+        \item qualche proiezione è sprovvista di proiezionista
+        \item qualche cinema, in qualche fascia oraria di apertura,
+              è sprovvisto di almeno due maschere
+    \end{itemize}
+    \\ \hline
+\end{tabularx}
+
+\begin{tabularx}{\linewidth}{|X|}
+    \hline
+    \rowcolor{tblhdrcolor}
+    \textbf{Frasi relative alle sale} \\\hline
+    Ogni cinema ha un numero arbitrario di sale.
+
+    Ogni sala è identificata da un numero di sala.
+
+    Ogni sala ha un numero arbitrario di posti.
+
+    In ogni sala si possono proiettare più film nello stesso giorno.
+
+    Ogni film può essere proiettato più volte nello stesso giorno ed
+    in sale differenti.
+
+    Il prezzo di una prenotazione dipende dal film proiettato,
+    dalla sala e dall'orario in cui avviene la proiezione.
+    \\ \hline
+\end{tabularx}
+
+\begin{tabularx}{\linewidth}{|X|}
+    \hline
+    \rowcolor{tblhdrcolor}
+    \textbf{Frasi relative ai posti} \\\hline
+    Ogni posto è identificato da una lettera per la fila ed un numero
+    di posto.
+
+    I clienti possono prenotare un posto per una proiezione completando la
+    procedura di prenotazione.
+
+    Una prenotazione validata viene associata al fatto che quel determinato
+    posto, per quella determinata proiezione, è stato occupato dal cliente.
+    \\ \hline
+\end{tabularx}
+
+\begin{tabularx}{\linewidth}{|X|}
+    \hline
+    \rowcolor{tblhdrcolor}
+    \textbf{Frasi relative ai film} \\\hline
+    In ogni sala si possono proiettare più film nello stesso giorno.
+
+    Ogni film può essere proiettato più volte nello stesso giorno ed
+    in sale differenti.
+
+    Ogni film ha una durata, un nome, un cast e una
+    casa cinematografica.
+
+    Il prezzo di una prenotazione dipende dal film proiettato,
+    dalla sala e dall'orario in cui avviene la proiezione.
+    \\ \hline
+\end{tabularx}
+
+\begin{tabularx}{\linewidth}{|X|}
+    \hline
+    \rowcolor{tblhdrcolor}
+    \textbf{Frasi relative alle proiezioni} \\\hline
+    In ogni sala si possono proiettare più film nello stesso giorno.
+    
+    Ogni film può essere proiettato più volte nello stesso giorno ed in sale
+    differenti.
+    
+    Il prezzo di una prenotazione dipende dal film proiettato,
+    dalla sala e dall'orario in cui avviene la proiezione.
+    
+    I clienti possono prenotare un posto per una proiezione
+    completando la procedura di prenotazione.
+    
+    Una prenotazione validata viene associata al fatto che quel
+    determinato posto, per quella determinata proiezione,
+    è stato occupato dal cliente.
+    \\ \hline
+\end{tabularx}
+
+\begin{tabularx}{\linewidth}{|X|}
+    \hline
+    \rowcolor{tblhdrcolor}
+    \textbf{Frasi relative alla programmazione delle proiezioni} \\\hline
+
+    In ogni sala si possono proiettare più film nello stesso giorno.
+    
+    Ogni film può essere proiettato più volte nello stesso giorno ed in sale
+    differenti.
+    
+    Il prezzo di una prenotazione dipende dal film proiettato,
+    dalla sala e dall'orario in cui avviene la proiezione.
+    
+    Gli amministratori gestiscono la programmazione delle proiezioni.
+    \\ \hline
+\end{tabularx}
+
+\begin{tabularx}{\linewidth}{|X|}
+    \hline
+    \rowcolor{tblhdrcolor}
+    \textbf{Frasi relative alle prenotazioni} \\\hline
+    Il prezzo di una prenotazione dipende dal film proiettato,
+    dalla sala e dall'orario in cui avviene la proiezione.
+    
+    I clienti possono prenotare un posto per una proiezione
+    completando la procedura di prenotazione.
+    
+    Le maschere validano le prenotazioni mediante il codice
+    di prenotazione presente sui biglietti.
+    
+    Una prenotazione validata viene associata al fatto che quel
+    determinato posto, per quella determinata proiezione,
+    è stato occupato dal cliente.
+    
+    Non è possibile utilizzare più volte lo stesso codice di
+    prenotazione per accedere al cinema.
+    
+    Gli amministratori possono generare dei report mensili che
+    mostrano per ogni cinema e per ogni sala:
+    \begin{itemize}
+        \item quante sono le prenotazioni confermate
+        \item quante sono le prenotazioni annullate
+        \item quante sono le prenotazioni scadute
+    \end{itemize}
+    \\ \hline
+\end{tabularx}
+
+\begin{tabularx}{\linewidth}{|X|}
+    \hline
+    \rowcolor{tblhdrcolor}
+    \textbf{Frasi relative a procedura di prenotazione} \\\hline
+    I clienti possono prenotare un posto per una proiezione
+    completando la procedura di prenotazione.
+    
+    I clienti hanno a disposizione 10 minuti per completare la
+    procedura di prenotazione.
+    
+    La procedura di prenotazione è formata dai seguenti passaggi:
+    \begin{enumerate}
+        \item il cliente seleziona un cinema
+        \item il sistema permette al cliente di verificare
+              il palinsesto del cinema selezionato
+        \item il cliente seleziona una proiezione
+        \item il cliente seleziona un posto disponibile
+        \item il cliente inserire i dati relativi alla carta
+              di credito (numero, intestatario, data di scadenza,
+              codice CVV)
+        \item il sistema restituisce al cliente un codice di
+              prenotazione
+    \end{enumerate}
+    
+    I clienti possono annullare la propria prenotazione usando il
+    codice di prenotazione entro 30 minuti dall'inizio della
+    proiezione.
+    \\ \hline
+\end{tabularx}
+
+\begin{tabularx}{\linewidth}{|X|}
+    \hline
+    \rowcolor{tblhdrcolor}
+    \textbf{Frasi relative agli amministratori} \\\hline
+    Gli amministratori gestiscono la programmazione delle proiezioni.
+    
+    Gli amministratori gestiscono la programmazione dei turni.
+    
+    Gli amministratori possono generare un report che permette di
+    sapere se:
+    \begin{itemize}
+        \item qualche proiezione è sprovvista di proiezionista
+        \item qualche cinema, in qualche fascia oraria di apertura,
+              è sprovvisto di almeno due maschere
+    \end{itemize}
+    
+    Gli amministratori possono generare dei report mensili che
+    mostrano per ogni cinema e per ogni sala:
+    \begin{itemize}
+        \item quante sono le prenotazioni confermate
+        \item quante sono le prenotazioni annullate
+        \item quante sono le prenotazioni scadute
+    \end{itemize}
+    \\ \hline
+\end{tabularx}
+
+\begin{tabularx}{\linewidth}{|X|}
+    \hline
+    \rowcolor{tblhdrcolor}
+    \textbf{Frasi relative ai dipendenti} \\\hline
+    I dipendenti sono divisi in maschere e proiezionisti.
+    
+    Ogni dipendente può effettuare un turno in un qualunque cinema.
+    \\ \hline
+\end{tabularx}
+
+\begin{tabularx}{\linewidth}{|X|}
+    \hline
+    \rowcolor{tblhdrcolor}
+    \textbf{Frasi relative alle maschere} \\\hline
+    I dipendenti sono divisi in maschere e proiezionisti.
+    
+    Le maschere validano le prenotazioni mediante il codice
+    di prenotazione presente sui biglietti.
+
+    Gli amministratori possono generare un report che permette di
+    sapere se:
+    \begin{itemize}
+        \item qualche proiezione è sprovvista di proiezionista
+        \item qualche cinema, in qualche fascia oraria di apertura,
+              è sprovvisto di almeno due maschere
+    \end{itemize}
+    \\ \hline
+\end{tabularx}
+
+\begin{tabularx}{\linewidth}{|X|}
+    \hline
+    \rowcolor{tblhdrcolor}
+    \textbf{Frasi relative ai proiezionisti} \\\hline
+    I dipendenti sono divisi in maschere e proiezionisti.
+    
+    Gli amministratori possono generare un report che permette di
+    sapere se:
+    \begin{itemize}
+        \item qualche proiezione è sprovvista di proiezionista
+        \item qualche cinema, in qualche fascia oraria di apertura,
+              è sprovvisto di almeno due maschere
+    \end{itemize}
+    \\ \hline
+\end{tabularx}
+
+\begin{tabularx}{\linewidth}{|X|}
+    \hline
+    \rowcolor{tblhdrcolor}
+    \textbf{Frasi relative ai turni} \\\hline
+    Ogni dipendente può effettuare un turno in un qualunque cinema.
+    
+    I turni devono essere di massimo otto ore.
+    
+    I turni sono gestiti su base settimanale.
+    \\ \hline
+\end{tabularx}
+
+\begin{tabularx}{\linewidth}{|X|}
+    \hline
+    \rowcolor{tblhdrcolor}
+    \textbf{Frasi relative alla programmazione dei turni} \\\hline
+    Gli amministratori gestiscono la programmazione dei turni.
+    
+    I turni sono gestiti su base settimanale.
     \\ \hline
 \end{tabularx}
