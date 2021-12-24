@@ -17,9 +17,103 @@
         \footnote{Indicare con E le entità, con R le relazioni}}
      & \multicolumn{1}{|c|}{\textbf{Volume atteso}}
     \\\hline
-    \hfill
-     & \hfill
-     & \hfill
+    Cinema
+     & E
+     & 10
+    \\\hline
+    Sala
+     & E
+     & 50 (in media 5 sale per ogni cinema)
+    \\ \hline
+    Posto
+     & E
+     & 10 000 (in media 200 posti per ogni sala)
+    \\ \hline
+    Dipendente
+     & E
+     & 200
+    \\ \hline
+    Maschera
+     & E
+     & 50
+    \\ \hline
+    Proiezionista
+     & E
+     & 150
+    \\ \hline
+    Turno
+     & E
+     & 1 200 (in media un turno per ogni dipendente per sei giorni a settimana)
+    \\ \hline
+    Film
+     & E
+     & 600 000
+    \\ \hline
+    Proiezione
+     & E
+     & 1 400 (in media 4 proiezioni al giorno per ogni sala in una settimana
+    prima del cambio del palinsesto)
+    \\ \hline
+    Prenotazione
+     & E
+     & 140 000 (in media la prenotazione del 50\% dei posti disponibili al
+    giorno)
+    \\ \hline
+    Prenotazione annullata
+     & E
+     & 14 000 (in media il 10\% delle prenotazioni)
+    \\ \hline
+    Prenotazione confermata
+     & E
+     & 126 000 (in media il 90\% delle prenotazioni)
+    \\ \hline
+    Prenotazione validata
+     & E
+     & 113 400 (in media il 90\% delle prenotazioni confermate)
+    \\ \hline
+    Prenotazione scaduta
+     & E
+     & 12 600 (in media il 10\% delle prenotazioni confermate)
+    \\ \hline
+    CinemaSala
+     & R
+     & 50
+    \\ \hline
+    SalaPosto
+     & R
+     & 10 000
+    \\ \hline
+    ProiezioneSala
+     & R
+     & 1 400
+    \\ \hline
+    PostoPrenotazione
+     & R
+     & 140 000
+    \\ \hline
+    PrenotazioneProiezione
+     & R
+     & 140 000
+    \\ \hline
+    FilmProiezione
+     & R
+     & 14 000
+    \\ \hline
+    ProiezioneProiezionista
+     & R
+     & 14 000
+    \\ \hline
+    Validazione
+     & R
+     & 113 400
+    \\ \hline
+    DipendenteTurno
+     & R
+     & 1 200
+    \\ \hline
+    CinemaTurno
+     & R
+     & 1 200
     \\ \hline
 \end{tabularx}
 
