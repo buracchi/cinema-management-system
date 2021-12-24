@@ -10,6 +10,92 @@
 % L’importante è descrivere e commentare tutti i passi della costruzione,
 % andando anche ad inserire “schemi parziali” utilizzati nel processo.
 %
+Per la costruzione dello schema E-R è stata utilizzata una strategia inside-out,
+dalla lista dei requisiti si è ricercato il primo concetto idoneo ad essere
+rappresento come un'entità, ovvero il cinema, e lo si è modellato provando a
+soddisfare i requisiti relativi:
+
+\begin{center}
+    \includegraphics[width=5cm]{progconc/er_1.png}
+\end{center}
+
+Il concetto successivo è proprio quello di sala, da cui si evince che è
+necessario rappresentare anche questo concetto per soddisfare i vincoli
+espressi nei requisiti, dunque si procede a reificare l'attributo utilizzando
+il pattern "parte-di" in quanto l'esistenza di un'occorrenza dell'entità
+sala dipende dall'esistenza di un'occorrenza di un entità cinema:
+
+\begin{center}
+    \includegraphics[width=6cm]{progconc/er_2.png}
+\end{center}
+
+Il concetto successivo è quello di posto, con un ragionamento analogo al
+precedente utilizziamo il pattern "parte-di":
+
+\begin{center}
+    \includegraphics[width=11cm]{progconc/er_3.png}
+\end{center}
+
+\pagebreak
+
+I concetti successivi sono quelli di proiezione e film. Sebbene non venga
+espresso esplicitamente nei requisiti, è importante notare che l'entità
+proiezione non può avere come identificatore esterno l'entità film in quanto
+non è possibile proiettare film differenti nello stesso momento in una stessa
+sala.
+
+Il fatto che l'omonimia sia un'evenienza comune quando si tratta di film
+è un'altro aspetto importante da considerare, per risolvere eventuali problemi
+introdurremo un codice univoco per identificare l'entità:
+
+\begin{center}
+    \includegraphics[width=12cm]{progconc/er_4.png}
+\end{center}
+
+\pagebreak
+
+Il concetto successivo è quello di prenotazione, le varie tipologie di
+prenotazione verranno espresse tramite il costrutto della generalizzazione.
+
+Poiché la validazione e l'annullamento delle proiezioni avvengono tramite
+un codice di prenotazione non sarà necessario richiedere al cliente di
+registrarsi ed effettuare il login per interagire con il sistema.
+
+Notiamo inoltre che un'operazione di rimborso consiste nella richiesta al
+servizio di pagamenti elettronici di annullare una transazione, sarà necessario
+pertanto registrare il codice identificante la transazione dal servizio
+utilizzato mentre non sarà necessario registrare i dati sensibili delle carte
+di credito nel sistema.
+
+\begin{center}
+    \includegraphics[width=12cm]{progconc/er_5.png}
+\end{center}
+
+\pagebreak
+
+Gli ultimi concetti da rappresentare sono quelli di dipendente e turno.
+
+\includegraphics[width=\linewidth]{progconc/er_6.png}
+
+Non avendo adottato una strategia bottom-up l'integrazione finale risulta
+banale, prima di potervi procedere tuttavia sarà necessario nominare le
+relazioni tra le entità nello schema sopra prodotto ed effettuare alcune
+considerazioni sulle entità cinema e dipendente.
+
+Sebbene non venga esplicitamente richiesto nei requisiti, è fondamentale che
+l'entità cinema mantenga informazioni relative al suo indirizzo per poter
+essere identificato dal cliente.
+È inoltre necessario notare che un indirizzo non è un attributo adatto ad
+identificare l'entità in quanto soggetto a possibili variazioni, pertanto
+sarà necessario introdurre un codice identificativo artificiale.
+
+Sebbene non venga esplicitamente richiesto nei requisiti, è fondamentale che
+l'entità dipendente mantenga alcune informazioni relative alla propria
+anagrafica per poter essere identificato dall'amministratore.
+È inoltre necessario notare che questi attributi non sono adatti ad
+identificare l'entità per problemi di possibili omonimie, pertanto
+sarà necessario introdurre un codice identificativo artificiale.
+
 \subsubsection*{Integrazione finale}
 %
 % Nell’integrazione finale delle varie parti dello schema E-R è possibile
@@ -18,28 +104,143 @@
 % Prima di riportare lo schema E-R finale, descrivere quali passi sono stati
 % adottati per risolvere tali conflitti.
 %
+\includegraphics[width=\linewidth]{progconc/final-integration.png}
+
 \subsection*{Regole aziendali}
 %
 % Laddove la specifica non sia catturata in maniera completa dallo schema E-R,
 % corredare lo stesso in questo paragrafo con l’insieme delle regole
 % aziendali necessarie a completare la progettazione concettuale.
 %
+\begin{longtable}{|p{16.75cm}|}
+    \hline
+    \rowcolor{tblhdrcolor}
+    \multicolumn{1}{|c|}{\textbf{Regole di vincolo}}
+    \\\hline
+    %\textlangle{}concetto\textrangle{}
+    %deve/non deve
+    %\textlangle{}espressione\textrangle{} \\
+    La procedura di prenotazione deve scadere dopo 10 minuti. \\\hline
+    Le prenotazioni confermate devono poter essere annullate entro 30 minuti
+    dall'inizio della proiezione.                             \\\hline
+    In una prenotazione devono coincidere il numero di sala del posto
+    ed il numero di sala della proiezione.                    \\\hline
+    I turni devono essere di massimo otto ore.
+    \\ \hline
+    \rowcolor{tblhdrcolor}
+    \multicolumn{1}{|c|}{\textbf{Regole di derivazione}}
+    \\\hline
+    %\textlangle{}concetto\textrangle{}
+    %si ottiene
+    %\textlangle{}operazione su concetti\textrangle{} \\
+    \\ \hline
+\end{longtable}
+
+\pagebreak
+
 \subsection*{Dizionario dei dati}
 %
 % Completare la progettazione concettuale riportando nella tabella seguente
 % il dizionario dei dati
 %
-\begin{tabularx}{\linewidth}{|l|X|l|l|}
+\begin{longtable}{|p{2.5cm}|p{7.1cm}|p{2.5cm}|p{3.2cm}|}
     \hline
     \rowcolor{tblhdrcolor}
     \multicolumn{1}{|c|}{\textbf{Entità}}
      & \multicolumn{1}{|c|}{\textbf{Descrizione}}
      & \multicolumn{1}{|c|}{\textbf{Attributi}}
      & \multicolumn{1}{|c|}{\textbf{Identificatori}}
-    \\\hline
-    \hfill
-     & \hfill
-     & \hfill
-     & \hfill
     \\ \hline
-\end{tabularx}
+    Cinema
+     & Un cinema facente parte della catena cinematografica.
+     & Fascia oraria d'apertura,
+    indirizzo
+     & Id
+    \\\hline
+    Sala
+     & Una sala di un cinema in cui vengono effettuate proiezioni.
+     &
+     & Numero, Cinema
+    \\\hline
+    Posto
+     & Sedia, poltrona e sim. in una sala prenotabile da un cliente per
+    una proiezione.
+     &
+     & Fila, Numero, Sala
+    \\\hline
+    Proiezione
+     & Riproduzione di un film in una sala in una certa data e in un
+    certo orario.
+     & Prezzo
+     & Data, Orario, Sala
+    \\\hline
+    Film
+     & Produzione cinematografica proiettabile in una sala di un cinema.
+     & Casa cinematografica, Nome, Durata, Cast
+     & Id
+    \\\hline
+    Prenotazione
+     & Diritto a sedere su un certo posto per una certa proiezione.
+     & Codice transazione
+     & Codice di prenotazione
+    \\\hline
+    Prenotazione annullata
+     & Una prenotazione che è stata annullata dal cliente.
+     &
+     &
+    \\\hline
+    Prenotazione confermata
+     & Prenotazione non annullata.
+     &
+     &
+    \\\hline
+    Prenotazione validata
+     & Prenotazione confermata validata da una maschera.
+     &
+     &
+    \\\hline
+    Prenotazione scaduta
+     & Una prenotazione confermata relativa ad proiezione effettuata non
+    validata da una maschera.
+     &
+     &
+    \\\hline
+    Dipendente
+     & Un dipendente della catena cinematografica.
+     & Nome,
+
+    Cognome
+     & Matricola
+    \\\hline
+    Maschera
+     & Un tipo di dipendente.
+     &
+     &
+    \\\hline
+    Proiezionista
+     & Un tipo di dipendente.
+     &
+     &
+    \\\hline
+    Turno
+     & Un’intervallo di tempo di massimo otto ore all’interno di una giornata
+    che definisce il periodo lavorativo di un dipendete.
+     &
+     & Giorno della settimana, Orario
+    \\\hline
+\end{longtable}
+
+%\begin{longtable}{|p{2.5cm}|p{7.6cm}|p{3.2cm}|p{2cm}|}
+%    \hline
+%    \rowcolor{tblhdrcolor}
+%    \multicolumn{1}{|c|}{\textbf{Relazione}}
+%     & \multicolumn{1}{|c|}{\textbf{Descrizione}}
+%     & \multicolumn{1}{|c|}{\textbf{Entità coinvolte}}
+%     & \multicolumn{1}{|c|}{\textbf{Attributi}}
+%    \\\hline
+%    \hfill
+%     & \hfill
+%     & \hfill
+%     & \hfill
+%    \\ \hline
+%\end{longtable}
