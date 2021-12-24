@@ -205,9 +205,10 @@
     \\\hline
 \end{longtable}
 
+\pagebreak
 \subsubsection*{Specifica disambiguata}
 
-\begin{tabularx}{\linewidth}{|X|}
+\begin{longtable}{|p{\linewidth}|}
     \hline
     % Riportare in questo riquadro la specifica di progetto corretta,
     % applicando le disambiguazioni proposte.
@@ -236,20 +237,40 @@
                   \item il sistema permette al cliente di verificare
                         il palinsesto del cinema selezionato
                   \item il cliente seleziona una proiezione
+                  \item il sistema permette al cliente di verificare
+                        i posti disponibili
                   \item il cliente seleziona un posto disponibile
                   \item il cliente inserire i dati relativi alla carta
                         di credito (numero, intestatario, data di scadenza,
                         codice CVV)
+                  \item il sistema richiede al servizio di pagamento di
+                        generare la relativa transazione
+                  \item il servizio di pagamento restituisce al sistema
+                        il codice della transazione generata
+                  \item il sistema genera la prenotazione e la registra
+                        come prenotazione confermata
                   \item il sistema restituisce al cliente un codice di
                         prenotazione
               \end{enumerate}
-        \item I clienti possono annullare la propria prenotazione usando il
-              codice di prenotazione entro 30 minuti dall'inizio della
-              proiezione.
+        \item I clienti possono annullare la propria prenotazione completando
+              la procedura di annullamento di una prenotazione
+        \item I clienti possono annullare la propria prenotazione
+              entro 30 minuti dall'inizio della proiezione.
+        \item La procedura di annullamento di una prenotazione è formata dai
+              seguenti passaggi:
+              \begin{enumerate}
+                  \item il cliente fornisce al sistema un codice di
+                        prenotazione
+                  \item il sistema richiede al servizio di pagamento di
+                        annullare la relativa transazione
+                  \item il sistema registra la prenotazione come prenotazione
+                        annullata
+              \end{enumerate}
         \item I dipendenti sono divisi in maschere e proiezionisti.
         \item Ogni dipendente può effettuare un turno in un qualunque cinema.
         \item Gli amministratori gestiscono la programmazione dei turni.
-        \item I turni devono essere di massimo otto ore.
+        \item La durata di una giornata lavorativa di un dipendente deve essere
+              di massimo otto ore.
         \item I turni sono gestiti su base settimanale.
         \item Gli amministratori possono generare un report che permette di
               sapere se:
@@ -258,6 +279,9 @@
                   \item qualche cinema, in qualche fascia oraria di apertura,
                         è sprovvisto di almeno due maschere
               \end{itemize}
+    \end{itemize}
+    \\\hline
+    \begin{itemize}
         \item Le maschere validano le prenotazioni mediante il codice
               di prenotazione presente sui biglietti.
         \item Una prenotazione validata viene associata al fatto che quel
@@ -274,7 +298,7 @@
               \end{itemize}
     \end{itemize}
     \\\hline
-\end{tabularx}
+\end{longtable}
 
 \pagebreak
 
@@ -416,8 +440,8 @@
      & Prenotazione, Biglietto
     \\ \hline
     Prenotazione scaduta
-     & Una prenotazione confermata non validata da una maschera
-    relativa ad proiezione effettuata.
+     & Una prenotazione confermata relativa ad proiezione effettuata
+     non validata da una maschera.
      &
      & Prenotazione, Biglietto
     \\ \hline
@@ -538,16 +562,16 @@
     \rowcolor{tblhdrcolor}
     \textbf{Frasi relative alle proiezioni} \\\hline
     In ogni sala si possono proiettare più film nello stesso giorno.
-    
+
     Ogni film può essere proiettato più volte nello stesso giorno ed in sale
     differenti.
-    
+
     Il prezzo di una prenotazione dipende dal film proiettato,
     dalla sala e dall'orario in cui avviene la proiezione.
-    
+
     I clienti possono prenotare un posto per una proiezione
     completando la procedura di prenotazione.
-    
+
     Una prenotazione validata viene associata al fatto che quel
     determinato posto, per quella determinata proiezione,
     è stato occupato dal cliente.
@@ -560,13 +584,13 @@
     \textbf{Frasi relative alla programmazione delle proiezioni} \\\hline
 
     In ogni sala si possono proiettare più film nello stesso giorno.
-    
+
     Ogni film può essere proiettato più volte nello stesso giorno ed in sale
     differenti.
-    
+
     Il prezzo di una prenotazione dipende dal film proiettato,
     dalla sala e dall'orario in cui avviene la proiezione.
-    
+
     Gli amministratori gestiscono la programmazione delle proiezioni.
     \\ \hline
 \end{tabularx}
@@ -577,20 +601,20 @@
     \textbf{Frasi relative alle prenotazioni} \\\hline
     Il prezzo di una prenotazione dipende dal film proiettato,
     dalla sala e dall'orario in cui avviene la proiezione.
-    
+
     I clienti possono prenotare un posto per una proiezione
     completando la procedura di prenotazione.
-    
+
     Le maschere validano le prenotazioni mediante il codice
     di prenotazione presente sui biglietti.
-    
+
     Una prenotazione validata viene associata al fatto che quel
     determinato posto, per quella determinata proiezione,
     è stato occupato dal cliente.
-    
+
     Non è possibile utilizzare più volte lo stesso codice di
     prenotazione per accedere al cinema.
-    
+
     Gli amministratori possono generare dei report mensili che
     mostrano per ogni cinema e per ogni sala:
     \begin{itemize}
@@ -607,10 +631,10 @@
     \textbf{Frasi relative a procedura di prenotazione} \\\hline
     I clienti possono prenotare un posto per una proiezione
     completando la procedura di prenotazione.
-    
+
     I clienti hanno a disposizione 10 minuti per completare la
     procedura di prenotazione.
-    
+
     La procedura di prenotazione è formata dai seguenti passaggi:
     \begin{enumerate}
         \item il cliente seleziona un cinema
@@ -624,7 +648,7 @@
         \item il sistema restituisce al cliente un codice di
               prenotazione
     \end{enumerate}
-    
+
     I clienti possono annullare la propria prenotazione usando il
     codice di prenotazione entro 30 minuti dall'inizio della
     proiezione.
@@ -636,9 +660,9 @@
     \rowcolor{tblhdrcolor}
     \textbf{Frasi relative agli amministratori} \\\hline
     Gli amministratori gestiscono la programmazione delle proiezioni.
-    
+
     Gli amministratori gestiscono la programmazione dei turni.
-    
+
     Gli amministratori possono generare un report che permette di
     sapere se:
     \begin{itemize}
@@ -646,7 +670,7 @@
         \item qualche cinema, in qualche fascia oraria di apertura,
               è sprovvisto di almeno due maschere
     \end{itemize}
-    
+
     Gli amministratori possono generare dei report mensili che
     mostrano per ogni cinema e per ogni sala:
     \begin{itemize}
@@ -662,7 +686,7 @@
     \rowcolor{tblhdrcolor}
     \textbf{Frasi relative ai dipendenti} \\\hline
     I dipendenti sono divisi in maschere e proiezionisti.
-    
+
     Ogni dipendente può effettuare un turno in un qualunque cinema.
     \\ \hline
 \end{tabularx}
@@ -672,7 +696,7 @@
     \rowcolor{tblhdrcolor}
     \textbf{Frasi relative alle maschere} \\\hline
     I dipendenti sono divisi in maschere e proiezionisti.
-    
+
     Le maschere validano le prenotazioni mediante il codice
     di prenotazione presente sui biglietti.
 
@@ -691,7 +715,7 @@
     \rowcolor{tblhdrcolor}
     \textbf{Frasi relative ai proiezionisti} \\\hline
     I dipendenti sono divisi in maschere e proiezionisti.
-    
+
     Gli amministratori possono generare un report che permette di
     sapere se:
     \begin{itemize}
@@ -707,9 +731,9 @@
     \rowcolor{tblhdrcolor}
     \textbf{Frasi relative ai turni} \\\hline
     Ogni dipendente può effettuare un turno in un qualunque cinema.
-    
+
     I turni devono essere di massimo otto ore.
-    
+
     I turni sono gestiti su base settimanale.
     \\ \hline
 \end{tabularx}
@@ -719,7 +743,7 @@
     \rowcolor{tblhdrcolor}
     \textbf{Frasi relative alla programmazione dei turni} \\\hline
     Gli amministratori gestiscono la programmazione dei turni.
-    
+
     I turni sono gestiti su base settimanale.
     \\ \hline
 \end{tabularx}
