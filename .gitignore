@@ -56,3 +56,6 @@ dkms.conf
 
 # Log file
 *.log
+
+# MySQL
+*.bak
