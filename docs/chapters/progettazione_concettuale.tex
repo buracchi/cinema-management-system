@@ -16,7 +16,7 @@ rappresento come un'entità, ovvero il cinema, e lo si è modellato provando a
 soddisfare i requisiti relativi:
 
 \begin{center}
-    \includegraphics[width=5cm]{progconc/er_1.png}
+    \includegraphics[width=5cm]{er_diagrams/er_1.png}
 \end{center}
 
 Il concetto successivo è proprio quello di sala, da cui si evince che è
@@ -26,14 +26,14 @@ il pattern "parte-di" in quanto l'esistenza di un'occorrenza dell'entità
 sala dipende dall'esistenza di un'occorrenza di un entità cinema:
 
 \begin{center}
-    \includegraphics[width=6cm]{progconc/er_2.png}
+    \includegraphics[width=6cm]{er_diagrams/er_2.png}
 \end{center}
 
 Il concetto successivo è quello di posto, con un ragionamento analogo al
 precedente utilizziamo il pattern "parte-di":
 
 \begin{center}
-    \includegraphics[width=11cm]{progconc/er_3.png}
+    \includegraphics[width=11cm]{er_diagrams/er_3.png}
 \end{center}
 
 \pagebreak
@@ -49,17 +49,13 @@ Il fatto che l'omonimia sia un'evenienza comune quando si tratta di film
 introdurremo un codice univoco per identificare l'entità:
 
 \begin{center}
-    \includegraphics[width=12cm]{progconc/er_4.png}
+    \includegraphics[width=12cm]{er_diagrams/er_4.png}
 \end{center}
 
 \pagebreak
 
-Il concetto successivo è quello di prenotazione, le varie tipologie di
-prenotazione verranno espresse tramite il costrutto della generalizzazione.
-
-Poiché la validazione e l'annullamento delle proiezioni avvengono tramite
-un codice di prenotazione non sarà necessario richiedere al cliente di
-registrarsi ed effettuare il login per interagire con il sistema.
+I concetti successivi sono quelli di prenotazione e cliente, le varie tipologie
+di prenotazione verranno espresse tramite il costrutto della generalizzazione.
 
 Notiamo inoltre che un'operazione di rimborso consiste nella richiesta al
 servizio di pagamenti elettronici di annullare una transazione, sarà necessario
@@ -68,14 +64,14 @@ utilizzato mentre non sarà necessario registrare i dati sensibili delle carte
 di credito nel sistema.
 
 \begin{center}
-    \includegraphics[width=12cm]{progconc/er_5.png}
+    \includegraphics[width=16.5cm]{er_diagrams/er_5.png}
 \end{center}
 
 \pagebreak
 
 Gli ultimi concetti da rappresentare sono quelli di dipendente e turno.
 
-\includegraphics[width=\linewidth]{progconc/er_6.png}
+\includegraphics[width=\linewidth]{er_diagrams/er_6.png}
 
 Non avendo adottato una strategia bottom-up l'integrazione finale risulta
 banale, prima di potervi procedere tuttavia sarà necessario nominare le
@@ -96,6 +92,13 @@ anagrafica per poter essere identificato dall'amministratore.
 identificare l'entità per problemi di possibili omonimie, pertanto
 sarà necessario introdurre un codice identificativo artificiale.
 
+Sebbene non venga esplicitamente richiesto nei requisiti, è fondamentale che
+l'entità cliente mantenga informazioni relative alle proprie credenziali per
+poter essere identificato dal sistema.
+È inoltre necessario notare che questi attributi non sono adatti ad
+identificare l'entità, pertanto sarà necessario introdurre un codice
+identificativo artificiale.
+
 \subsubsection*{Integrazione finale}
 %
 % Nell’integrazione finale delle varie parti dello schema E-R è possibile
@@ -104,7 +107,7 @@ sarà necessario introdurre un codice identificativo artificiale.
 % Prima di riportare lo schema E-R finale, descrivere quali passi sono stati
 % adottati per risolvere tali conflitti.
 %
-\includegraphics[width=\linewidth]{progconc/final-integration.png}
+\includegraphics[width=\linewidth]{er_diagrams/final-integration.png}
 
 \subsection*{Regole aziendali}
 %
@@ -133,6 +136,9 @@ sarà necessario introdurre un codice identificativo artificiale.
     %\textlangle{}concetto\textrangle{}
     %si ottiene
     %\textlangle{}operazione su concetti\textrangle{} \\
+    I posti disponibili per una proiezione si ottengono rimuovendo dai posti
+    della sala in cui avviene la proiezione i posti associati a tutte le
+    prenotazioni confermate relative alla proiezione
     \\ \hline
 \end{longtable}
 
@@ -227,6 +233,11 @@ sarà necessario introdurre un codice identificativo artificiale.
     che definisce il periodo lavorativo di un dipendete.
      &
      & Giorno della settimana, Orario
+    \\\hline
+    Cliente
+     & Utente che può effettuare la procedura di prenotazione.
+     & Credenziali
+     & Id
     \\\hline
 \end{longtable}
 
