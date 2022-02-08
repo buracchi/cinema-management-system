@@ -313,22 +313,103 @@
 %
 
 \begin{verbatim}
-CREATE DEFINER = CURRENT_USER TRIGGER `cinemadb`.`Turni_BEFORE_INSERT`
-    BEFORE INSERT ON `Turni`
-    FOR EACH ROW
+CREATE TRIGGER `cinemadb`.`Turni_BEFORE_INSERT`
+BEFORE INSERT ON `Turni`
+FOR EACH ROW
+BEGIN
+    IF (NEW.`durata` > TIME('08:00:00')) THEN
+        SIGNAL SQLSTATE '45001'
+        SET MESSAGE_TEXT = 'Impossibile creare un turno di più di 8 ore.';
+    END IF;
+END
+\end{verbatim}
+
+\begin{verbatim}
+CREATE TRIGGER `cinemadb`.`Turni_BEFORE_INSERT_1` 
+BEFORE INSERT ON `Turni` 
+FOR EACH ROW
 BEGIN
     DECLARE OreTotali TIME;
     SET OreTotali = (SELECT SEC_TO_TIME(SUM(TIME_TO_SEC(`Turni`.`durata`)))
                         FROM `Turni`
                         WHERE `Turni`.`dipendente` = NEW.`dipendente`
                             AND `Turni`.`giorno` = NEW.`giorno`);
-    IF (NEW.`durata` > TIME('08:00:00')
-        OR OreTotali + NEW.`durata` > TIME('08:00:00')) THEN
-        SIGNAL SQLSTATE '45001';
+    IF (OreTotali + NEW.`durata` > TIME('08:00:00')) THEN
+        SIGNAL SQLSTATE '45001'
+        SET MESSAGE_TEXT = 'La somma della durata dei turni nella giornata
+                            supera le 8 ore.';
     END IF;
 END
 \end{verbatim}
 
+\begin{verbatim}
+CREATE TRIGGER `cinemadb`.`Turni_BEFORE_INSERT_2`
+BEFORE INSERT ON `Turni`
+FOR EACH ROW
+BEGIN
+    DECLARE clash BOOL;
+    SET clash = EXISTS (SELECT * 
+                        FROM `Turni` 
+                        WHERE `Turni`.`dipendente` = NEW.`dipendente`
+                            AND `Turni`.`giorno` = NEW.`giorno`
+                            AND `Turni`.`inizio` < 
+                            (SEC_TO_TIME(TIME_TO_SEC(NEW.`inizio`) 
+                            + TIME_TO_SEC(NEW.`durata`))) 
+                            AND (SEC_TO_TIME(TIME_TO_SEC(`Turni`.`inizio`) 
+                            + TIME_TO_SEC(`Turni`.`durata`))) > NEW.`inizio`);
+    IF (clash) THEN
+        SIGNAL SQLSTATE '45001'
+        SET MESSAGE_TEXT = 'Il dipendente è già assegnato ad un turno
+                            nell\'arco temporale selezionato.';
+    END IF;
+END
+\end{verbatim}
+
+\pagebreak
+\begin{verbatim}
+CREATE TRIGGER `cinemadb`.`Proiezioni_BEFORE_INSERT`
+BEFORE INSERT ON `Proiezioni`
+FOR EACH ROW
+BEGIN
+    DECLARE inizio_proiezione TIMESTAMP;
+    DECLARE fine_proiezione TIMESTAMP;
+    DECLARE fine_proiezione_prec TIMESTAMP;
+    DECLARE inizio_proiezione_succ TIMESTAMP;
+    SET inizio_proiezione = TIMESTAMP(NEW.`data`, NEW.`ora`);
+    SET fine_proiezione = TIMESTAMP(NEW.`data`,
+                                    NEW.`ora` + (SELECT `durata`
+                                                 FROM `Film`
+                                                 WHERE `id` = NEW.`film`));
+    SET inizio_proiezione_succ = (SELECT TIMESTAMP(`data`, `ora`)
+                                  FROM `Proiezioni`
+                                  WHERE `cinema` = NEW.`cinema`
+                                    AND `sala` = NEW.`sala`
+                                    AND (`data` > NEW.`data`
+                                        OR (`data` = NEW.`data`
+                                            AND `ora` > NEW.`ora`))
+                                  ORDER BY `data` ASC, `ora` ASC
+                                  LIMIT 1);
+    SET fine_proiezione_prec = (SELECT TIMESTAMP(`data`, `ora` + `durata`)
+                                FROM `Proiezioni` JOIN `Film` on `id` = `film`
+                                WHERE `cinema` = NEW.`cinema`
+                                    AND `sala` = NEW.`sala`
+                                    AND (`data` < NEW.`data`
+                                        OR (`data` = NEW.`data`
+                                            AND `ora` <= NEW.`ora`))
+                                ORDER BY `data` DESC, `ora` DESC
+                                LIMIT 1);
+    IF ((fine_proiezione_prec IS NOT NULL
+            AND fine_proiezione_prec > inizio_proiezione)
+        OR (inizio_proiezione_succ IS NOT NULL
+            AND inizio_proiezione_succ < fine_proiezione)) THEN
+        SIGNAL SQLSTATE '45001'
+        SET MESSAGE_TEXT = 'La sala selezionata è già impegnata in una
+                            proiezione nell\'orario selezionato.';
+    END IF;
+END
+\end{verbatim}
+
+\pagebreak
 \subsection*{Eventi}
 %
 % Descrivere quali eventi sono stati implementati, mostrando il codice SQL
@@ -337,9 +418,22 @@ END
 % eventi specifici vengono istanziati in maniera effimera durante
 % l’esecuzione di alcune procedure.
 %
+\begin{verbatim}
+CREATE EVENT `cinemadb`.`pulizia_prenotazioni`
+ON SCHEDULE EVERY 1 MONTH
+STARTS TIMESTAMP(DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL 1 MONTH), '%Y-%m-1'))
+DO
+    DELETE FROM `Prenotazioni` WHERE `data` < CURDATE();
+\end{verbatim}
 
-%Pulizia mensile delle tabelle
-
+\begin{verbatim}
+CREATE EVENT `cinemadb`.`pulizia_proiezioni`
+ON SCHEDULE EVERY 1 DAY
+STARTS TIMESTAMP(CURDATE())
+DO
+    DELETE FROM `Proiezioni` WHERE `data` < CURDATE();
+\end{verbatim}
+    
 \subsection*{Viste}
 %
 % Mostrare e commentare il codice SQL necessario a creare tutte le viste
@@ -348,9 +442,12 @@ END
 
 \begin{verbatim}
 CREATE VIEW `OrariCinema` AS
-    SELECT `cinema`, `data`, MIN(`ora`) as inizio,
-    SEC_TO_TIME(MAX(TIME_TO_SEC(`ora`)) + MAX(TIME_TO_SEC(`durata`))) as fine
-    FROM `Proiezioni` JOIN `Film` ON (`film` = `id`)
+    SELECT `cinema`, `data`, MIN(`ora`) AS `inizio`,
+    SEC_TO_TIME((MAX(TIME_TO_SEC(`ora`))
+    + (SELECT MAX(TIME_TO_SEC(`durata`))
+        FROM `Proiezioni` JOIN `Film` ON `film` = `id`
+        WHERE `ora` = (SELECT MAX(`ora`) FROM `Proiezioni`)))) AS `fine`
+    FROM `Proiezioni` JOIN `Film` ON `film` = `id`
     GROUP BY `cinema`, `data`;
 \end{verbatim}
 

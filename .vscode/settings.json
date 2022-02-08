@@ -2,6 +2,7 @@
     "editor.rulers": [80],
     "latex-workshop.latex.outDir": "build",
     "cSpell.words": [
+        "cinemadb",
         "dall’applicazione",
         "disambiguata",
         "istanziare",
@@ -11,6 +12,7 @@
         "prenotabile",
         "prenotabili",
         "proiettabile",
+        "SQLSTATE",
         "VARCHAR"
     ]
 }
