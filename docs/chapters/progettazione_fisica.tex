@@ -443,11 +443,8 @@ DO
 \begin{verbatim}
 CREATE VIEW `OrariCinema` AS
     SELECT `cinema`, `data`, MIN(`ora`) AS `inizio`,
-    SEC_TO_TIME((MAX(TIME_TO_SEC(`ora`))
-    + (SELECT MAX(TIME_TO_SEC(`durata`))
-        FROM `Proiezioni` JOIN `Film` ON `film` = `id`
-        WHERE `ora` = (SELECT MAX(`ora`) FROM `Proiezioni`)))) AS `fine`
-    FROM `Proiezioni` JOIN `Film` ON `film` = `id`
+        SEC_TO_TIME(MAX(TIME_TO_SEC(`ora`) + TIME_TO_SEC(`durata`))) AS `fine`
+    FROM `Proiezioni` JOIN `Film` ON `id` = `film`
     GROUP BY `cinema`, `data`;
 \end{verbatim}
 
