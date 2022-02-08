@@ -490,8 +490,28 @@
      & 1
      & L
     \\\hline
-    CinemaTurno
+    Proiezione
      & E
+     & 1
+     & L
+    \\\hline
+    ProiezioneSala
+     & R
+     & 1
+     & L
+    \\\hline
+    FilmProiezione
+     & R
+     & 1
+     & L
+    \\\hline
+    Film
+     & E
+     & 1
+     & L
+    \\\hline
+    CinemaTurno
+     & R
      & 1
      & L
     \\\hline
@@ -511,7 +531,7 @@
      & L
     \\\hline
     \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
-    Costo: 5/giorno}                            \\\hline
+    Costo: 9/giorno}                            \\\hline
 \end{tabularx}
 
 \begin{tabularx}{\linewidth}{|l|X|X|X|}
@@ -652,7 +672,7 @@ non sarà necessario sostituirli con un codice identificativo artificiale.
 % Fornire una rappresentazione grafica del modello relazionale completo.
 %
 
-Cinema(\underline{id}, indirizzo, orario)
+Cinema(\underline{id}, indirizzo)
 
 Sale(\underline{cinema}, \underline{numero})
 
@@ -676,14 +696,14 @@ film,
 proiezionista)
 
 Prenotazioni(\underline{codice},
-codice\_transazione,
+transazione,
 stato,
 cinema,
 sala,
-proiezione\_data,
-proiezione\_ora,
-posto\_fila,
-posto\_numero)
+data,
+ora,
+fila,
+numero)
 
 \quad Con i vincoli:
 
@@ -701,11 +721,11 @@ Proiezioni(film) $\subseteq$ Film(id)
 
 Proiezioni(proiezionista) $\subseteq$ Dipendente(matricola)
 
-Prenotazioni(cinema, sala, proiezione\_data, proiezione\_ora)
+Prenotazioni(cinema, sala, data, ora)
 $\subseteq$
 Proiezioni(cinema, sala, data, ora)
 
-Prenotazioni(cinema, sala, posto\_fila, posto\_numero)
+Prenotazioni(cinema, sala, fila, numero)
 $\subseteq$
 Posti(cinema, sala, fila, numero)
 

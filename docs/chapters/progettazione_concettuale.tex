@@ -16,7 +16,7 @@ rappresento come un'entità, ovvero il cinema, e lo si è modellato provando a
 soddisfare i requisiti relativi:
 
 \begin{center}
-    \includegraphics[width=5cm]{er_diagrams/er_1.png}
+    \includegraphics[width=3.5cm]{er_diagrams/er_1.png}
 \end{center}
 
 Il concetto successivo è proprio quello di sala, da cui si evince che è
@@ -140,6 +140,12 @@ identificativo artificiale.
     della sala in cui avviene la proiezione i posti associati a tutte le
     prenotazioni confermate relative alla proiezione
     \\ \hline
+    La fascia oraria d'apertura per un cinema in una giornata si ottiene
+    considerando l'intervallo temporale formato
+    dall'orario di inizio della prima proiezione della giornata nel cinema e
+    dall'orario d'inizio dell'ultima proiezione della giornata nel cinema
+    sommato alla durata del relativo film proiettato
+    \\ \hline
 \end{longtable}
 
 \pagebreak
@@ -159,8 +165,7 @@ identificativo artificiale.
     \\ \hline
     Cinema
      & Un cinema facente parte della catena cinematografica.
-     & Fascia oraria d'apertura,
-    indirizzo
+     & Indirizzo
      & Id
     \\\hline
     Sala

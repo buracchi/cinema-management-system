@@ -6,6 +6,33 @@
 % con quali privilegi di accesso su quali tabelle, giustificando le scelte
 % progettuali.
 %
+
+\subsubsection*{Ruoli}
+
+\begin{tabularx}{\linewidth}{|X|X|}
+    \hline
+    \rowcolor{tblhdrcolor}
+    \multicolumn{1}{|c|}{\textbf{Nome}}
+                   & \multicolumn{1}{|c|}{\textbf{Privilegi}}
+    \\\hline
+    Cliente        &                                          \\\hline
+    Maschera       &                                          \\\hline
+    Amministratore &                                          \\\hline
+\end{tabularx}
+
+\subsubsection*{Utenti}
+
+\begin{tabularx}{\linewidth}{|X|X|}
+    \hline
+    \rowcolor{tblhdrcolor}
+    \multicolumn{1}{|c|}{\textbf{Nome}}
+                   & \multicolumn{1}{|c|}{\textbf{Ruoli}}
+    \\\hline
+    cliente        & Cliente                              \\\hline
+    maschera       & Maschera                             \\\hline
+    amministratore & Amministratore, Cliente              \\\hline
+\end{tabularx}
+
 \subsection*{Strutture di memorizzazione}
 %
 % Compilare la tabella seguente indicando quali tipi di dato vengono
@@ -15,7 +42,7 @@
 \begin{tabularx}{\linewidth}{|X|X|X|}
     \hline
     \multicolumn{3}{|>{\columncolor{tblhdrcolor}}l|}{
-    \textbf{Tabella \textlangle{}nome\textrangle{}}} \\\hline
+    \textbf{Cinema}}                               \\\hline
     \rowcolor{tblhdrcolor}
     \multicolumn{1}{|c|}{\textbf{Colonna}}
      & \multicolumn{1}{|c|}{\textbf{Tipo di dato}}
@@ -25,9 +52,234 @@
             È ovviamente possibile specificare più di un attributo per
             ciascuna colonna.}}
     \\\hline
-    \hfill
-     & \hfill
-     & \hfill
+    id
+     & INT
+     & PK, NN, AI
+    \\ \hline
+    indirizzo
+     & VARCHAR(128)
+     & NN, UQ
+    \\ \hline
+\end{tabularx}
+
+\begin{tabularx}{\linewidth}{|X|X|X|}
+    \hline
+    \multicolumn{3}{|>{\columncolor{tblhdrcolor}}l|}{
+    \textbf{Sale}}                                 \\\hline
+    \rowcolor{tblhdrcolor}
+    \multicolumn{1}{|c|}{\textbf{Colonna}}
+     & \multicolumn{1}{|c|}{\textbf{Tipo di dato}}
+     & \multicolumn{1}{|c|}{\textbf{Attributi}}
+    \\\hline
+    cinema
+     & INT
+     & PK, NN
+    \\ \hline
+    numero
+     & INT
+     & PK, NN
+    \\ \hline
+\end{tabularx}
+
+\begin{tabularx}{\linewidth}{|X|X|X|}
+    \hline
+    \multicolumn{3}{|>{\columncolor{tblhdrcolor}}l|}{
+    \textbf{Posti}}                                \\\hline
+    \rowcolor{tblhdrcolor}
+    \multicolumn{1}{|c|}{\textbf{Colonna}}
+     & \multicolumn{1}{|c|}{\textbf{Tipo di dato}}
+     & \multicolumn{1}{|c|}{\textbf{Attributi}}
+    \\\hline
+    cinema
+     & INT
+     & PK, NN
+    \\ \hline
+    sala
+     & INT
+     & PK, NN
+    \\ \hline
+    fila
+     & CHAR(1)
+     & PK, NN
+    \\ \hline
+    numero
+     & INT
+     & PK, NN
+    \\ \hline
+\end{tabularx}
+
+\begin{tabularx}{\linewidth}{|X|X|X|}
+    \hline
+    \multicolumn{3}{|>{\columncolor{tblhdrcolor}}l|}{
+    \textbf{Dipendente}}                           \\\hline
+    \rowcolor{tblhdrcolor}
+    \multicolumn{1}{|c|}{\textbf{Colonna}}
+     & \multicolumn{1}{|c|}{\textbf{Tipo di dato}}
+     & \multicolumn{1}{|c|}{\textbf{Attributi}}
+    \\\hline
+    matricola
+     & INT
+     & PK, NN, AI
+    \\ \hline
+    nome
+     & VARCHAR(45)
+     & NN
+    \\ \hline
+    cognome
+     & VARCHAR(45)
+     & NN
+    \\ \hline
+    ruolo
+     & ENUM('maschera', 'proiezionista')
+     & NN
+    \\ \hline
+\end{tabularx}
+
+\begin{tabularx}{\linewidth}{|X|X|X|}
+    \hline
+    \multicolumn{3}{|>{\columncolor{tblhdrcolor}}l|}{
+    \textbf{Turni}}                                          \\\hline
+    \rowcolor{tblhdrcolor}
+    \multicolumn{1}{|c|}{\textbf{Colonna}}
+     & \multicolumn{1}{|c|}{\textbf{Tipo di dato}}
+     & \multicolumn{1}{|c|}{\textbf{Attributi}}
+    \\\hline
+    dipendente
+     & INT
+     & PK, NN
+    \\ \hline
+    giorno
+     & ENUM('lun', 'mar', 'mer', 'gio', 'ven', 'sab', 'dom')
+     & PK, NN
+    \\ \hline
+    inizio
+     & TIME
+     & PK, NN
+    \\ \hline
+    durata
+     & TIME
+     & NN
+    \\ \hline
+    cinema
+     & INT
+     & NN
+    \\ \hline
+\end{tabularx}
+
+\begin{tabularx}{\linewidth}{|X|X|X|}
+    \hline
+    \multicolumn{3}{|>{\columncolor{tblhdrcolor}}l|}{
+    \textbf{Film}}                                 \\\hline
+    \rowcolor{tblhdrcolor}
+    \multicolumn{1}{|c|}{\textbf{Colonna}}
+     & \multicolumn{1}{|c|}{\textbf{Tipo di dato}}
+     & \multicolumn{1}{|c|}{\textbf{Attributi}}
+    \\\hline
+    id
+     & INT
+     & PK, NN, AI
+    \\ \hline
+    nome
+     & VARCHAR(45)
+     & NN
+    \\ \hline
+    durata
+     & TIME
+     & NN
+    \\ \hline
+    casa\_cinematografica
+     & VARCHAR(45)
+     &
+    \\ \hline
+    cast
+     & VARCHAR(1024)
+     &
+    \\ \hline
+\end{tabularx}
+
+\begin{tabularx}{\linewidth}{|X|X|X|}
+    \hline
+    \multicolumn{3}{|>{\columncolor{tblhdrcolor}}l|}{
+    \textbf{Proiezioni}}                           \\\hline
+    \rowcolor{tblhdrcolor}
+    \multicolumn{1}{|c|}{\textbf{Colonna}}
+     & \multicolumn{1}{|c|}{\textbf{Tipo di dato}}
+     & \multicolumn{1}{|c|}{\textbf{Attributi}}
+    \\\hline
+    cinema
+     & INT
+     & PK, NN
+    \\ \hline
+    sala
+     & INT
+     & PK, NN
+    \\ \hline
+    data
+     & DATE
+     & PK, NN
+    \\ \hline
+    ora
+     & TIME
+     & PK, NN
+    \\ \hline
+    prezzo
+     & DECIMAL(15,2)
+     & NN
+    \\ \hline
+    film
+     & INT
+     & NN
+    \\ \hline
+    proiezionista
+     & INT
+     &
+    \\ \hline
+\end{tabularx}
+
+\begin{tabularx}{\linewidth}{|X|X|X|}
+    \hline
+    \multicolumn{3}{|>{\columncolor{tblhdrcolor}}l|}{
+    \textbf{Prenotazioni}}                                    \\\hline
+    \rowcolor{tblhdrcolor}
+    \multicolumn{1}{|c|}{\textbf{Colonna}}
+     & \multicolumn{1}{|c|}{\textbf{Tipo di dato}}
+     & \multicolumn{1}{|c|}{\textbf{Attributi}}
+    \\\hline
+    codice
+     & INT
+     & PK, NN, AI
+    \\ \hline
+    transazione
+     & VARCHAR(256)
+     & NN, UQ
+    \\ \hline
+    stato
+     & ENUM('confermata', 'annullata', 'validata', 'scaduta')
+     & NN
+    \\ \hline
+    cinema
+     & INT
+     & NN
+    \\ \hline
+    sala
+     & INT
+     & NN
+    \\ \hline
+    fila
+     & CHAR(1)
+     & NN
+    \\ \hline
+    numero
+     & INT
+     & NN
+    \\ \hline
+    data
+     & DATE
+     & NN
+    \\ \hline
+    ora
+     & TIME
+     & NN
     \\ \hline
 \end{tabularx}
 
@@ -59,6 +311,24 @@
 % riferimento richiede di utilizzare trigger anche per realizzare vincoli di
 % check ed asserzioni.
 %
+
+\begin{verbatim}
+CREATE DEFINER = CURRENT_USER TRIGGER `cinemadb`.`Turni_BEFORE_INSERT`
+    BEFORE INSERT ON `Turni`
+    FOR EACH ROW
+BEGIN
+    DECLARE OreTotali TIME;
+    SET OreTotali = (SELECT SEC_TO_TIME(SUM(TIME_TO_SEC(`Turni`.`durata`)))
+                        FROM `Turni`
+                        WHERE `Turni`.`dipendente` = NEW.`dipendente`
+                            AND `Turni`.`giorno` = NEW.`giorno`);
+    IF (NEW.`durata` > TIME('08:00:00')
+        OR OreTotali + NEW.`durata` > TIME('08:00:00')) THEN
+        SIGNAL SQLSTATE '45001';
+    END IF;
+END
+\end{verbatim}
+
 \subsection*{Eventi}
 %
 % Descrivere quali eventi sono stati implementati, mostrando il codice SQL
@@ -67,11 +337,23 @@
 % eventi specifici vengono istanziati in maniera effimera durante
 % l’esecuzione di alcune procedure.
 %
+
+%Pulizia mensile delle tabelle
+
 \subsection*{Viste}
 %
 % Mostrare e commentare il codice SQL necessario a creare tutte le viste
 % necessarie per l’implementazione dell’applicazione.
 %
+
+\begin{verbatim}
+CREATE VIEW `OrariCinema` AS
+    SELECT `cinema`, `data`, MIN(`ora`) as inizio,
+    SEC_TO_TIME(MAX(TIME_TO_SEC(`ora`)) + MAX(TIME_TO_SEC(`durata`))) as fine
+    FROM `Proiezioni` JOIN `Film` ON (`film` = `id`)
+    GROUP BY `cinema`, `data`;
+\end{verbatim}
+
 \subsection*{Stored Procedures e transazioni}
 %
 % Mostrare e commentare le stored procedure che sono state realizzate per
