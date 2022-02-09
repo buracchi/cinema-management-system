@@ -3,8 +3,10 @@
     "latex-workshop.latex.outDir": "build",
     "cSpell.words": [
         "cinemadb",
+        "CURDATE",
         "dall’applicazione",
         "disambiguata",
+        "IFNULL",
         "istanziare",
         "istanziati",
         "istanziazione",

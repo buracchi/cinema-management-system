@@ -489,6 +489,9 @@ END
 % eventi specifici vengono istanziati in maniera effimera durante
 % l’esecuzione di alcune procedure.
 %
+
+Gli eventi sono istanziati unicamente in fase di configurazione del sistema
+
 \begin{verbatim}
 CREATE EVENT `cinemadb`.`pulizia_prenotazioni`
 ON SCHEDULE EVERY 1 MONTH
@@ -511,9 +514,138 @@ DO
 % necessarie per l’implementazione dell’applicazione.
 %
 
+\pagebreak
 \subsection*{Stored Procedures e transazioni}
 %
 % Mostrare e commentare le stored procedure che sono state realizzate per
 % implementare la logica applicativa delle operazioni sui dati, evidenziando
 % quando (e perché) sono state realizzate operazioni transazionali complesse.
 %
+
+\begin{verbatim}
+CREATE PROCEDURE `mostra_cinema` ()
+BEGIN
+    SELECT *
+    FROM `Cinema`;
+END
+\end{verbatim}
+
+\begin{verbatim}
+CREATE PROCEDURE `mostra_proiezioni_cinema` (IN _cinema_id INT)
+BEGIN
+    SELECT `cinema`, `sala`, `data`, `ora`, `prezzo`,
+        `film`, `nome`, `durata`, `casa_cinematografica`, `cast`
+    FROM `Proiezioni` JOIN `Film` ON `film` = `id`
+    WHERE `cinema` = _cinema_id AND `data` >= CURDATE()
+        AND `ora` >= TIME(NOW());
+END
+\end{verbatim}
+
+\begin{verbatim}
+CREATE PROCEDURE `mostra_posti_disponibili` (
+    IN _cinema_id INT,
+    IN _sala_id INT,
+    IN _data DATE,
+    IN _ora TIME)
+BEGIN
+    SELECT `fila`, `numero`
+    FROM `Posti`
+    WHERE EXISTS (SELECT *
+                    FROM `Proiezioni`
+                    WHERE `Proiezioni`.`cinema` = _cinema_id
+                        AND `Proiezioni`.`sala` = _sala_id
+                        AND `Proiezioni`.`data` = _data
+                        AND `Proiezioni`.`ora` = _ora) 
+        AND (`fila`, `numero`) NOT IN (
+            SELECT `fila`, `numero`
+            FROM `Prenotazioni`
+            WHERE `Prenotazioni`.`cinema` = _cinema_id
+                AND `Prenotazioni`.`sala` = _sala_id
+                AND `Prenotazioni`.`data` = _data
+                AND `Prenotazioni`.`ora` = _ora
+                AND `Prenotazioni`.`stato` = 'confermata');
+END
+\end{verbatim}
+
+\pagebreak
+\begin{verbatim}
+CREATE PROCEDURE `effettua_prenotazione` (
+    IN _cinema_id INT,
+    IN _sala_id INT,
+    IN _data DATE,
+    IN _ora TIME,
+    IN _fila CHAR(1),
+    IN _numero INT
+    IN _intestatario VARCHAR(128),
+    IN _numero_carta NUMERIC(16,0),
+    IN _scadenza DATE,
+    IN _CVV2 NUMERIC(3))
+BEGIN
+    # Mock servizio di pagamento---------------------------------------------
+    DECLARE tid INT;
+    SET tid = (SELECT IFNULL(MAX(`transazione`) + 1, 1) FROM `Prenotazioni`);
+    # -----------------------------------------------------------------------
+    INSERT INTO `Prenotazioni` (`transazione`, `stato`, `cinema`, `sala`,
+        `data`, `ora`, `fila`, `numero`)
+        VALUES (tid, 'confermata', _cinema_id, _sala_id, _data, _ora,
+        _fila, _numero);
+END
+\end{verbatim}
+
+\begin{verbatim}
+CREATE PROCEDURE `annulla_prenotazione` (IN _codice INT)
+BEGIN
+    DECLARE stato_prenotazione ENUM('confermata', 'annullata',
+        'validata', 'scaduta');
+    SET stato_prenotazione = (SELECT `stato`
+                                FROM `Prenotazioni`
+                                WHERE `codice` = _codice);
+    IF (stato_prenotazione != 'confermata') THEN
+        SIGNAL SQLSTATE '45002'
+        SET MESSAGE_TEXT = 'Prenotazione inesistente o invalida.';
+    END IF;
+    # Mock servizio di pagamento---------------------------------------------
+    # -----------------------------------------------------------------------
+    UPDATE `Prenotazioni` SET `stato`='annullata'
+    WHERE `codice` = _codice;
+END
+\end{verbatim}
+
+\pagebreak
+\begin{verbatim}
+CREATE PROCEDURE `valida_prenotazione` (IN _codice INT)
+BEGIN
+    DECLARE stato_prenotazione ENUM('confermata', 'annullata',
+        'validata', 'scaduta');
+    SET stato_prenotazione = (SELECT `stato`
+                                FROM `Prenotazioni`
+                                WHERE `codice` = _codice);
+    IF (stato_prenotazione != 'confermata') THEN
+        SIGNAL SQLSTATE '45002'
+        SET MESSAGE_TEXT = 'Prenotazione inesistente o invalida.';
+    END IF;
+    UPDATE `Prenotazioni` SET `stato`='validata'
+    WHERE `codice` = _codice;
+END
+\end{verbatim}
+
+\begin{verbatim}
+CREATE PROCEDURE `mostra_proiezioni_senza_proiezionista` ()
+BEGIN
+    SELECT *
+    FROM `Proiezioni`
+    WHERE `proiezionista` IS NULL
+        AND `data` > CURDATE();
+END
+\end{verbatim}
+
+\begin{verbatim}
+CREATE PROCEDURE `mostra_stato_prenotazioni` ()
+BEGIN
+    SELECT IFNULL(SUM(`stato` = 'confermata'), 0) AS confermate,
+        IFNULL(SUM(`stato` = 'annullata'), 0) AS annullate,
+        IFNULL(SUM(`stato` = 'validata'), 0) AS validate,
+        IFNULL(SUM(`stato` = 'scaduta'), 0) AS scadute
+    FROM `Prenotazioni`;
+END
+\end{verbatim}
