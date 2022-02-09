@@ -531,13 +531,15 @@ END
 \end{verbatim}
 
 \begin{verbatim}
+END
 CREATE PROCEDURE `mostra_proiezioni_cinema` (IN _cinema_id INT)
 BEGIN
-    SELECT `cinema`, `sala`, `data`, `ora`, `prezzo`,
-        `film`, `nome`, `durata`, `casa_cinematografica`, `cast`
+    SELECT `cinema`, `sala`, `data`, `ora`, `prezzo`, `film`,
+        `nome`, `durata`, `casa_cinematografica`, `cast`
     FROM `Proiezioni` JOIN `Film` ON `film` = `id`
-    WHERE `cinema` = _cinema_id AND `data` >= CURDATE()
-        AND `ora` >= TIME(NOW());
+    WHERE `cinema` = _cinema_id
+        AND (`data` > CURDATE()
+            OR (`data` = CURDATE() AND `ora` > TIME(NOW())));
 END
 \end{verbatim}
 
@@ -642,10 +644,14 @@ END
 \begin{verbatim}
 CREATE PROCEDURE `mostra_stato_prenotazioni` ()
 BEGIN
-    SELECT IFNULL(SUM(`stato` = 'confermata'), 0) AS confermate,
+    SELECT `Sale`.`cinema`, `Sale`.`numero` AS sala,
+        IFNULL(SUM(`stato` = 'confermata'), 0) AS confermate,
         IFNULL(SUM(`stato` = 'annullata'), 0) AS annullate,
         IFNULL(SUM(`stato` = 'validata'), 0) AS validate,
         IFNULL(SUM(`stato` = 'scaduta'), 0) AS scadute
-    FROM `Prenotazioni`;
+    FROM `Prenotazioni` RIGHT OUTER JOIN `Sale`
+        ON `Prenotazioni`.`cinema` = `Sale`.`cinema`
+            AND `sala` = `Sale`.`numero`
+    GROUP BY `Sale`.`cinema`, `Sale`.`numero`;
 END
 \end{verbatim}

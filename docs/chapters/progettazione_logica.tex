@@ -140,15 +140,15 @@
      & \multicolumn{1}{|c|}{\textbf{Frequenza attesa}}
     \\ \hline
     Op. 1
-     & Inserisci le nuove proiezioni in programma per un insieme di cinema.
+     & Inserisci le nuove proiezioni in programma.
      & 4/mese
     \\ \hline
     Op. 2
-     & Assegna un proiezionista ad un insieme di proiezioni in programma.
+     & Assegna un proiezionista ad una proiezione in programma.
      & 1400/settimana
     \\ \hline
     Op. 3
-     & Mostra tutti i cinema.
+     & Mostra tutti i cinema e i loro relativi dati.
      & 5000/giorno
     \\ \hline
     Op. 4
@@ -173,21 +173,26 @@
      & 4500/giorno
     \\ \hline
     Op. 9
-     & Inserisci un insieme di turni assegnati ad un insieme di dipendenti.
+     & Inserisci un nuovo turno assegnato ad un dipendente.
      & 50/settimana
     \\ \hline
     Op. 10
+     & Elimina un turno assegnato ad un dipendente.
+     & 50/settimana
+    \\ \hline
+    Op. 11
      & Mostra tutte le proiezioni che non sono associate ad un proiezionista.
      & 1/giorno
     \\ \hline
-    Op. 11
-     & Mostra tutti i cinema sprovvisti nella loro fascia oraria d'apertura di
-    almeno due maschere.
+    Op. 12
+     & Mostra tutti i periodi temporali in cui un cinema è sprovvisto di
+    almeno due maschere durante la propria fascia oraria d'apertura.
      & 1/giorno
     \\ \hline
-    Op. 12
-     & Mostra il numero delle proiezioni confermate, il numero delle proiezioni
-    annullate ed il numero delle proiezioni scadute.
+    Op. 13
+     & Mostra per ogni cinema e per ogni sala il numero delle prenotazioni
+    confermate, il numero delle prenotazioni annullate ed il numero delle
+    prenotazioni scadute.
      & 1/giorno
     \\ \hline
 \end{tabularx}
@@ -451,10 +456,34 @@
     Costo: 150/settimana}                       \\\hline
 \end{tabularx}
 
-\begin{tabularx}{\linewidth}{|l|X|X|X|}
+\begin{tabularx}{\linewidth}{|X|X|X|X|}
     \hline
     \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
     \textbf{Operazione 10}}                     \\\hline
+    \rowcolor{tblhdrcolor}
+    \multicolumn{1}{|c|}{\textbf{Concetto}}
+     & \multicolumn{1}{|c|}{\textbf{Costrutto}}
+     & \multicolumn{1}{|c|}{\textbf{Accessi}}
+     & \multicolumn{1}{|c|}{\textbf{Tipo}}
+    \\ \hline
+    Dipendente
+     & E
+     & 1
+     & L
+    \\\hline
+    Turno
+     & E
+     & 1
+     & S
+    \\\hline
+    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
+    Costo: 150/settimana}                       \\\hline
+\end{tabularx}
+
+\begin{tabularx}{\linewidth}{|l|X|X|X|}
+    \hline
+    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
+    \textbf{Operazione 11}}                     \\\hline
     \rowcolor{tblhdrcolor}
     \multicolumn{1}{|c|}{\textbf{Concetto}}
      & \multicolumn{1}{|c|}{\textbf{Costrutto}}
@@ -478,7 +507,7 @@
 \begin{tabularx}{\linewidth}{|X|X|X|X|}
     \hline
     \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
-    \textbf{Operazione 11}}                     \\\hline
+    \textbf{Operazione 12}}                     \\\hline
     \rowcolor{tblhdrcolor}
     \multicolumn{1}{|c|}{\textbf{Concetto}}
      & \multicolumn{1}{|c|}{\textbf{Costrutto}}
@@ -537,7 +566,7 @@
 \begin{tabularx}{\linewidth}{|l|X|X|X|}
     \hline
     \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
-    \textbf{Operazione 12}}                     \\\hline
+    \textbf{Operazione 13}}                     \\\hline
     \rowcolor{tblhdrcolor}
     \multicolumn{1}{|c|}{\textbf{Concetto}}
      & \multicolumn{1}{|c|}{\textbf{Costrutto}}
@@ -626,7 +655,7 @@ L'attributo multivalore Cast viene coinvolto unicamente durante l'Operazione 4,
 pertanto anziché introdurre un'entità Cast ed una relazione CastFilm
 l'attributo multivalore verrà ridotto ad un semplice attributo Cast il cui
 dominio sarà quello di una stringa.
-In questo modo il costo dell'operazione 4 anziché incrementare a 25000 
+In questo modo il costo dell'operazione 4 anziché incrementare a 25000
 rimarrà di 15000 accessi al giorno.
 
 Per ridurre il costo dell'operazione più costosa, ovvero l'Operazione 5 è
@@ -735,7 +764,7 @@ Posti(cinema, sala, fila, numero)
 % descritto (in forma grafica) andando a mostrare le forme 1NF, 2NF, 3NF.
 %
 
-Notiamo che nessuna tabella presenta dipendenze funzionali non banali. 
+Notiamo che nessuna tabella presenta dipendenze funzionali non banali.
 
 Notiamo che lo schema non contiene tabelle contenenti gruppi ripetuti di
 attributi e ciascun attributo è definito su un dominio con valori atomici,
