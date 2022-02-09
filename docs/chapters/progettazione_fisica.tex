@@ -313,6 +313,19 @@
 %
 
 \begin{verbatim}
+CREATE TRIGGER `cinemadb`.`Cinema_BEFORE_INSERT`
+BEFORE INSERT ON `Cinema`
+FOR EACH ROW
+BEGIN
+    IF (NEW.`chiusura` < NEW.`apertura`) THEN
+        SIGNAL SQLSTATE '45001'
+        SET MESSAGE_TEXT = 'L\'orario di chiusura non può precedere quello
+                            di apertura';
+    END IF;
+END
+\end{verbatim}
+
+\begin{verbatim}
 CREATE TRIGGER `cinemadb`.`Turni_BEFORE_INSERT`
 BEFORE INSERT ON `Turni`
 FOR EACH ROW
@@ -342,6 +355,7 @@ BEGIN
 END
 \end{verbatim}
 
+\pagebreak
 \begin{verbatim}
 CREATE TRIGGER `cinemadb`.`Turni_BEFORE_INSERT_2`
 BEFORE INSERT ON `Turni`
@@ -361,6 +375,29 @@ BEGIN
         SIGNAL SQLSTATE '45001'
         SET MESSAGE_TEXT = 'Il dipendente è già assegnato ad un turno
                             nell\'arco temporale selezionato.';
+    END IF;
+END
+\end{verbatim}
+
+\begin{verbatim}
+CREATE TRIGGER `cinemadb`.`Turni_BEFORE_INSERT_3`
+BEFORE INSERT ON `Turni`
+FOR EACH ROW
+BEGIN
+    DECLARE ora_apertura_cinema TIME;
+    DECLARE ora_chiusura_cinema TIME;
+    SET ora_apertura_cinema = (SELECT `apertura`
+                                FROM `Cinema`
+                                WHERE `id` = NEW.`cinema`);
+    SET ora_chiusura_cinema = (SELECT `chiusura`
+                                FROM `Cinema`
+                                WHERE `id` = NEW.`cinema`);
+    IF (NEW.`inizio` < ora_apertura_cinema
+        OR SEC_TO_TIME(TIME_TO_SEC(NEW.`inizio`)
+        + TIME_TO_SEC(NEW.`durata`)) > ora_chiusura_cinema) THEN
+        SIGNAL SQLSTATE '45001'
+        SET MESSAGE_TEXT = 'Il cinema selezionato è chiuso nell\'intervallo
+                            di tempo specificato.';
     END IF;
 END
 \end{verbatim}
@@ -410,6 +447,32 @@ END
 \end{verbatim}
 
 \pagebreak
+\begin{verbatim}
+CREATE TRIGGER `cinemadb`.`Proiezioni_BEFORE_INSERT_1`
+BEFORE INSERT ON `Proiezioni`
+FOR EACH ROW
+BEGIN
+    DECLARE ora_apertura_cinema TIME;
+    DECLARE ora_chiusura_cinema TIME;
+    DECLARE durata TIME;
+    SET ora_apertura_cinema = (SELECT `apertura`
+                                FROM `Cinema`
+                                WHERE `id` = NEW.`cinema`);
+    SET ora_chiusura_cinema = (SELECT `chiusura`
+                                FROM `Cinema`
+                                WHERE `id` = NEW.`cinema`);
+    SET durata = (SELECT `durata` FROM `Film` WHERE `id` = NEW.`film`);
+    IF (NEW.`ora` < ora_apertura_cinema
+        OR SEC_TO_TIME(TIME_TO_SEC(NEW.`ora`)
+        + TIME_TO_SEC(durata)) > ora_chiusura_cinema) THEN
+        SIGNAL SQLSTATE '45001'
+        SET MESSAGE_TEXT = 'Il cinema selezionato è chiuso nell\'intervallo
+                            di tempo specificato.';
+    END IF;
+END
+\end{verbatim}
+
+\pagebreak
 \subsection*{Eventi}
 %
 % Descrivere quali eventi sono stati implementati, mostrando il codice SQL
@@ -433,7 +496,7 @@ STARTS TIMESTAMP(CURDATE())
 DO
     DELETE FROM `Proiezioni` WHERE `data` < CURDATE();
 \end{verbatim}
-    
+
 \subsection*{Viste}
 %
 % Mostrare e commentare il codice SQL necessario a creare tutte le viste
