@@ -60,6 +60,14 @@
      & VARCHAR(128)
      & NN, UQ
     \\ \hline
+    apertura
+     & TIME
+     & NN
+    \\ \hline
+    chiusura
+     & TIME
+     & NN
+    \\ \hline
 \end{tabularx}
 
 \begin{tabularx}{\linewidth}{|X|X|X|}
@@ -502,14 +510,6 @@ DO
 % Mostrare e commentare il codice SQL necessario a creare tutte le viste
 % necessarie per l’implementazione dell’applicazione.
 %
-
-\begin{verbatim}
-CREATE VIEW `OrariCinema` AS
-    SELECT `cinema`, `data`, MIN(`ora`) AS `inizio`,
-        SEC_TO_TIME(MAX(TIME_TO_SEC(`ora`) + TIME_TO_SEC(`durata`))) AS `fine`
-    FROM `Proiezioni` JOIN `Film` ON `id` = `film`
-    GROUP BY `cinema`, `data`;
-\end{verbatim}
 
 \subsection*{Stored Procedures e transazioni}
 %
