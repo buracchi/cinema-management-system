@@ -16,7 +16,7 @@ rappresento come un'entità, ovvero il cinema, e lo si è modellato provando a
 soddisfare i requisiti relativi:
 
 \begin{center}
-    \includegraphics[width=3.5cm]{er_diagrams/er_1.png}
+    \includegraphics[width=5cm]{er_diagrams/er_1.png}
 \end{center}
 
 Il concetto successivo è proprio quello di sala, da cui si evince che è
@@ -129,6 +129,10 @@ identificativo artificiale.
     In una prenotazione devono coincidere il numero di sala del posto
     ed il numero di sala della proiezione.                    \\\hline
     I turni devono essere di massimo otto ore.                \\\hline
+    I turni in un cinema devono avvenire nella fascia oraria d'apertura
+    del cinema.                                               \\\hline
+    Le proiezione in un cinema devono avvenire nella fascia oraria d'apertura
+    del cinema.                                               \\\hline
     In una sala non possono essere proiettati più film contemporaneamente.
     \\ \hline
     \rowcolor{tblhdrcolor}
@@ -140,12 +144,6 @@ identificativo artificiale.
     I posti disponibili per una proiezione si ottengono rimuovendo dai posti
     della sala in cui avviene la proiezione i posti associati a tutte le
     prenotazioni confermate relative alla proiezione
-    \\ \hline
-    La fascia oraria d'apertura per un cinema in una giornata si ottiene
-    considerando l'intervallo temporale formato
-    dall'orario di inizio della prima proiezione della giornata nel cinema e
-    dall'orario d'inizio dell'ultima proiezione della giornata nel cinema
-    sommato alla durata del relativo film proiettato
     \\ \hline
 \end{longtable}
 
@@ -166,7 +164,8 @@ identificativo artificiale.
     \\ \hline
     Cinema
      & Un cinema facente parte della catena cinematografica.
-     & Indirizzo
+     & Fascia oraria d'apertura,
+    indirizzo
      & Id
     \\\hline
     Sala
