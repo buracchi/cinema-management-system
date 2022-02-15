@@ -2,6 +2,7 @@
     "editor.rulers": [80],
     "latex-workshop.latex.outDir": "build",
     "cSpell.words": [
+        "BCNF",
         "cinemadb",
         "CURDATE",
         "dall’applicazione",
