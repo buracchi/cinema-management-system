@@ -57,6 +57,11 @@ introdurremo un codice univoco per identificare l'entità:
 I concetti successivi sono quelli di prenotazione e cliente, le varie tipologie
 di prenotazione verranno espresse tramite il costrutto della generalizzazione.
 
+Poiché la cardinalità della relazione che lega l'entità prenotazione con
+l'entità proiezione è (1,1) ed il prezzo di una prenotazione è univocamente 
+identificato dagli attributi che compongono la chiave primaria dell'entità
+proiezione, aggiungiamo l'attributo prezzo a quest'ultima.
+
 Notiamo inoltre che un'operazione di rimborso consiste nella richiesta al
 servizio di pagamenti elettronici di annullare una transazione, sarà necessario
 pertanto registrare il codice identificante la transazione dal servizio
@@ -123,24 +128,26 @@ identificativo artificiale.
     %\textlangle{}concetto\textrangle{}
     %deve/non deve
     %\textlangle{}espressione\textrangle{} \\
-    La procedura di prenotazione deve scadere dopo 10 minuti. \\\hline
+    % Il prezzo di una prenotazione deve dipendere dal film, dalla sala
+    % e dal momento in cui avviene la relativa proiezione.        \\\hline
+    La procedura di prenotazione deve scadere dopo 10 minuti.   \\\hline
     Le prenotazioni confermate devono poter essere annullate entro 30 minuti
-    dall'inizio della proiezione.                             \\\hline
-    In una prenotazione devono coincidere il numero di sala del posto
-    e della proiezione.                                       \\\hline
-    Una prenotazione può essere validata un'unica volta.      \\\hline
-    Una prenotazione scaduta non può essere validata.         \\\hline
-    Una prenotazione annullata non può essere validata.       \\\hline
-    I turni devono essere di massimo otto ore.                \\\hline
+    dall'inizio della proiezione.                               \\\hline
+    In una prenotazione devono coincidere il numero di sala e cinema del posto
+    e della proiezione.                                         \\\hline
+    Una prenotazione deve poter essere validata un'unica volta. \\\hline
+    Una prenotazione scaduta non deve poter essere validata.    \\\hline
+    Una prenotazione annullata non deve poter essere validata.  \\\hline
+    I turni devono essere di massimo otto ore.                  \\\hline
     I turni in un cinema devono avvenire nella fascia oraria d'apertura
-    del cinema.                                               \\\hline
+    del cinema.                                                 \\\hline
     Le proiezioni in un cinema devono avvenire nella fascia oraria d'apertura
-    del cinema.                                               \\\hline
+    del cinema.                                                 \\\hline
     Un proiezionista associato ad una proiezione deve essere associato
     ad un turno che copre l'intervallo temporale in cui si svolge la proiezione
-    nel cinema in cui essa avviene.                           \\\hline
-    In una sala non possono essere proiettati più film contemporaneamente.
-    \\ \hline
+    nel cinema in cui essa avviene.                             \\\hline
+    In una sala non possono essere proiettati più film
+    contemporaneamente.                                         \\ \hline
     \rowcolor{tblhdrcolor}
     \multicolumn{1}{|c|}{\textbf{Regole di derivazione}}
     \\\hline
@@ -150,7 +157,7 @@ identificativo artificiale.
     I posti disponibili per una proiezione si ottengono rimuovendo dai posti
     della sala in cui avviene la proiezione i posti associati a tutte le
     prenotazioni confermate relative alla proiezione
-    \\ \hline
+    \\\hline
 \end{longtable}
 
 \pagebreak

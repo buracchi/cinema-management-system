@@ -3,6 +3,7 @@
 % Lo scopo di questa sezione è raffinare la specifica fornita, andando ad
 % effettuare un'operazione preliminare di disambiguazione.
 %
+
 \subsection*{Identificazione dei termini ambigui e correzioni possibili}
 %
 % Compilare la seguente tabella, facendo riferimento alla specifica del
@@ -34,6 +35,12 @@
       "amministratori" generando un'ambiguità.
 
       I termini "della catena" sono pleonastici.
+      \\ \hline
+      6
+       & ciascun
+       & ogni posto
+       & Il termine "ciascun" viene utilizzato per indicare in maniera implicita
+      "ogni posto" complicando la comprensione del testo.
       \\ \hline
       24, 25
        & amministratori della catena
@@ -70,7 +77,7 @@
        & Il termine "biglietto" viene utilizzato come sinonimo di
       "prenotazione" generando un'ambiguità.
       \\ \hline
-      10
+      31
        & biglietto utilizzato
        & prenotazione validata
        & Il termine "biglietto" viene utilizzato come sinonimo di
@@ -91,7 +98,7 @@
        & perfezionare
        & completare
        & Il termine "perfezionare" è utilizzato come sinonimo di "completare"
-      rendendo più difficile la comprensione del testo.
+      complicando la comprensione del testo.
       \\ \hline
       27
        & verifica
@@ -99,36 +106,116 @@
        & Il termine "verifica" è utilizzato come sinonimo di "validazione"
       generando un'ambiguità.
       \\ \hline
+      11
+       & costo
+       & prezzo
+       & Il termine "costo" viene utilizzato per riferirsi al prezzo.
+      \\ \hline
 \end{tabularx}
 
 \pagebreak
-\subsubsection*{Interlocuzione con il cliente}
+\subsubsection*{Specifica disambiguata}
 
-\begin{longtable}{|p{8.15cm}|p{8.15cm}|}
+\resetlinenumber[1]
+\begin{tabularx}{\linewidth}{r|>{\internallinenumbers}X|}
+      \cline{2-2} &
+      % Riportare in questo riquadro la specifica di progetto corretta,
+      % applicando le disambiguazioni proposte.
+      Si vuole realizzare il sistema informativo di una catena cinematografica,
+      che si occupi anche della gestione delle prenotazioni.
+      \newline
+      \newline
+      Gli amministratori gestiscono i cinema.
+      Ciascun cinema ha un numero arbitrario di sale, identificato da un
+      numero di sala.
+      In ogni sala c’è un numero arbitrario di posti, \linebreak
+      ogni posto è individuato da una lettera per la fila ed un numero
+      di posto.
+      \newline
+      \newline
+      In ogni sala vengono proiettati più film quotidianamente.
+      Ciascun cinema può proiettare lo stesso film più volte in una giornata,
+      in sale differenti. Ogni film ha una durata, un nome, unl cast e una
+      casa cinematografica.
+      Lo stesso film, proiettato in orari differenti e in sale differenti,
+      può avere un prezzo per la prenotazione differente, proprio in relazione
+      alla sala e all’orario in cui esso viene proiettato.
+      \newline
+      \newline
+      Il sistema di prenotazione è tale per cui i clienti possono prenotarsi
+      per una proiezione, scegliendo un posto disponibile. Dal momento
+      dell’inizio della procedura di prenotazione, un cliente ha a disposizione
+      10 minuti per completare la prenotazione.
+      Dopo aver scelto il  posto, al cliente è data la possibilità di inserire
+      i dati relativi alla propria carta di credito
+      (numero, intestatario, data di scadenza, codice CVV).
+      Una volta inseriti questi dati, il sistema restituisce al cliente
+      un codice di prenotazione.
+      Fino a 30 minuti dall'inizio della proiezione, il cliente ha la
+      possibilità di annullare la sua prenotazione fornendo al sistema il codice
+      di prenotazione.
+      \newline
+      \newline
+      La catena cinematografica gestisce anche i propri dipendenti, divisi in
+      maschere e proiezionisti.
+      Gli amministratori definiscono i turni, di otto ore massimo.
+      I turni sono gestiti su base settimanale.
+      Un report permette di sapere agli amministratori se qualche proiezione
+      è sprovvista di proiezionista o se qualche cinema, in qualche
+      fascia oraria di apertura, è sprovvisto di almeno due maschere per la
+      verifica delle prenotazioni all’ingresso.
+      \newline
+      \newline
+      La validazione delle prenotazioni avviene da parte delle maschere
+      mediante l’utilizzo del codice di prenotazione.
+      Una prenotazione validata viene associato nel sistema al fatto che quel
+      determinato posto, per quella determinata proiezione, è stato occupato
+      dal cliente.
+      Non è possibile utilizzare più volte lo stesso codice di prenotazione
+      per accedere al cinema.
+      \newline
+      \newline
+      A fini statistici, gli amministratori possono generare dei report mensili
+      che mostrano per ciascun cinema e ciascuna sala quante prenotazioni sono
+      state confermate, quante sono state annullate, e quante prenotazioni
+      confermate non sono state utilizzate per accedere al cinema.
+      \\\cline{2-2}
+\end{tabularx}
+
+\pagebreak
+
+\subsection*{Interazione col cliente}
+
+\begin{longtable}{|p{1cm}|p{7.66cm}|p{7.66cm}|}
       \hline
       \rowcolor{tblhdrcolor}
-      \multicolumn{1}{|c|}{\textbf{Messaggio}}
-       & \multicolumn{1}{|c|}{\textbf{Risposta}}
+      \multicolumn{1}{|c|}{\textbf{Id}}                                       &
+      \multicolumn{1}{|c|}{\textbf{Messaggio}}                                &
+      \multicolumn{1}{|c|}{\textbf{Risposta}}
       \\\hline
+      I1                                                                      &
       Non è chiaro il significato di questo periodo nella specifica:
 
       "L'amministrazione della catena gestisce i cinema."
 
-      La frase in questione è circostanziale o con il termine "gestisce" si vuole
-      far riferimento a delle operazioni specifiche sui cinema che non sono state
-      definite e che si richiede di mettere a disposizione degli amministratori?
-       & Definisce, ad esempio, chi è che può decidere il palinsesto dei cinema,
+      La frase in questione è circostanziale o con il termine "gestisce"
+      si vuole far riferimento a delle operazioni specifiche sui cinema che
+      non sono state definite e che si richiede di mettere a disposizione
+      degli amministratori?                                                   &
+      Definisce, ad esempio, chi è che può decidere il palinsesto dei cinema,
       ossia l'amministrazione della catena può cambiare ad esempio la
       programmazione
 
       Così come anche i turni di lavoro dei dipendenti
       \\\hline
+      I2                                                                      &
       Quando gli amministratori modificano la programmazione delle proiezioni
       dovrebbe essere il sistema ad aggiornare coerentemente tutti i palinsesti
       o la modifica manuale dei palinsesti è un'operazione che si richiede
-      di mettere a disposizione degli amministratori?
-       & Non ho capito sinceramente in cosa potrebbe consistere l'automatismo...
+      di mettere a disposizione degli amministratori?                         &
+      Non ho capito sinceramente in cosa potrebbe consistere l'automatismo...
       \\\hline
+      I3                                                                      &
       Attraverso la procedura di aggiornamento della programmazione delle
       proiezioni gli amministratori possono aggiornare le proiezioni in programma.
 
@@ -136,26 +223,29 @@
       verificare il palinsesto di un cinema per decidere quale proiezione
       prenotare.
 
-      Queste due informazioni sono corrette?
-       & Si
+      Queste due informazioni sono corrette?                                  &
+      Si
       \\\hline
+      I4                                                                      &
       Il palinsesto di un cinema mostrato al cliente durante la procedura di
       prenotazione dev'essere generato dal sistema o dev'essere possibile per
-      gli amministratori modificarlo manualmente?
-       & Credo ci sia un equivoco: come può un sistema generare automaticamente
+      gli amministratori modificarlo manualmente?                             &
+      Credo ci sia un equivoco: come può un sistema generare automaticamente
       qualcosa se non ha le informazioni per farlo? Il palinsesto è solo la
       lista dei film con gli orari. Se gli amministratori non inseriscono i
       film con gli orari, cosa può generare il sistema in automatico?
       \\\hline
+      I5                                                                      &
       Nel caso in cui il sistema non contenga le informazioni necessarie per
       generare il palinsesto il sistema informerà il cliente che non sono
       presenti proiezioni in programma.
       Durante la procedura di aggiornamento della programmazione delle
-      proiezioni gli amministratori dovranno inserire nel sistema i dati relativi
-      alle proiezioni, che comprendono i film e gli orari di proiezione.
-      Queste informazioni risiederanno dunque nel sistema al termine della prima
-      procedura di aggiornamento della programmazione delle proiezioni.
-       & Continuo a non capire qual è il punto di tutta questa discussione...
+      proiezioni gli amministratori dovranno inserire nel sistema i dati
+      relativi alle proiezioni, che comprendono i film e gli orari di
+      proiezione.
+      Queste informazioni risiederanno dunque nel sistema al termine della
+      prima procedura di aggiornamento della programmazione delle proiezioni. &
+      Continuo a non capire qual è il punto di tutta questa discussione...
       U+1F601
 
       Se non ci sono film, i film prenotabili sono zero, non vedo cosa cosa ci
@@ -165,19 +255,21 @@
       In ultimo sì: sono gli amministratori che possono decidere la
       programmazione dei film, come dicevamo già prima!
       \\\hline
+      I6                                                                      &
       Nella specifica si fa riferimento al fatto che i cinema hanno delle
       fasce orarie d'apertura. Può fornirmi più dettagli su quest'ultime?
-      Devono rispettare dei vincoli?
-       & Non è necessario che il sistema imponga dei vincoli, anzi è preferibile
+      Devono rispettare dei vincoli?                                          &
+      Non è necessario che il sistema imponga dei vincoli, anzi è preferibile
       che non ne imponga affatto, poiché non sappiamo oggi quali orari potremo
       avere nei nostri cinema in futuro.
       Quindi, la cosa migliore è lasciare la libertà agli amministratori di
       definire gli orari di apertura come meglio credono.
       \\\hline
+      I7                                                                      &
       Nella specifica si fa riferimento a delle prenotazioni "confermate".
 
-      Cosa si intende per "confermate"?
-       & Si fa riferimento a questo
+      Cosa si intende per "confermate"?                                       &
+      Si fa riferimento a questo
       "Dal momento dell’inizio della procedura di prenotazione, un cliente ha
       a disposizione 10 minuti per perfezionare la prenotazione"
 
@@ -185,51 +277,116 @@
       la possibilità di annullare la sua prenotazione fornendo al sistema il
       codice di prenotazione."
       \\\hline
+      I8                                                                      &
       Nella specifica si fa poi riferimento a delle
       prenotazioni confermate " non  [...] utilizzate per accedere al cinema".
 
       Cosa si intende per "non utilizzate"? Che non sono ancora state
-      validate o che sono scadute?
-       & Sì, sono i biglietti venduti a persone che poi non sono andate al cinema
+      validate o che sono scadute?                                            &
+      Sì, sono i biglietti venduti a persone che poi non sono andate al cinema
       \\\hline
+      I9                                                                      &
       Nella specifica si fa riferimento al fatto che
       "I turni sono gestiti su base settimanale".
 
-      Cosa si intende con questo?
-       & Che ogni settimana si fanno i turni
+      Cosa si intende con questo?                                             &
+      Che ogni settimana si fanno i turni
       \\\hline
+      I10                                                                     &
       Lo stesso dipendente può lavorare in cinema diversi in turni diversi o
-      lavora unicamente in un cinema?
-       & Questo non è detto, può essere, non vorrei che ci fossero vincoli dal
+      lavora unicamente in un cinema?                                         &
+      Questo non è detto, può essere, non vorrei che ci fossero vincoli dal
       sistema: ce la gestiamo noi quando facciamo i turni
+      \\\hline
+      I10                                                                     &
+      Lo stesso dipendente può lavorare in cinema diversi in turni diversi o
+      lavora unicamente in un cinema?                                         &
+      Questo non è detto, può essere, non vorrei che ci fossero vincoli dal
+      sistema: ce la gestiamo noi quando facciamo i turni
+      \\\hline
+      I11                                                                     &
+      Due biglietti per lo stesso film proiettato nella stessa sala alla
+      stessa ora ma in giornate differenti possono avere costi differenti?    &
+      Sì, ad esempio il mercoledì i biglietti spesso costano di meno
       \\\hline
 \end{longtable}
 
 \pagebreak
-\subsubsection*{Specifica disambiguata}
 
-\begin{longtable}{|p{\linewidth}|}
+\subsection*{Requisiti estratti dalla specifica e dall'interazione col cliente}
+%
+% SDL sta per Specifica Disambiguata Linea
+%
+
+\begin{longtable}{|p{0.8cm}|p{13.4cm}|p{2.1cm}|}
       \hline
-      % Riportare in questo riquadro la specifica di progetto corretta,
-      % applicando le disambiguazioni proposte.
-      Ogni cinema ha un numero arbitrario di sale.                      \\\hline
-      Ogni cinema ha una fascia oraria di apertura.                     \\\hline
-      Ogni sala è identificata da un numero di sala.                    \\\hline
-      Ogni sala ha un numero arbitrario di posti.                       \\\hline
+      \rowcolor{tblhdrcolor}
+      \multicolumn{1}{|c|}{\textbf{Id}}                                       &
+      \multicolumn{1}{|c|}{\textbf{Descrizione}}                              &
+      \multicolumn{1}{|c|}{\textbf{Origine}}
+      \\\hline
+      R1                                                                      &
+      Ogni cinema ha un numero arbitrario di sale.                            &
+      SDL 4, 5
+      \\\hline
+      R2                                                                      &
+      Ogni cinema ha una fascia oraria di apertura.                           &
+      SDL 26, 27
+      \\\hline
+      R3                                                                      &
+      Ogni sala è identificata da un numero di sala.                          &
+      SDL 5
+      \\\hline
+      R4                                                                      &
+      Ogni sala ha un numero arbitrario di posti.                             &
+      SDL 5
+      \\\hline
+      R5                                                                      &
       Ogni posto è identificato da una lettera per la fila ed un numero
-      di posto.                                                         \\\hline
-      In ogni sala si possono proiettare più film nello stesso giorno.  \\\hline
+      di posto.                                                               &
+      SDL 6
+      \\\hline
+      R6                                                                      &
+      In ogni sala si possono proiettare più film nello stesso giorno.        &
+      SDL 8
+      \\\hline
+      R7                                                                      &
       Ogni film può essere proiettato più volte nello stesso giorno ed
-      in sale differenti.                                               \\\hline
-      Ogni film ha una durata, un nome, un cast e una casa
-      cinematografica.                                                  \\\hline
-      Il prezzo di una prenotazione dipende dal film proiettato, dalla sala e
-      dall'orario in cui avviene la proiezione.                         \\\hline
-      Gli amministratori gestiscono la programmazione delle proiezioni. \\\hline
+      in sale differenti.                                                     &
+      SDL 8, 9
+      \\\hline
+      R8                                                                      &
+      Ogni film ha una durata, un nome, un cast e una casa cinematografica.   &
+      SDL 10
+      \\\hline
+      R9                                                                      &
+      Il prezzo di una prenotazione dipende dal film proiettato, dalla
+      sala, dalla data e dall'orario in cui avviene la proiezione.            &
+      I11, SDL 10, 11, 12
+      \\\hline
+      R10                                                                     &
+      Gli amministratori gestiscono la programmazione delle proiezioni
+      potendo:
+      \begin{itemize}
+            \item visualizzare le proiezioni in programma
+            \item creare nuove proiezioni in programma
+            \item modificare proiezioni esistenti in programma
+            \item eliminare proiezioni esistenti in programma
+            \item assegnare ad una proiezione in programma un proiezionista
+      \end{itemize}         &
+      I1
+      \\\hline
+      R11                                                                     &
       I clienti possono prenotare un posto per una proiezione completando
-      la procedura di prenotazione.                                     \\\hline
-      I clienti hanno a disposizione 10 minuti per completare la procedura di
-      prenotazione.                                                     \\\hline
+      la procedura di prenotazione.                                           &
+      SDL 14, 15
+      \\\hline
+      R12                                                                     &
+      I clienti hanno a disposizione 10 minuti per completare la procedura
+      di prenotazione.                                                        &
+      SDL 16
+      \\\hline
+      R13                                                                     &
       La procedura di prenotazione è formata dai seguenti passaggi:
       \begin{enumerate}
             \item il cliente seleziona un cinema
@@ -250,13 +407,22 @@
                   come prenotazione confermata
             \item il sistema restituisce al cliente un codice di
                   prenotazione
-      \end{enumerate}              \\\hline
-      I clienti possono annullare la propria prenotazione completando
-      la procedura di annullamento di una prenotazione.                 \\\hline
+      \end{enumerate}                   &
+      I3, SDL 16, 17, 18, 19
+      \\\hline
+      R14                                                                     &
+      I clienti possono annullare la propria prenotazione completando la
+      procedura di annullamento di una prenotazione.                          &
+      SDL 20
+      \\\hline
+      R15                                                                     &
       I clienti possono annullare la propria prenotazione entro 30 minuti
-      dall'inizio della proiezione.                                     \\\hline
-      La procedura di annullamento di una prenotazione è formata dai seguenti
-      passaggi:
+      dall'inizio della proiezione.                                           &
+      SDL 19, 20
+      \\\hline
+      R16                                                                     &
+      La procedura di annullamento di una prenotazione è formata dai
+      seguenti passaggi:
       \begin{enumerate}
             \item il cliente fornisce al sistema un codice di
                   prenotazione
@@ -264,34 +430,70 @@
                   annullare la relativa transazione
             \item il sistema registra la prenotazione come prenotazione
                   annullata
-      \end{enumerate}        \\\hline
-      I dipendenti sono divisi in maschere e proiezionisti.             \\\hline
-      Ogni dipendente può effettuare un turno in un qualunque cinema.   \\\hline
-      Gli amministratori gestiscono la programmazione dei turni.        \\\hline
-      La durata di una giornata lavorativa di un dipendente deve essere
-      di massimo otto ore.                                              \\\hline
-      I turni sono gestiti su base settimanale.                         \\\hline
-      Gli amministratori possono generare un report che permette di
-      sapere se:
+      \end{enumerate}             &
+      SDL 20, 21
+      \\\hline
+      R17                                                                     &
+      I dipendenti sono divisi in maschere e proiezionisti.                   &
+      SDL 23, 24
+      \\\hline
+      R18                                                                     &
+      Ogni dipendente può effettuare un turno in un qualunque cinema.         &
+      I10
+      \\\hline
+      R19                                                                     &
+      Gli amministratori gestiscono la programmazione dei turni
+      potendo:
+      \begin{itemize}
+            \item visualizzare i turni in programma
+            \item creare nuovi turni in programma
+            \item modificare turni esistenti in programma
+            \item eliminare turni esistenti in programma
+      \end{itemize}                           &
+      SDL 24
+      \\\hline
+      R20                                                                     &
+      La durata di una giornata lavorativa di un dipendente deve essere di
+      massimo otto ore.                                                       &
+      SDL 24
+      \\\hline
+      R21                                                                     &
+      I turni sono gestiti su base settimanale.                               &
+      SDL 24, 25
+      \\\hline
+      R22                                                                     &
+      Gli amministratori possono generare un report che permette di sapere se:
       \begin{itemize}
             \item qualche proiezione è sprovvista di proiezionista
             \item qualche cinema, in qualche fascia oraria di apertura,
                   è sprovvisto di almeno due maschere
-      \end{itemize}        \\\hline
-      Le maschere validano le prenotazioni mediante il codice
-      di prenotazione presente sui biglietti.                           \\\hline
-      Una prenotazione validata viene associata al fatto che quel
-      determinato posto, per quella determinata proiezione,
-      è stato occupato dal cliente.                                     \\\hline
-      Non è possibile utilizzare più volte lo stesso codice di
-      prenotazione per accedere al cinema.                              \\\hline
-      Gli amministratori possono generare dei report mensili che
-      mostrano per ogni cinema e per ogni sala:
+      \end{itemize}             &
+      SDL 25, 26, 27
+      \\\hline
+      R23                                                                     &
+      Le maschere validano le prenotazioni mediante il codice di prenotazione
+      presente sui biglietti.                                                 &
+      SDL 29, 30
+      \\\hline
+      R24                                                                     &
+      Una prenotazione validata viene associata al fatto che quel determinato
+      posto, per quella determinata proiezione, è stato occupato dal cliente. &
+      SDL 30, 31
+      \\\hline
+      R25                                                                     &
+      Non è possibile utilizzare più volte lo stesso codice di prenotazione
+      per accedere al cinema.                                                 &
+      SDL 32
+      \\\hline
+      R26                                                                     &
+      Gli amministratori possono generare dei report mensili che mostrano
+      per ogni cinema e per ogni sala:
       \begin{itemize}
             \item quante sono le prenotazioni confermate
             \item quante sono le prenotazioni annullate
             \item quante sono le prenotazioni scadute
-      \end{itemize}
+      \end{itemize}                            &
+      SDL 34, 35, 36, 37
       \\\hline
 \end{longtable}
 
@@ -473,6 +675,8 @@
       \\ \hline
 \end{longtable}
 
+\pagebreak
+
 \subsection*{Raggruppamento dei requisiti in insiemi omogenei}
 %
 % Per ciascun elemento "più importante" della specifica
@@ -515,8 +719,8 @@
       Ogni film può essere proiettato più volte nello stesso giorno ed
       in sale differenti.
 
-      Il prezzo di una prenotazione dipende dal film proiettato,
-      dalla sala e dall'orario in cui avviene la proiezione.
+      Il prezzo di una prenotazione dipende dal film proiettato, dalla
+      sala, dalla data e dall'orario in cui avviene la proiezione.
       \\ \hline
 \end{tabularx}
 
@@ -547,8 +751,8 @@
       Ogni film ha una durata, un nome, un cast e una
       casa cinematografica.
 
-      Il prezzo di una prenotazione dipende dal film proiettato,
-      dalla sala e dall'orario in cui avviene la proiezione.
+      Il prezzo di una prenotazione dipende dal film proiettato, dalla
+      sala, dalla data e dall'orario in cui avviene la proiezione.
       \\ \hline
 \end{tabularx}
 
@@ -561,8 +765,8 @@
       Ogni film può essere proiettato più volte nello stesso giorno ed in sale
       differenti.
 
-      Il prezzo di una prenotazione dipende dal film proiettato,
-      dalla sala e dall'orario in cui avviene la proiezione.
+      Il prezzo di una prenotazione dipende dal film proiettato, dalla
+      sala, dalla data e dall'orario in cui avviene la proiezione.
 
       I clienti possono prenotare un posto per una proiezione
       completando la procedura di prenotazione.
@@ -583,8 +787,8 @@
       Ogni film può essere proiettato più volte nello stesso giorno ed in sale
       differenti.
 
-      Il prezzo di una prenotazione dipende dal film proiettato,
-      dalla sala e dall'orario in cui avviene la proiezione.
+      Il prezzo di una prenotazione dipende dal film proiettato, dalla
+      sala, dalla data e dall'orario in cui avviene la proiezione.
 
       Gli amministratori gestiscono la programmazione delle proiezioni.
       \\ \hline
@@ -594,8 +798,8 @@
       \hline
       \rowcolor{tblhdrcolor}
       \textbf{Frasi relative alle prenotazioni} \\\hline
-      Il prezzo di una prenotazione dipende dal film proiettato,
-      dalla sala e dall'orario in cui avviene la proiezione.
+      Il prezzo di una prenotazione dipende dal film proiettato, dalla
+      sala, dalla data e dall'orario in cui avviene la proiezione.
 
       I clienti possono prenotare un posto per una proiezione
       completando la procedura di prenotazione.
