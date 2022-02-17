@@ -867,66 +867,6 @@ COMMIT;
 
 
 -- -----------------------------------------------------
--- Data for table `cinemadb`.`Sale`
--- -----------------------------------------------------
-START TRANSACTION;
-USE `cinemadb`;
-INSERT INTO `cinemadb`.`Sale` (`cinema`, `numero`) VALUES (1, 1);
-INSERT INTO `cinemadb`.`Sale` (`cinema`, `numero`) VALUES (1, 2);
-INSERT INTO `cinemadb`.`Sale` (`cinema`, `numero`) VALUES (1, 3);
-INSERT INTO `cinemadb`.`Sale` (`cinema`, `numero`) VALUES (1, 4);
-INSERT INTO `cinemadb`.`Sale` (`cinema`, `numero`) VALUES (1, 5);
-INSERT INTO `cinemadb`.`Sale` (`cinema`, `numero`) VALUES (2, 1);
-INSERT INTO `cinemadb`.`Sale` (`cinema`, `numero`) VALUES (2, 2);
-INSERT INTO `cinemadb`.`Sale` (`cinema`, `numero`) VALUES (2, 3);
-INSERT INTO `cinemadb`.`Sale` (`cinema`, `numero`) VALUES (3, 1);
-INSERT INTO `cinemadb`.`Sale` (`cinema`, `numero`) VALUES (3, 2);
-INSERT INTO `cinemadb`.`Sale` (`cinema`, `numero`) VALUES (3, 3);
-INSERT INTO `cinemadb`.`Sale` (`cinema`, `numero`) VALUES (3, 4);
-INSERT INTO `cinemadb`.`Sale` (`cinema`, `numero`) VALUES (4, 1);
-INSERT INTO `cinemadb`.`Sale` (`cinema`, `numero`) VALUES (4, 2);
-INSERT INTO `cinemadb`.`Sale` (`cinema`, `numero`) VALUES (4, 3);
-INSERT INTO `cinemadb`.`Sale` (`cinema`, `numero`) VALUES (4, 4);
-INSERT INTO `cinemadb`.`Sale` (`cinema`, `numero`) VALUES (4, 5);
-INSERT INTO `cinemadb`.`Sale` (`cinema`, `numero`) VALUES (4, 6);
-INSERT INTO `cinemadb`.`Sale` (`cinema`, `numero`) VALUES (4, 7);
-INSERT INTO `cinemadb`.`Sale` (`cinema`, `numero`) VALUES (5, 1);
-INSERT INTO `cinemadb`.`Sale` (`cinema`, `numero`) VALUES (5, 2);
-INSERT INTO `cinemadb`.`Sale` (`cinema`, `numero`) VALUES (5, 3);
-INSERT INTO `cinemadb`.`Sale` (`cinema`, `numero`) VALUES (5, 4);
-INSERT INTO `cinemadb`.`Sale` (`cinema`, `numero`) VALUES (5, 5);
-INSERT INTO `cinemadb`.`Sale` (`cinema`, `numero`) VALUES (6, 1);
-INSERT INTO `cinemadb`.`Sale` (`cinema`, `numero`) VALUES (6, 2);
-INSERT INTO `cinemadb`.`Sale` (`cinema`, `numero`) VALUES (6, 3);
-INSERT INTO `cinemadb`.`Sale` (`cinema`, `numero`) VALUES (6, 4);
-INSERT INTO `cinemadb`.`Sale` (`cinema`, `numero`) VALUES (6, 5);
-INSERT INTO `cinemadb`.`Sale` (`cinema`, `numero`) VALUES (7, 1);
-INSERT INTO `cinemadb`.`Sale` (`cinema`, `numero`) VALUES (7, 2);
-INSERT INTO `cinemadb`.`Sale` (`cinema`, `numero`) VALUES (7, 3);
-INSERT INTO `cinemadb`.`Sale` (`cinema`, `numero`) VALUES (7, 4);
-INSERT INTO `cinemadb`.`Sale` (`cinema`, `numero`) VALUES (7, 5);
-INSERT INTO `cinemadb`.`Sale` (`cinema`, `numero`) VALUES (7, 6);
-INSERT INTO `cinemadb`.`Sale` (`cinema`, `numero`) VALUES (8, 1);
-INSERT INTO `cinemadb`.`Sale` (`cinema`, `numero`) VALUES (8, 2);
-INSERT INTO `cinemadb`.`Sale` (`cinema`, `numero`) VALUES (8, 3);
-INSERT INTO `cinemadb`.`Sale` (`cinema`, `numero`) VALUES (9, 1);
-INSERT INTO `cinemadb`.`Sale` (`cinema`, `numero`) VALUES (9, 2);
-INSERT INTO `cinemadb`.`Sale` (`cinema`, `numero`) VALUES (9, 3);
-INSERT INTO `cinemadb`.`Sale` (`cinema`, `numero`) VALUES (9, 4);
-INSERT INTO `cinemadb`.`Sale` (`cinema`, `numero`) VALUES (9, 5);
-INSERT INTO `cinemadb`.`Sale` (`cinema`, `numero`) VALUES (9, 6);
-INSERT INTO `cinemadb`.`Sale` (`cinema`, `numero`) VALUES (9, 7);
-INSERT INTO `cinemadb`.`Sale` (`cinema`, `numero`) VALUES (10, 1);
-INSERT INTO `cinemadb`.`Sale` (`cinema`, `numero`) VALUES (10, 2);
-INSERT INTO `cinemadb`.`Sale` (`cinema`, `numero`) VALUES (10, 3);
-INSERT INTO `cinemadb`.`Sale` (`cinema`, `numero`) VALUES (10, 4);
-INSERT INTO `cinemadb`.`Sale` (`cinema`, `numero`) VALUES (10, 5);
-INSERT INTO `cinemadb`.`Sale` (`cinema`, `numero`) VALUES (10, 6);
-
-COMMIT;
-
-
--- -----------------------------------------------------
 -- Data for table `cinemadb`.`Ruoli`
 -- -----------------------------------------------------
 START TRANSACTION;
@@ -1000,6 +940,37 @@ DO
 	DELETE FROM `Proiezioni` WHERE `data` < CURDATE();
 -- end attached script 'Eventi'
 -- begin attached script 'Popolazione'
+-- -----------------------------------------------------
+-- Data for table `cinemadb`.`Sale`
+-- -----------------------------------------------------
+
+INSERT INTO `Sale` (`cinema`, `numero`)
+WITH RECURSIVE numeri AS (SELECT 1 AS numero
+						  UNION ALL
+						  SELECT numero + 1
+						  FROM numeri
+						  WHERE numero + 1 <= 5)
+SELECT id, numero
+FROM cinema CROSS JOIN numeri;
+
+-- -----------------------------------------------------
+-- Data for table `cinemadb`.`Posti`
+-- -----------------------------------------------------
+
+INSERT INTO `Posti` (`cinema`, `sala`, `fila`, `numero`)
+WITH RECURSIVE numeri AS (SELECT 1 AS numero
+						  UNION ALL
+						  SELECT numero + 1
+						  FROM numeri
+						  WHERE numero + 1 <= 25),
+	lettere AS (SELECT 'A' AS lettera
+						  UNION ALL
+						  SELECT CHAR(ASCII(lettera) + 1 USING ASCII)
+						  FROM lettere
+						  WHERE ASCII(lettera) + 1 <= ASCII('A') + 8)
+SELECT cinema, Sale.numero, lettera, numeri.numero
+FROM Sale CROSS JOIN lettere CROSS JOIN numeri;
+
 -- -----------------------------------------------------
 -- Data for table `cinemadb`.`Dipendenti`
 -- -----------------------------------------------------
