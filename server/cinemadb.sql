@@ -222,6 +222,11 @@ ENGINE = InnoDB;
 USE `cinemadb` ;
 
 -- -----------------------------------------------------
+-- Placeholder table for view `cinemadb`.`Palinsesti`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `cinemadb`.`Palinsesti` (`data` INT, `ora` INT, `cinema` INT, `sala` INT, `prezzo` INT, `nome` INT, `durata` INT, `casa_cinematografica` INT, `cast` INT);
+
+-- -----------------------------------------------------
 -- procedure mostra_cinema
 -- -----------------------------------------------------
 
@@ -236,19 +241,16 @@ END$$
 DELIMITER ;
 
 -- -----------------------------------------------------
--- procedure mostra_proiezioni_cinema
+-- procedure mostra_palinsesto
 -- -----------------------------------------------------
 
 DELIMITER $$
 USE `cinemadb`$$
-CREATE PROCEDURE `mostra_proiezioni_cinema` (IN _cinema_id INT)
+CREATE PROCEDURE `mostra_palinsesto` (IN _cinema_id INT)
 BEGIN
-	SELECT `cinema`, `sala`, `data`, `ora`, `prezzo`,
-		`nome`, `durata`, `casa_cinematografica`, `cast`
-    FROM `Proiezioni` JOIN `Film` ON `film` = `id`
-    WHERE `cinema` = _cinema_id
-		AND (`data` > CURDATE()
-			OR (`data` = CURDATE() AND `ora` > TIME(NOW())));
+	SELECT *
+    FROM `Palinsesti`
+    WHERE `cinema` = _cinema_id;
 END$$
 
 DELIMITER ;
@@ -637,6 +639,19 @@ BEGIN
 END$$
 
 DELIMITER ;
+
+-- -----------------------------------------------------
+-- View `cinemadb`.`Palinsesti`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `cinemadb`.`Palinsesti`;
+USE `cinemadb`;
+CREATE  OR REPLACE VIEW `Palinsesti` AS
+	SELECT `data`, `ora`, `cinema`, `sala`, `prezzo`,
+		`nome`, `durata`, `casa_cinematografica`, `cast`
+    FROM `Proiezioni` JOIN `Film` ON `film` = `id`
+    WHERE `data` > CURDATE()
+		OR (`data` = CURDATE() AND `ora` > TIME(NOW()))
+	ORDER BY `data`, `ora`, `cinema`, `sala`;
 USE `cinemadb`;
 
 DELIMITER $$
@@ -770,7 +785,7 @@ FOR EACH ROW
 BEGIN
 	DECLARE ruolo VARCHAR(15);
     SET ruolo = (SELECT `ruolo` FROM `Dipendenti` WHERE `matricola` = NEW.`proiezionista`);
-    IF (ruolo != 'Proiezionista') THEN
+    IF (NEW.proiezionista IS NOT NULL AND ruolo != 'Proiezionista') THEN
         SIGNAL SQLSTATE '45001'
         SET MESSAGE_TEXT = 'Impossibile assegnare ad una proiezione un dipendente non proiezionista.';
     END IF;
@@ -796,7 +811,7 @@ SET esiste_turno = (SELECT COUNT(*)
 						AND inizio <= ora
 						AND SEC_TO_TIME(TIME_TO_SEC(ora) + TIME_TO_SEC(Film.durata))
 						<= SEC_TO_TIME(TIME_TO_SEC(inizio) + TIME_TO_SEC(Turni.durata)));
-IF (esiste_turno = FALSE) THEN
+IF (NEW.proiezionista IS NOT NULL AND esiste_turno = FALSE) THEN
         SIGNAL SQLSTATE '45001'
         SET MESSAGE_TEXT = 'Il proiezionista selezionato non è assegnato ad un turno compatibile con la proiezione.';
 END IF;
@@ -809,7 +824,7 @@ FOR EACH ROW
 BEGIN
 	DECLARE ruolo VARCHAR(15);
     SET ruolo = (SELECT `ruolo` FROM `Dipendenti` WHERE `matricola` = NEW.`proiezionista`);
-    IF (ruolo != 'Proiezionista') THEN
+    IF (NEW.proiezionista IS NOT NULL AND ruolo != 'Proiezionista') THEN
         SIGNAL SQLSTATE '45001'
         SET MESSAGE_TEXT = 'Impossibile assegnare ad una proiezione un dipendente non proiezionista.';
     END IF;
@@ -834,7 +849,7 @@ SET esiste_turno = (SELECT COUNT(*)
 						AND inizio <= ora
 						AND SEC_TO_TIME(TIME_TO_SEC(ora) + TIME_TO_SEC(Film.durata))
 						<= SEC_TO_TIME(TIME_TO_SEC(inizio) + TIME_TO_SEC(Turni.durata)));
-IF (esiste_turno = FALSE) THEN
+IF (NEW.proiezionista IS NOT NULL AND esiste_turno = FALSE) THEN
         SIGNAL SQLSTATE '45001'
         SET MESSAGE_TEXT = 'Il proiezionista selezionato non è assegnato ad un turno compatibile con la proiezione.';
 END IF;
@@ -855,9 +870,9 @@ USE `cinemadb`;
 INSERT INTO `cinemadb`.`Cinema` (`id`, `indirizzo`, `apertura`, `chiusura`) VALUES (1, 'Via Giuseppe Verdi 72100 BR Brindisi', '10:00:00', '23:00:00');
 INSERT INTO `cinemadb`.`Cinema` (`id`, `indirizzo`, `apertura`, `chiusura`) VALUES (2, 'Via Roma 12100 CN Cremona', '10:00:00', '23:00:00');
 INSERT INTO `cinemadb`.`Cinema` (`id`, `indirizzo`, `apertura`, `chiusura`) VALUES (3, 'Via Dante 40100 BO Bologna', '10:00:00', '23:00:00');
-INSERT INTO `cinemadb`.`Cinema` (`id`, `indirizzo`, `apertura`, `chiusura`) VALUES (4, 'Via Cavour 1810 IM Imperia', '16:00:00', '23:00:00');
-INSERT INTO `cinemadb`.`Cinema` (`id`, `indirizzo`, `apertura`, `chiusura`) VALUES (5, 'Via Monte Bianco 94100 EN Enna', '16:00:00', '23:00:00');
-INSERT INTO `cinemadb`.`Cinema` (`id`, `indirizzo`, `apertura`, `chiusura`) VALUES (6, 'Via Giove 28100 NO Novara', '16:00:00', '23:00:00');
+INSERT INTO `cinemadb`.`Cinema` (`id`, `indirizzo`, `apertura`, `chiusura`) VALUES (4, 'Via Cavour 1810 IM Imperia', '10:00:00', '23:00:00');
+INSERT INTO `cinemadb`.`Cinema` (`id`, `indirizzo`, `apertura`, `chiusura`) VALUES (5, 'Via Monte Bianco 94100 EN Enna', '10:00:00', '23:00:00');
+INSERT INTO `cinemadb`.`Cinema` (`id`, `indirizzo`, `apertura`, `chiusura`) VALUES (6, 'Via Giove 28100 NO Novara', '10:00:00', '23:00:00');
 INSERT INTO `cinemadb`.`Cinema` (`id`, `indirizzo`, `apertura`, `chiusura`) VALUES (7, 'Via della Repubblica RM 00100 Roma', '10:00:00', '23:00:00');
 INSERT INTO `cinemadb`.`Cinema` (`id`, `indirizzo`, `apertura`, `chiusura`) VALUES (8, 'Via de Gasperi 33170 PN Pordenone', '10:00:00', '23:00:00');
 INSERT INTO `cinemadb`.`Cinema` (`id`, `indirizzo`, `apertura`, `chiusura`) VALUES (9, 'Via dei Tulipani 37100 VR Verona', '10:00:00', '23:00:00');
@@ -900,7 +915,7 @@ START TRANSACTION;
 USE `cinemadb`;
 INSERT INTO `cinemadb`.`Film` (`id`, `nome`, `durata`, `casa_cinematografica`, `cast`) VALUES (DEFAULT, 'Il padrino', '02:55:00', '', NULL);
 INSERT INTO `cinemadb`.`Film` (`id`, `nome`, `durata`, `casa_cinematografica`, `cast`) VALUES (DEFAULT, 'Il cavaliere oscuro', '02:32:00', NULL, NULL);
-INSERT INTO `cinemadb`.`Film` (`id`, `nome`, `durata`, `casa_cinematografica`, `cast`) VALUES (DEFAULT, 'Schindler\'s List', '03:15:00', NULL, NULL);
+INSERT INTO `cinemadb`.`Film` (`id`, `nome`, `durata`, `casa_cinematografica`, `cast`) VALUES (DEFAULT, 'Frankenstein Junior', '01:46:00', NULL, NULL);
 INSERT INTO `cinemadb`.`Film` (`id`, `nome`, `durata`, `casa_cinematografica`, `cast`) VALUES (DEFAULT, 'Pulp Fiction', '02:34:00', NULL, NULL);
 INSERT INTO `cinemadb`.`Film` (`id`, `nome`, `durata`, `casa_cinematografica`, `cast`) VALUES (DEFAULT, 'Il buono, il brutto, il cattivo', '02:41:00', NULL, NULL);
 INSERT INTO `cinemadb`.`Film` (`id`, `nome`, `durata`, `casa_cinematografica`, `cast`) VALUES (DEFAULT, 'Fight Club', '02:19:00', NULL, NULL);
@@ -987,6 +1002,29 @@ SELECT matricola, 'Mario', 'Rossi',
         ELSE 'Proiezionista'
         END
 FROM matricole;
+
+-- -----------------------------------------------------
+-- Data for table `cinemadb`.`Proiezioni`
+-- -----------------------------------------------------
+
+INSERT INTO `Proiezioni` (`cinema`, `sala`, `data`, `ora`, `prezzo`, `film`)
+WITH RECURSIVE giornate AS (SELECT CURDATE()
+									+ INTERVAL 7 - WEEKDAY(CURDATE()) DAY
+                                    AS giorno
+							 UNION ALL
+							 SELECT giorno + INTERVAL 1 DAY
+							 FROM giornate
+							 WHERE giorno + INTERVAL 1 DAY
+								< CURDATE()
+									+ INTERVAL 7 - WEEKDAY(CURDATE()) DAY
+									+ INTERVAL 7 DAY)
+SELECT cinema, numero, giorno, ora, '5.00',
+	(SELECT id FROM Film ORDER BY RAND() LIMIT 1) AS id
+FROM Sale CROSS JOIN giornate
+		  CROSS JOIN (SELECT '10:00:00' AS ora
+						UNION ALL SELECT '15:00:00'
+                        UNION ALL SELECT '18:00:00'
+                        UNION ALL SELECT '21:00:00') AS orari;
 
 -- -----------------------------------------------------
 -- Data for table `cinemadb`.`Turni`
