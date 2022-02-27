@@ -137,7 +137,7 @@ CREATE TABLE IF NOT EXISTS `cinemadb`.`Film` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `nome` VARCHAR(45) NOT NULL,
   `durata` TIME NOT NULL,
-  `casa_cinematografica` VARCHAR(45) NULL,
+  `casa_cinematografica` VARCHAR(256) NULL,
   `cast` VARCHAR(1024) NULL,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB;
@@ -224,7 +224,7 @@ USE `cinemadb` ;
 -- -----------------------------------------------------
 -- Placeholder table for view `cinemadb`.`Palinsesti`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `cinemadb`.`Palinsesti` (`data` INT, `ora` INT, `cinema` INT, `sala` INT, `prezzo` INT, `nome` INT, `durata` INT, `casa_cinematografica` INT, `cast` INT);
+CREATE TABLE IF NOT EXISTS `cinemadb`.`Palinsesti` (`data` INT, `ora` INT, `cinema` INT, `sala` INT, `prezzo` INT, `movie_id` INT, `nome` INT, `durata` INT, `casa_cinematografica` INT, `cast` INT);
 
 -- -----------------------------------------------------
 -- procedure mostra_cinema
@@ -268,10 +268,10 @@ CREATE PROCEDURE `mostra_posti_disponibili` (
     IN _ora TIME)
 BEGIN
 	SELECT `fila`, `numero`
-	FROM `Posti` JOIN `Proiezioni` ON (`Proiezioni`.`cinema` = _cinema_id
-										AND `Proiezioni`.`sala` = _sala_id
-										AND `Proiezioni`.`data` = _data
-										AND `Proiezioni`.`ora` = _ora)
+	FROM `Posti` JOIN `Palinsesti` ON (`Palinsesti`.`cinema` = _cinema_id
+										AND `Palinsesti`.`sala` = _sala_id
+										AND `Palinsesti`.`data` = _data
+										AND `Palinsesti`.`ora` = _ora)
 	WHERE (`fila`, `numero`) NOT IN (SELECT `fila`, `numero`
 										FROM `Prenotazioni`
 										WHERE `Prenotazioni`.`cinema` = _cinema_id
@@ -421,13 +421,13 @@ WITH
                                                   ORDER BY `dalle_ore`, `alle_ore`)
                                                   AS `gruppo`
                      FROM gruppi_variazioni)
-SELECT `cinema`, `giorno`, min(`dalle_ore`) AS `dalle_ore`,
-       max(`alle_ore`) AS `alle_ore`, `numero_maschere`
+SELECT `cinema`, `giorno`, MIN(`dalle_ore`) AS `dalle_ore`,
+       MAX(`alle_ore`) AS `alle_ore`, `numero_maschere`
 FROM gruppi_orari
 WHERE `dalle_ore` != `alle_ore`
 GROUP BY `cinema`, `giorno`, `numero_maschere`, `gruppo`
 HAVING `numero_maschere` < 2
-ORDER BY `cinema`, NUMERO_GIORNO(`giorno`), min(`dalle_ore`);
+ORDER BY `cinema`, NUMERO_GIORNO(`giorno`), MIN(`dalle_ore`);
 END$$
 
 DELIMITER ;
@@ -542,9 +542,8 @@ DELIMITER $$
 USE `cinemadb`$$
 CREATE PROCEDURE `mostra_proiezioni` ()
 BEGIN
-	SELECT `cinema`, `sala`, `data`, `ora`, `prezzo`, `id`, `nome`, `durata`
-    FROM `Proiezioni` JOIN `Film` ON `film` = `id`
-    WHERE `data` > CURDATE() OR (`data` = CURDATE() AND `ora` > TIME(NOW()));
+	SELECT *
+    FROM `Palinsesti`;
 END$$
 
 DELIMITER ;
@@ -631,11 +630,17 @@ CREATE PROCEDURE `mostra_proiezionisti_disponibili` (
 	IN _data DATE,
 	IN _ora TIME)
 BEGIN
-	SELECT matricola, nome, cognome
-    FROM Dipendente JOIN Turni ON matricola = dipendente
-		JOIN Proiezione ON Proiezione.cinema = _cinema AND Proiezione.sala = _sala AND Proiezione.data = _data AND Proiezione._ora = _ora
-		JOIN Film ON id = Proiezioni.film
-    WHERE inizio <= _ora AND Turni.durata >= Film.durata;
+	SELECT `matricola`, `Dipendenti`.`nome`, `cognome`
+    FROM `Dipendenti` JOIN `Turni` ON `matricola` = `dipendente`
+		JOIN `Proiezioni` ON `Proiezioni`.`cinema` = `Turni`.`cinema`
+							AND GIORNO_DELLA_SETTIMANA(`Proiezioni`.`data`) = `Turni`.`giorno`
+							AND `Proiezioni`.`cinema` = _cinema
+                            AND `Proiezioni`.`sala` = _sala
+                            AND `Proiezioni`.`data` = _data
+                            AND `Proiezioni`.`ora` = _ora
+		JOIN `Film` ON `id` = `Proiezioni`.`film`
+    WHERE `ruolo` = 'Proiezionista' AND `inizio` <= _ora
+		AND `Turni`.`durata` >= `Film`.`durata`;
 END$$
 
 DELIMITER ;
@@ -647,7 +652,8 @@ DROP TABLE IF EXISTS `cinemadb`.`Palinsesti`;
 USE `cinemadb`;
 CREATE  OR REPLACE VIEW `Palinsesti` AS
 	SELECT `data`, `ora`, `cinema`, `sala`, `prezzo`,
-		`nome`, `durata`, `casa_cinematografica`, `cast`
+		`id` AS movie_id, `nome`, `durata`,
+		`casa_cinematografica`, `cast`
     FROM `Proiezioni` JOIN `Film` ON `film` = `id`
     WHERE `data` > CURDATE()
 		OR (`data` = CURDATE() AND `ora` > TIME(NOW()))
@@ -667,7 +673,7 @@ BEGIN
 END$$
 
 USE `cinemadb`$$
-CREATE TRIGGER `cinemadb`.`Turni_BEFORE_INSERT`
+CREATE TRIGGER `cinemadb`.`Turni_BEFORE_INSERT_Check_Durata`
 BEFORE INSERT ON `Turni`
 FOR EACH ROW
 BEGIN
@@ -678,7 +684,7 @@ BEGIN
 END$$
 
 USE `cinemadb`$$
-CREATE TRIGGER `cinemadb`.`Turni_BEFORE_INSERT_1` 
+CREATE TRIGGER `cinemadb`.`Turni_BEFORE_INSERT_Check_Somma_Durate` 
 BEFORE INSERT ON `Turni` 
 FOR EACH ROW
 BEGIN
@@ -694,7 +700,7 @@ BEGIN
 END$$
 
 USE `cinemadb`$$
-CREATE TRIGGER `cinemadb`.`Turni_BEFORE_INSERT_2`
+CREATE TRIGGER `cinemadb`.`Turni_BEFORE_INSERT_Check_Sovrapposizioni`
 BEFORE INSERT ON `Turni`
 FOR EACH ROW
 BEGIN
@@ -715,7 +721,7 @@ BEGIN
 END$$
 
 USE `cinemadb`$$
-CREATE TRIGGER `cinemadb`.`Turni_BEFORE_INSERT_3`
+CREATE TRIGGER `cinemadb`.`Turni_BEFORE_INSERT_Check_Cinema_Aperto`
 BEFORE INSERT ON `Turni`
 FOR EACH ROW
 BEGIN
@@ -728,6 +734,24 @@ BEGIN
         SIGNAL SQLSTATE '45001'
         SET MESSAGE_TEXT = 'Il cinema selezionato è chiuso nell\'intervallo di tempo specificato.';
     END IF;
+END$$
+
+USE `cinemadb`$$
+CREATE TRIGGER `cinemadb`.`Turni_AFTER_DELETE_Reset_Proiezionista_Proiezione`
+AFTER DELETE ON `Turni`
+FOR EACH ROW
+BEGIN
+	UPDATE `Proiezioni`
+    SET `proiezionista` = NULL
+    WHERE (`cinema`, `sala`, `data`, `ora`) IN
+		(SELECT `cinema`, `sala`, `data`, `ora`
+			FROM `Proiezioni` JOIN `Film` ON `film` = `id`
+			WHERE `proiezionista` = OLD.`dipendente`
+				AND `cinema` = OLD.`cinema`
+				AND GIORNO_DELLA_SETTIMANA(`data`) = OLD.`giorno`
+				AND `ora` >= OLD.`inizio`
+				AND SEC_TO_TIME(TIME_TO_SEC(`ora`) + TIME_TO_SEC(`Film`.`durata`))
+					<= SEC_TO_TIME(TIME_TO_SEC(OLD.`inizio`) + TIME_TO_SEC(OLD.`durata`)));
 END$$
 
 USE `cinemadb`$$
@@ -785,7 +809,7 @@ FOR EACH ROW
 BEGIN
 	DECLARE ruolo VARCHAR(15);
     SET ruolo = (SELECT `ruolo` FROM `Dipendenti` WHERE `matricola` = NEW.`proiezionista`);
-    IF (NEW.proiezionista IS NOT NULL AND ruolo != 'Proiezionista') THEN
+    IF (NEW.`proiezionista` IS NOT NULL AND ruolo != 'Proiezionista') THEN
         SIGNAL SQLSTATE '45001'
         SET MESSAGE_TEXT = 'Impossibile assegnare ad una proiezione un dipendente non proiezionista.';
     END IF;
@@ -796,25 +820,23 @@ CREATE TRIGGER `cinemadb`.`Proiezioni_BEFORE_INSERT_3`
 BEFORE INSERT ON `Proiezioni`
 FOR EACH ROW
 BEGIN
-DECLARE esiste_turno BOOL;
-SET esiste_turno = (SELECT COUNT(*)
-					FROM Proiezioni JOIN Film ON film = id 
-									JOIN Turni ON Proiezioni.cinema = Turni.cinema
-												AND GIORNO_DELLA_SETTIMANA(Proiezioni.data) = Turni.giorno
-												AND Proiezioni.proiezionista = Turni.dipendente
-					WHERE Proiezioni.cinema = NEW.cinema
-						AND Proiezioni.sala = NEW.sala
-						AND Proiezioni.data = NEW.data
-						AND Proiezioni.ora = NEW.ora
-                        AND Proiezioni.film = NEW.film
-						AND Proiezioni.proiezionista = NEW.proiezionista
-						AND inizio <= ora
-						AND SEC_TO_TIME(TIME_TO_SEC(ora) + TIME_TO_SEC(Film.durata))
-						<= SEC_TO_TIME(TIME_TO_SEC(inizio) + TIME_TO_SEC(Turni.durata)));
-IF (NEW.proiezionista IS NOT NULL AND esiste_turno = FALSE) THEN
-        SIGNAL SQLSTATE '45001'
-        SET MESSAGE_TEXT = 'Il proiezionista selezionato non è assegnato ad un turno compatibile con la proiezione.';
-END IF;
+	DECLARE esiste_turno BOOL;
+	SET esiste_turno = (SELECT COUNT(*)
+					FROM `Proiezioni` JOIN `Film` ON `film` = `id` 
+									JOIN `Turni` ON `Proiezioni`.`cinema` = `Turni`.`cinema`
+												AND GIORNO_DELLA_SETTIMANA(`Proiezioni`.`data`) = `Turni`.`giorno`
+					WHERE `Proiezioni`.`cinema` = NEW.`cinema`
+						AND `Proiezioni`.`sala` = NEW.`sala`
+						AND `Proiezioni`.`data` = NEW.`data`
+						AND `Proiezioni`.`ora` = NEW.`ora`
+                        AND `Turni`.`dipendente` = NEW.`proiezionista`
+						AND `inizio` <= `ora`
+						AND SEC_TO_TIME(TIME_TO_SEC(`ora`) + TIME_TO_SEC(`Film`.`durata`))
+						<= SEC_TO_TIME(TIME_TO_SEC(`inizio`) + TIME_TO_SEC(`Turni`.`durata`)));
+	IF (NEW.`proiezionista` IS NOT NULL AND esiste_turno = FALSE) THEN
+		SIGNAL SQLSTATE '45001'
+		SET MESSAGE_TEXT = 'Il proiezionista selezionato non è assegnato ad un turno compatibile con la proiezione.';
+	END IF;
 END$$
 
 USE `cinemadb`$$
@@ -822,9 +844,9 @@ CREATE TRIGGER `cinemadb`.`Proiezioni_BEFORE_UPDATE`
 BEFORE UPDATE ON `Proiezioni`
 FOR EACH ROW
 BEGIN
-	DECLARE ruolo VARCHAR(15);
-    SET ruolo = (SELECT `ruolo` FROM `Dipendenti` WHERE `matricola` = NEW.`proiezionista`);
-    IF (NEW.proiezionista IS NOT NULL AND ruolo != 'Proiezionista') THEN
+	DECLARE _ruolo VARCHAR(15);
+    SET _ruolo = (SELECT `ruolo` FROM `Dipendenti` WHERE `matricola` = NEW.`proiezionista`);
+    IF (NEW.`proiezionista` IS NOT NULL AND _ruolo != 'Proiezionista') THEN
         SIGNAL SQLSTATE '45001'
         SET MESSAGE_TEXT = 'Impossibile assegnare ad una proiezione un dipendente non proiezionista.';
     END IF;
@@ -835,28 +857,38 @@ CREATE TRIGGER `cinemadb`.`Proiezioni_BEFORE_UPDATE_1`
 BEFORE UPDATE ON `Proiezioni`
 FOR EACH ROW
 BEGIN
-DECLARE esiste_turno BOOL;
-SET esiste_turno = (SELECT COUNT(*)
-					FROM Proiezioni JOIN Film ON film = id 
-									JOIN Turni ON Proiezioni.cinema = Turni.cinema
-												AND GIORNO_DELLA_SETTIMANA(Proiezioni.data) = Turni.giorno
-												AND Proiezioni.proiezionista = Turni.dipendente
-					WHERE Proiezioni.cinema = NEW.cinema
-						AND Proiezioni.sala = NEW.sala
-						AND Proiezioni.data = NEW.data
-						AND Proiezioni.ora = NEW.ora
-						AND Proiezioni.proiezionista = NEW.proiezionista
-						AND inizio <= ora
-						AND SEC_TO_TIME(TIME_TO_SEC(ora) + TIME_TO_SEC(Film.durata))
-						<= SEC_TO_TIME(TIME_TO_SEC(inizio) + TIME_TO_SEC(Turni.durata)));
-IF (NEW.proiezionista IS NOT NULL AND esiste_turno = FALSE) THEN
-        SIGNAL SQLSTATE '45001'
-        SET MESSAGE_TEXT = 'Il proiezionista selezionato non è assegnato ad un turno compatibile con la proiezione.';
-END IF;
+	DECLARE esiste_turno BOOL;
+	SET esiste_turno = (SELECT COUNT(*)
+					FROM `Proiezioni` JOIN `Film` ON `film` = `id` 
+									JOIN `Turni` ON `Proiezioni`.`cinema` = `Turni`.`cinema`
+												AND GIORNO_DELLA_SETTIMANA(`Proiezioni`.`data`) = `Turni`.`giorno`
+					WHERE `Proiezioni`.`cinema` = NEW.`cinema`
+						AND `Proiezioni`.`sala` = NEW.`sala`
+						AND `Proiezioni`.`data` = NEW.`data`
+						AND `Proiezioni`.`ora` = NEW.`ora`
+                        AND `Turni`.`dipendente` = NEW.`proiezionista`
+						AND `inizio` <= `ora`
+						AND SEC_TO_TIME(TIME_TO_SEC(`ora`) + TIME_TO_SEC(`Film`.`durata`))
+						<= SEC_TO_TIME(TIME_TO_SEC(`inizio`) + TIME_TO_SEC(`Turni`.`durata`)));
+	IF (NEW.`proiezionista` IS NOT NULL AND esiste_turno = FALSE) THEN
+		SIGNAL SQLSTATE '45001'
+		SET MESSAGE_TEXT = 'Il proiezionista selezionato non è assegnato ad un turno compatibile con la proiezione.';
+	END IF;
 END$$
 
 
 DELIMITER ;
+GRANT EXECUTE ON procedure `cinemadb`.`mostra_cinema` TO 'amministratore';
+GRANT EXECUTE ON procedure `cinemadb`.`mostra_palinsesto` TO 'amministratore';
+GRANT EXECUTE ON procedure `cinemadb`.`mostra_posti_disponibili` TO 'amministratore';
+GRANT EXECUTE ON procedure `cinemadb`.`effettua_prenotazione` TO 'amministratore';
+GRANT EXECUTE ON procedure `cinemadb`.`annulla_prenotazione` TO 'amministratore';
+GRANT EXECUTE ON procedure `cinemadb`.`mostra_cinema` TO 'cliente';
+GRANT EXECUTE ON procedure `cinemadb`.`mostra_palinsesto` TO 'cliente';
+GRANT EXECUTE ON procedure `cinemadb`.`mostra_posti_disponibili` TO 'cliente';
+GRANT EXECUTE ON procedure `cinemadb`.`effettua_prenotazione` TO 'cliente';
+GRANT EXECUTE ON procedure `cinemadb`.`annulla_prenotazione` TO 'cliente';
+GRANT EXECUTE ON procedure `cinemadb`.`valida_prenotazione` TO 'maschera';
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
@@ -913,9 +945,9 @@ COMMIT;
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `cinemadb`;
-INSERT INTO `cinemadb`.`Film` (`id`, `nome`, `durata`, `casa_cinematografica`, `cast`) VALUES (DEFAULT, 'Il padrino', '02:55:00', '', NULL);
-INSERT INTO `cinemadb`.`Film` (`id`, `nome`, `durata`, `casa_cinematografica`, `cast`) VALUES (DEFAULT, 'Il cavaliere oscuro', '02:32:00', NULL, NULL);
-INSERT INTO `cinemadb`.`Film` (`id`, `nome`, `durata`, `casa_cinematografica`, `cast`) VALUES (DEFAULT, 'Frankenstein Junior', '01:46:00', NULL, NULL);
+INSERT INTO `cinemadb`.`Film` (`id`, `nome`, `durata`, `casa_cinematografica`, `cast`) VALUES (DEFAULT, 'Il padrino', '02:55:00', 'Paramount Pictures Studios, ALTRO', 'Marlon Brando, Al Pacino, James Caan, Richard S. Castellano, Robert Duvall, Diane Keaton, John Cazale, Talia Shire, Abe Vigoda, Al Lettieri, Gianni Russo, Lenny Montana');
+INSERT INTO `cinemadb`.`Film` (`id`, `nome`, `durata`, `casa_cinematografica`, `cast`) VALUES (DEFAULT, 'Il cavaliere oscuro', '02:32:00', 'Warner Bros. Pictures, ALTRO', 'Christian Bale, Cillian Murphy, Gary Oldman, Morgan Freeman, Heath Ledger, Michael Caine, Maggie Gyllenhaal, Aaron Eckhart');
+INSERT INTO `cinemadb`.`Film` (`id`, `nome`, `durata`, `casa_cinematografica`, `cast`) VALUES (DEFAULT, 'Frankenstein Junior', '01:46:00', 'Gruskoff/Venture Films, ALTRO', 'Gene Wilder, Peter Boyle, Marty Feldman, Teri Garr, Cloris Leachman');
 INSERT INTO `cinemadb`.`Film` (`id`, `nome`, `durata`, `casa_cinematografica`, `cast`) VALUES (DEFAULT, 'Pulp Fiction', '02:34:00', NULL, NULL);
 INSERT INTO `cinemadb`.`Film` (`id`, `nome`, `durata`, `casa_cinematografica`, `cast`) VALUES (DEFAULT, 'Il buono, il brutto, il cattivo', '02:41:00', NULL, NULL);
 INSERT INTO `cinemadb`.`Film` (`id`, `nome`, `durata`, `casa_cinematografica`, `cast`) VALUES (DEFAULT, 'Fight Club', '02:19:00', NULL, NULL);
@@ -1019,7 +1051,7 @@ WITH RECURSIVE giornate AS (SELECT CURDATE()
 									+ INTERVAL 7 - WEEKDAY(CURDATE()) DAY
 									+ INTERVAL 7 DAY)
 SELECT cinema, numero, giorno, ora, '5.00',
-	(SELECT id FROM Film ORDER BY RAND() LIMIT 1) AS id
+	(SELECT id FROM Film ORDER BY RAND(0) LIMIT 1) AS id
 FROM Sale CROSS JOIN giornate
 		  CROSS JOIN (SELECT '10:00:00' AS ora
 						UNION ALL SELECT '15:00:00'
@@ -1030,14 +1062,26 @@ FROM Sale CROSS JOIN giornate
 -- Data for table `cinemadb`.`Turni`
 -- -----------------------------------------------------
 
-INSERT INTO `Turni` (`dipendente`, `giorno`, `inizio`, `durata`, `cinema`) VALUES (2, 'Lunedì', '10:00:00', '01:00:00', 1);
-INSERT INTO `Turni` (`dipendente`, `giorno`, `inizio`, `durata`, `cinema`) VALUES (2, 'Martedì', '10:00:00', '08:00:00', 1);
-INSERT INTO `Turni` (`dipendente`, `giorno`, `inizio`, `durata`, `cinema`) VALUES (4, 'Lunedì', '10:30:00', '01:30:00', 1);
-INSERT INTO `Turni` (`dipendente`, `giorno`, `inizio`, `durata`, `cinema`) VALUES (4, 'Lunedì', '16:30:00', '01:00:00', 1);
-INSERT INTO `Turni` (`dipendente`, `giorno`, `inizio`, `durata`, `cinema`) VALUES (4, 'Martedì', '18:00:00', '05:00:00', 1);
-INSERT INTO `Turni` (`dipendente`, `giorno`, `inizio`, `durata`, `cinema`) VALUES (6, 'Lunedì', '10:45:00', '00:30:00', 1);
-INSERT INTO `Turni` (`dipendente`, `giorno`, `inizio`, `durata`, `cinema`) VALUES (6, 'Martedì', '10:00:00', '08:00:00', 1);
-INSERT INTO `Turni` (`dipendente`, `giorno`, `inizio`, `durata`, `cinema`) VALUES (7, 'Lunedì', '16:00:00', '02:00:00', 1);
-INSERT INTO `Turni` (`dipendente`, `giorno`, `inizio`, `durata`, `cinema`) VALUES (7, 'Martedì', '18:00:00', '05:00:00', 1);
+INSERT INTO `Turni` (`dipendente`, `giorno`, `inizio`, `durata`, `cinema`)
+SELECT D.matricola, Giorni.nome AS giorno, Orari.inizio, Orari.durata, Cinema.id AS cinema
+FROM (SELECT matricola FROM Dipendenti WHERE Dipendenti.ruolo = 'Maschera' ORDER BY matricola ASC LIMIT 20) AS D JOIN Giorni
+				CROSS JOIN (SELECT '10:00:00' AS inizio, '05:00:00' AS durata) AS Orari
+				JOIN Cinema ON MOD(matricola, (SELECT COUNT(*) FROM Cinema)) = Cinema.id
+UNION ALL
+SELECT D.matricola, Giorni.nome AS giorno, Orari.inizio, Orari.durata, Cinema.id AS cinema
+FROM (SELECT matricola FROM Dipendenti WHERE Dipendenti.ruolo = 'Maschera' ORDER BY matricola DESC LIMIT 20) AS D JOIN Giorni
+				CROSS JOIN (SELECT '15:00:00' AS inizio, '08:00:00' AS durata) AS Orari
+				JOIN Cinema ON MOD(matricola, (SELECT COUNT(*) FROM Cinema)) = Cinema.id
+UNION ALL
+SELECT D.matricola, Giorni.nome AS giorno, Orari.inizio, Orari.durata, Cinema.id AS cinema
+FROM (SELECT matricola FROM Dipendenti WHERE Dipendenti.ruolo = 'Proiezionista' ORDER BY matricola ASC LIMIT 50) AS D JOIN Giorni
+				CROSS JOIN (SELECT '10:00:00' AS inizio, '05:00:00' AS durata) AS Orari
+				JOIN Cinema ON MOD(matricola, (SELECT COUNT(*) FROM Cinema)) = Cinema.id
+UNION ALL
+SELECT D.matricola, Giorni.nome AS giorno, Orari.inizio, Orari.durata, Cinema.id AS cinema
+FROM (SELECT matricola FROM Dipendenti WHERE Dipendenti.ruolo = 'Proiezionista' ORDER BY matricola DESC LIMIT 20) AS D JOIN Giorni
+				CROSS JOIN (SELECT '15:00:00' AS inizio, '08:00:00' AS durata) AS Orari
+				JOIN Cinema ON MOD(matricola, (SELECT COUNT(*) FROM Cinema)) = Cinema.id
+ORDER BY matricola ASC, cinema ASC;
 
 -- end attached script 'Popolazione'
