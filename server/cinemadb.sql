@@ -39,8 +39,8 @@ CREATE TABLE IF NOT EXISTS `cinemadb`.`Sale` (
   CONSTRAINT `fk_Sale_Cinema`
     FOREIGN KEY (`cinema`)
     REFERENCES `cinemadb`.`Cinema` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
 
@@ -56,8 +56,8 @@ CREATE TABLE IF NOT EXISTS `cinemadb`.`Posti` (
   CONSTRAINT `fk_Posti_Sale1`
     FOREIGN KEY (`cinema` , `sala`)
     REFERENCES `cinemadb`.`Sale` (`cinema` , `numero`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
 
@@ -115,13 +115,13 @@ CREATE TABLE IF NOT EXISTS `cinemadb`.`Turni` (
   CONSTRAINT `fk_Turni_Cinema1`
     FOREIGN KEY (`cinema`)
     REFERENCES `cinemadb`.`Cinema` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
   CONSTRAINT `fk_Turni_Dipendenti1`
     FOREIGN KEY (`dipendente`)
     REFERENCES `cinemadb`.`Dipendenti` (`matricola`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
   CONSTRAINT `fk_Turni_Giorno1`
     FOREIGN KEY (`giorno`)
     REFERENCES `cinemadb`.`Giorni` (`nome`)
@@ -160,18 +160,18 @@ CREATE TABLE IF NOT EXISTS `cinemadb`.`Proiezioni` (
   CONSTRAINT `fk_Proiezioni_Sale1`
     FOREIGN KEY (`cinema` , `sala`)
     REFERENCES `cinemadb`.`Sale` (`cinema` , `numero`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
   CONSTRAINT `fk_Proiezioni_Film1`
     FOREIGN KEY (`film`)
     REFERENCES `cinemadb`.`Film` (`id`)
     ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
+    ON UPDATE CASCADE,
   CONSTRAINT `fk_Proiezioni_Dipendenti1`
     FOREIGN KEY (`proiezionista`)
     REFERENCES `cinemadb`.`Dipendenti` (`matricola`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+    ON DELETE SET NULL
+    ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
 
@@ -206,12 +206,12 @@ CREATE TABLE IF NOT EXISTS `cinemadb`.`Prenotazioni` (
     FOREIGN KEY (`cinema` , `sala` , `fila` , `numero`)
     REFERENCES `cinemadb`.`Posti` (`cinema` , `sala` , `fila` , `numero`)
     ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
+    ON UPDATE CASCADE,
   CONSTRAINT `fk_Prenotazioni_Proiezioni1`
     FOREIGN KEY (`cinema` , `sala` , `data` , `ora`)
     REFERENCES `cinemadb`.`Proiezioni` (`cinema` , `sala` , `data` , `ora`)
     ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
+    ON UPDATE CASCADE,
   CONSTRAINT `fk_Prenotazioni_StatoPrenotazione1`
     FOREIGN KEY (`stato`)
     REFERENCES `cinemadb`.`StatiPrenotazione` (`nome`)
@@ -319,22 +319,10 @@ DELIMITER $$
 USE `cinemadb`$$
 CREATE PROCEDURE `annulla_prenotazione` (IN _codice INT)
 BEGIN
-	DECLARE stato_prenotazione VARCHAR(15);
-	DECLARE inizio_proiezione TIMESTAMP;
-    SET stato_prenotazione = (SELECT `stato` FROM `Prenotazioni` WHERE `codice` = _codice);
-    SET inizio_proiezione = (SELECT TIMESTAMP(`data`, `ora`) FROM `Prenotazioni` WHERE `codice` = _codice);
-    IF (stato_prenotazione != 'Confermata') THEN
-		SIGNAL SQLSTATE '45002'
-        SET MESSAGE_TEXT = 'Prenotazione inesistente o invalida.';
-    END IF;
-    IF (inizio_proiezione > DATE_SUB(NOW(), INTERVAL 30 MINUTE)) THEN
-        SIGNAL SQLSTATE '45001'
-        SET MESSAGE_TEXT = 'Non è possibile annullare una prenotazione raggiunti i trenta minuti precedenti l\'inizio della proiezione.';
-    END IF;
-	# Mock servizio di pagamento---------------------------------------------
-	# -----------------------------------------------------------------------
     UPDATE `Prenotazioni` SET `stato`='Annullata'
     WHERE `codice` = _codice;
+	# Mock servizio di pagamento---------------------------------------------
+	# -----------------------------------------------------------------------
 END$$
 
 DELIMITER ;
@@ -347,13 +335,7 @@ DELIMITER $$
 USE `cinemadb`$$
 CREATE PROCEDURE `valida_prenotazione` (IN _codice INT)
 BEGIN
-	DECLARE stato_prenotazione VARCHAR(15);
-    SET stato_prenotazione = (SELECT `stato` FROM `Prenotazioni` WHERE `codice` = _codice);
-    IF (stato_prenotazione != 'Confermata') THEN
-		SIGNAL SQLSTATE '45002'
-        SET MESSAGE_TEXT = 'Prenotazione inesistente o invalida.';
-    END IF;
-    UPDATE `Prenotazioni` SET `stato`='Validata'
+    UPDATE `Prenotazioni` SET `stato` = 'Validata'
     WHERE `codice` = _codice;
 END$$
 
@@ -630,6 +612,13 @@ CREATE PROCEDURE `mostra_proiezionisti_disponibili` (
 	IN _data DATE,
 	IN _ora TIME)
 BEGIN
+	DECLARE _fine TIME;
+    SET _fine = (SELECT SEC_TO_TIME(TIME_TO_SEC(`ora`) + TIME_TO_SEC(`durata`))
+					FROM `Proiezioni` JOIN `Film` ON `id` = `film`
+                    WHERE `Proiezioni`.`cinema` = _cinema
+						AND `Proiezioni`.`sala` = _sala
+						AND `Proiezioni`.`data` = _data
+						AND `Proiezioni`.`ora` = _ora);
 	SELECT `matricola`, `Dipendenti`.`nome`, `cognome`
     FROM `Dipendenti` JOIN `Turni` ON `matricola` = `dipendente`
 		JOIN `Proiezioni` ON `Proiezioni`.`cinema` = `Turni`.`cinema`
@@ -640,7 +629,45 @@ BEGIN
                             AND `Proiezioni`.`ora` = _ora
 		JOIN `Film` ON `id` = `Proiezioni`.`film`
     WHERE `ruolo` = 'Proiezionista' AND `inizio` <= _ora
-		AND `Turni`.`durata` >= `Film`.`durata`;
+		AND `Turni`.`durata` >= `Film`.`durata`
+        AND NOT EXISTS (SELECT *
+						FROM `Proiezioni` JOIN `Film` ON `id` = `film`
+						WHERE `cinema` = _cinema
+						AND `data` = _data
+						AND `ora` <= _fine
+						AND SEC_TO_TIME(TIME_TO_SEC(`ora`) + TIME_TO_SEC(`durata`))
+							>= _ora
+						AND `proiezionista` = `matricola`);
+END$$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- function MESSAGGIO_ERRORE
+-- -----------------------------------------------------
+
+DELIMITER $$
+USE `cinemadb`$$
+CREATE FUNCTION `MESSAGGIO_ERRORE` (_codice INT)
+RETURNS VARCHAR(128)
+DETERMINISTIC
+BEGIN
+	RETURN (SELECT
+			CASE
+				WHEN _codice = 45001 THEN "L'orario di chiusura non può precedere quello di apertura"
+				WHEN _codice = 45002 THEN "La sala selezionata è già impegnata in una proiezione nell'orario selezionato."
+				WHEN _codice = 45003 THEN "Il cinema selezionato è chiuso nell'intervallo di tempo specificato."
+				WHEN _codice = 45004 THEN "Impossibile assegnare ad una proiezione un dipendente non proiezionista."
+				WHEN _codice = 45005 THEN "Il proiezionista selezionato non è assegnato ad un turno compatibile con la proiezione."
+				WHEN _codice = 45006 THEN "Il proiezionista selezionato è già assegnato ad un'altra  proiezione nel periodo richiesto."
+				WHEN _codice = 45007 THEN "Impossibile creare un turno di più di 8 ore."
+				WHEN _codice = 45008 THEN "La somma della durata dei turni nella giornata supera le 8 ore."
+				WHEN _codice = 45009 THEN "Il dipendente è già assegnato ad un turno nell'arco temporale selezionato."
+				WHEN _codice = 45010 THEN "Impossibile creare una prenotazione non confermata."
+				WHEN _codice = 45011 THEN "Impossibile cambiare lo stato di una prenotazione annullata, scaduta o validata."
+				WHEN _codice = 45012 THEN "Non è possibile annullare una prenotazione raggiunti i trenta minuti precedenti l'inizio della proiezione."
+				ELSE NULL
+			END);
 END$$
 
 DELIMITER ;
@@ -662,13 +689,26 @@ USE `cinemadb`;
 
 DELIMITER $$
 USE `cinemadb`$$
-CREATE TRIGGER `cinemadb`.`Cinema_BEFORE_INSERT`
+CREATE TRIGGER `cinemadb`.`Cinema_BEFORE_INSERT_Check_Orario`
 BEFORE INSERT ON `Cinema`
 FOR EACH ROW
 BEGIN
 	IF (NEW.`chiusura` < NEW.`apertura`) THEN
+		SET @err_msg = MESSAGGIO_ERRORE(45001);
 		SIGNAL SQLSTATE '45001'
-		SET MESSAGE_TEXT = 'L\'orario di chiusura non può precedere quello di apertura';
+		SET MESSAGE_TEXT = @err_msg;
+    END IF;
+END$$
+
+USE `cinemadb`$$
+CREATE TRIGGER `cinemadb`.`Cinema_BEFORE_UPDATE_Check_Orario`
+BEFORE UPDATE ON `Cinema`
+FOR EACH ROW
+BEGIN
+	IF (NEW.`chiusura` < NEW.`apertura`) THEN
+		SET @err_msg = MESSAGGIO_ERRORE(45001);
+		SIGNAL SQLSTATE '45001'
+		SET MESSAGE_TEXT = @err_msg;
     END IF;
 END$$
 
@@ -678,8 +718,9 @@ BEFORE INSERT ON `Turni`
 FOR EACH ROW
 BEGIN
     IF (NEW.`durata` > TIME('08:00:00')) THEN
-        SIGNAL SQLSTATE '45001'
-        SET MESSAGE_TEXT = 'Impossibile creare un turno di più di 8 ore.';
+		SET @err_msg = MESSAGGIO_ERRORE(45007);
+		SIGNAL SQLSTATE '45007'
+		SET MESSAGE_TEXT = @err_msg;
     END IF;
 END$$
 
@@ -694,8 +735,9 @@ BEGIN
                         WHERE `Turni`.`dipendente` = NEW.`dipendente`
                             AND `Turni`.`giorno` = NEW.`giorno`);
     IF (OreTotali + NEW.`durata` > TIME('08:00:00')) THEN
-        SIGNAL SQLSTATE '45001'
-        SET MESSAGE_TEXT = 'La somma della durata dei turni nella giornata supera le 8 ore.';
+		SET @err_msg = MESSAGGIO_ERRORE(45008);
+		SIGNAL SQLSTATE '45008'
+		SET MESSAGE_TEXT = @err_msg;
     END IF;
 END$$
 
@@ -715,8 +757,9 @@ BEGIN
                             AND (SEC_TO_TIME(TIME_TO_SEC(`Turni`.`inizio`) 
                             + TIME_TO_SEC(`Turni`.`durata`))) > NEW.`inizio`);
     IF (clash) THEN
-        SIGNAL SQLSTATE '45001'
-        SET MESSAGE_TEXT = 'Il dipendente è già assegnato ad un turno nell\'arco temporale selezionato.';
+		SET @err_msg = MESSAGGIO_ERRORE(45009);
+		SIGNAL SQLSTATE '45009'
+		SET MESSAGE_TEXT = @err_msg;
     END IF;
 END$$
 
@@ -731,8 +774,9 @@ BEGIN
     SET ora_chiusura_cinema = (SELECT `chiusura` FROM `Cinema` WHERE `id` = NEW.`cinema`);
     IF (NEW.`inizio` < ora_apertura_cinema
 		OR SEC_TO_TIME(TIME_TO_SEC(NEW.`inizio`) + TIME_TO_SEC(NEW.`durata`)) > ora_chiusura_cinema) THEN
-        SIGNAL SQLSTATE '45001'
-        SET MESSAGE_TEXT = 'Il cinema selezionato è chiuso nell\'intervallo di tempo specificato.';
+		SET @err_msg = MESSAGGIO_ERRORE(45003);
+		SIGNAL SQLSTATE '45003'
+		SET MESSAGE_TEXT = @err_msg;
     END IF;
 END$$
 
@@ -755,7 +799,7 @@ BEGIN
 END$$
 
 USE `cinemadb`$$
-CREATE TRIGGER `cinemadb`.`Proiezioni_BEFORE_INSERT`
+CREATE TRIGGER `cinemadb`.`Proiezioni_BEFORE_INSERT_Check_Sala_Libera`
 BEFORE INSERT ON `Proiezioni`
 FOR EACH ROW
 BEGIN
@@ -779,13 +823,14 @@ BEGIN
 										LIMIT 1);
     IF ((fine_proiezione_prec IS NOT NULL AND fine_proiezione_prec > inizio_proiezione)
 		OR (inizio_proiezione_succ IS NOT NULL AND inizio_proiezione_succ < fine_proiezione)) THEN
-		SIGNAL SQLSTATE '45001'
-		SET MESSAGE_TEXT = 'La sala selezionata è già impegnata in una proiezione nell\'orario selezionato.';
+		SET @err_msg = MESSAGGIO_ERRORE(45002);
+		SIGNAL SQLSTATE '45002'
+		SET MESSAGE_TEXT = @err_msg;
     END IF;
 END$$
 
 USE `cinemadb`$$
-CREATE TRIGGER `cinemadb`.`Proiezioni_BEFORE_INSERT_1`
+CREATE TRIGGER `cinemadb`.`Proiezioni_BEFORE_INSERT_Check_Cinema_Aperto`
 BEFORE INSERT ON `Proiezioni`
 FOR EACH ROW
 BEGIN
@@ -797,63 +842,28 @@ BEGIN
     SET durata = (SELECT `durata` FROM `Film` WHERE `id` = NEW.`film`);
     IF (NEW.`ora` < ora_apertura_cinema
 		OR SEC_TO_TIME(TIME_TO_SEC(NEW.`ora`) + TIME_TO_SEC(durata)) > ora_chiusura_cinema) THEN
-        SIGNAL SQLSTATE '45001'
-        SET MESSAGE_TEXT = 'Il cinema selezionato è chiuso nell\'intervallo di tempo specificato.';
+		SET @err_msg = MESSAGGIO_ERRORE(45003);
+		SIGNAL SQLSTATE '45003'
+		SET MESSAGE_TEXT = @err_msg;
     END IF;
 END$$
 
 USE `cinemadb`$$
-CREATE TRIGGER `cinemadb`.`Proiezioni_BEFORE_INSERT_2`
-BEFORE INSERT ON `Proiezioni`
-FOR EACH ROW
-BEGIN
-	DECLARE ruolo VARCHAR(15);
-    SET ruolo = (SELECT `ruolo` FROM `Dipendenti` WHERE `matricola` = NEW.`proiezionista`);
-    IF (NEW.`proiezionista` IS NOT NULL AND ruolo != 'Proiezionista') THEN
-        SIGNAL SQLSTATE '45001'
-        SET MESSAGE_TEXT = 'Impossibile assegnare ad una proiezione un dipendente non proiezionista.';
-    END IF;
-END$$
-
-USE `cinemadb`$$
-CREATE TRIGGER `cinemadb`.`Proiezioni_BEFORE_INSERT_3`
-BEFORE INSERT ON `Proiezioni`
-FOR EACH ROW
-BEGIN
-	DECLARE esiste_turno BOOL;
-	SET esiste_turno = (SELECT COUNT(*)
-					FROM `Proiezioni` JOIN `Film` ON `film` = `id` 
-									JOIN `Turni` ON `Proiezioni`.`cinema` = `Turni`.`cinema`
-												AND GIORNO_DELLA_SETTIMANA(`Proiezioni`.`data`) = `Turni`.`giorno`
-					WHERE `Proiezioni`.`cinema` = NEW.`cinema`
-						AND `Proiezioni`.`sala` = NEW.`sala`
-						AND `Proiezioni`.`data` = NEW.`data`
-						AND `Proiezioni`.`ora` = NEW.`ora`
-                        AND `Turni`.`dipendente` = NEW.`proiezionista`
-						AND `inizio` <= `ora`
-						AND SEC_TO_TIME(TIME_TO_SEC(`ora`) + TIME_TO_SEC(`Film`.`durata`))
-						<= SEC_TO_TIME(TIME_TO_SEC(`inizio`) + TIME_TO_SEC(`Turni`.`durata`)));
-	IF (NEW.`proiezionista` IS NOT NULL AND esiste_turno = FALSE) THEN
-		SIGNAL SQLSTATE '45001'
-		SET MESSAGE_TEXT = 'Il proiezionista selezionato non è assegnato ad un turno compatibile con la proiezione.';
-	END IF;
-END$$
-
-USE `cinemadb`$$
-CREATE TRIGGER `cinemadb`.`Proiezioni_BEFORE_UPDATE`
+CREATE TRIGGER `cinemadb`.`Proiezioni_BEFORE_UPDATE_Check_Proiezionista`
 BEFORE UPDATE ON `Proiezioni`
 FOR EACH ROW
 BEGIN
 	DECLARE _ruolo VARCHAR(15);
     SET _ruolo = (SELECT `ruolo` FROM `Dipendenti` WHERE `matricola` = NEW.`proiezionista`);
     IF (NEW.`proiezionista` IS NOT NULL AND _ruolo != 'Proiezionista') THEN
-        SIGNAL SQLSTATE '45001'
-        SET MESSAGE_TEXT = 'Impossibile assegnare ad una proiezione un dipendente non proiezionista.';
+		SET @err_msg = MESSAGGIO_ERRORE(45004);
+		SIGNAL SQLSTATE '45004'
+		SET MESSAGE_TEXT = @err_msg;
     END IF;
 END$$
 
 USE `cinemadb`$$
-CREATE TRIGGER `cinemadb`.`Proiezioni_BEFORE_UPDATE_1`
+CREATE TRIGGER `cinemadb`.`Proiezioni_BEFORE_UPDATE_Check_Turno`
 BEFORE UPDATE ON `Proiezioni`
 FOR EACH ROW
 BEGIN
@@ -871,18 +881,94 @@ BEGIN
 						AND SEC_TO_TIME(TIME_TO_SEC(`ora`) + TIME_TO_SEC(`Film`.`durata`))
 						<= SEC_TO_TIME(TIME_TO_SEC(`inizio`) + TIME_TO_SEC(`Turni`.`durata`)));
 	IF (NEW.`proiezionista` IS NOT NULL AND esiste_turno = FALSE) THEN
-		SIGNAL SQLSTATE '45001'
-		SET MESSAGE_TEXT = 'Il proiezionista selezionato non è assegnato ad un turno compatibile con la proiezione.';
+		SET @err_msg = MESSAGGIO_ERRORE(45005);
+		SIGNAL SQLSTATE '45005'
+		SET MESSAGE_TEXT = @err_msg;
 	END IF;
+END$$
+
+USE `cinemadb`$$
+CREATE TRIGGER `cinemadb`.`Proiezioni_BEFORE_UPDATE_Check_Proiezionista_Occupato`
+BEFORE UPDATE ON `Proiezioni`
+FOR EACH ROW
+BEGIN
+	DECLARE _fine TIME;
+	DECLARE impegnato BOOL;
+    SET _fine = (SELECT SEC_TO_TIME(TIME_TO_SEC(`ora`) + TIME_TO_SEC(`durata`))
+					FROM `Proiezioni` JOIN `Film` ON `id` = `film`
+                    WHERE `Proiezioni`.`cinema` = NEW.`cinema`
+						AND `Proiezioni`.`sala` = NEW.`sala`
+						AND `Proiezioni`.`data` = NEW.`data`
+						AND `Proiezioni`.`ora` = NEW.`ora`);
+    SET impegnato = (SELECT COUNT(*)
+						FROM `Proiezioni` JOIN `Film` ON `id` = `film`
+						WHERE `cinema` = NEW.`cinema`
+						AND `data` = NEW.`data`
+						AND `proiezionista` = NEW.`proiezionista`
+						AND `ora` <= _fine
+						AND SEC_TO_TIME(TIME_TO_SEC(`ora`) + TIME_TO_SEC(`durata`))
+							>= NEW.`ora`);
+	IF (NEW.`proiezionista` IS NOT NULL AND impegnato = TRUE) THEN
+		SET @err_msg = MESSAGGIO_ERRORE(45006);
+		SIGNAL SQLSTATE '45006'
+		SET MESSAGE_TEXT = @err_msg;
+	END IF;
+END$$
+
+USE `cinemadb`$$
+CREATE TRIGGER `cinemadb`.`Prenotazioni_BEFORE_INSERT_Check_Stato`
+BEFORE INSERT ON `Prenotazioni`
+FOR EACH ROW
+BEGIN
+	IF (NEW.`stato` != 'Confermata') THEN
+		SET @err_msg = MESSAGGIO_ERRORE(45003);
+		SIGNAL SQLSTATE '45010'
+		SET MESSAGE_TEXT = @err_msg;
+	END IF;
+END$$
+
+USE `cinemadb`$$
+CREATE TRIGGER `cinemadb`.`Prenotazioni_BEFORE_UPDATE_Check_Stato`
+BEFORE UPDATE ON `Prenotazioni`
+FOR EACH ROW
+BEGIN
+	IF (OLD.`stato` != 'Confermata') THEN
+		SET @err_msg = MESSAGGIO_ERRORE(45011);
+		SIGNAL SQLSTATE '45011'
+		SET MESSAGE_TEXT = @err_msg;
+	END IF;
+END$$
+
+USE `cinemadb`$$
+CREATE TRIGGER `cinemadb`.`Prenotazioni_BEFORE_UPDATE_Check_Ora_Proiezione`
+BEFORE UPDATE ON `Prenotazioni`
+FOR EACH ROW
+BEGIN
+	DECLARE inizio_proiezione TIMESTAMP;
+    SET inizio_proiezione = (SELECT TIMESTAMP(`data`, `ora`)
+								FROM `Prenotazioni`
+                                WHERE `codice` = NEW.`codice`);
+    IF (NEW.`stato` = 'Annullata'
+			AND inizio_proiezione > DATE_SUB(NOW(), INTERVAL 30 MINUTE)) THEN
+		SET @err_msg = MESSAGGIO_ERRORE(45012);
+		SIGNAL SQLSTATE '45012'
+		SET MESSAGE_TEXT = @err_msg;
+    END IF;
 END$$
 
 
 DELIMITER ;
-GRANT EXECUTE ON procedure `cinemadb`.`mostra_cinema` TO 'amministratore';
-GRANT EXECUTE ON procedure `cinemadb`.`mostra_palinsesto` TO 'amministratore';
-GRANT EXECUTE ON procedure `cinemadb`.`mostra_posti_disponibili` TO 'amministratore';
-GRANT EXECUTE ON procedure `cinemadb`.`effettua_prenotazione` TO 'amministratore';
-GRANT EXECUTE ON procedure `cinemadb`.`annulla_prenotazione` TO 'amministratore';
+GRANT EXECUTE ON procedure `cinemadb`.`mostra_proiezioni` TO 'amministratore';
+GRANT EXECUTE ON procedure `cinemadb`.`inserisci_proiezione` TO 'amministratore';
+GRANT EXECUTE ON procedure `cinemadb`.`mostra_proiezionisti_disponibili` TO 'amministratore';
+GRANT EXECUTE ON procedure `cinemadb`.`assegna_proiezionista` TO 'amministratore';
+GRANT EXECUTE ON procedure `cinemadb`.`elimina_proiezione` TO 'amministratore';
+GRANT EXECUTE ON procedure `cinemadb`.`mostra_turni` TO 'amministratore';
+GRANT EXECUTE ON procedure `cinemadb`.`inserisci_turno` TO 'amministratore';
+GRANT EXECUTE ON procedure `cinemadb`.`elimina_turno` TO 'amministratore';
+GRANT EXECUTE ON procedure `cinemadb`.`mostra_stato_prenotazioni` TO 'amministratore';
+GRANT EXECUTE ON procedure `cinemadb`.`mostra_proiezioni_senza_proiezionista` TO 'amministratore';
+GRANT EXECUTE ON procedure `cinemadb`.`mostra_cinema_senza_maschere` TO 'amministratore';
 GRANT EXECUTE ON procedure `cinemadb`.`mostra_cinema` TO 'cliente';
 GRANT EXECUTE ON procedure `cinemadb`.`mostra_palinsesto` TO 'cliente';
 GRANT EXECUTE ON procedure `cinemadb`.`mostra_posti_disponibili` TO 'cliente';
@@ -948,11 +1034,11 @@ USE `cinemadb`;
 INSERT INTO `cinemadb`.`Film` (`id`, `nome`, `durata`, `casa_cinematografica`, `cast`) VALUES (DEFAULT, 'Il padrino', '02:55:00', 'Paramount Pictures Studios, ALTRO', 'Marlon Brando, Al Pacino, James Caan, Richard S. Castellano, Robert Duvall, Diane Keaton, John Cazale, Talia Shire, Abe Vigoda, Al Lettieri, Gianni Russo, Lenny Montana');
 INSERT INTO `cinemadb`.`Film` (`id`, `nome`, `durata`, `casa_cinematografica`, `cast`) VALUES (DEFAULT, 'Il cavaliere oscuro', '02:32:00', 'Warner Bros. Pictures, ALTRO', 'Christian Bale, Cillian Murphy, Gary Oldman, Morgan Freeman, Heath Ledger, Michael Caine, Maggie Gyllenhaal, Aaron Eckhart');
 INSERT INTO `cinemadb`.`Film` (`id`, `nome`, `durata`, `casa_cinematografica`, `cast`) VALUES (DEFAULT, 'Frankenstein Junior', '01:46:00', 'Gruskoff/Venture Films, ALTRO', 'Gene Wilder, Peter Boyle, Marty Feldman, Teri Garr, Cloris Leachman');
-INSERT INTO `cinemadb`.`Film` (`id`, `nome`, `durata`, `casa_cinematografica`, `cast`) VALUES (DEFAULT, 'Pulp Fiction', '02:34:00', NULL, NULL);
-INSERT INTO `cinemadb`.`Film` (`id`, `nome`, `durata`, `casa_cinematografica`, `cast`) VALUES (DEFAULT, 'Il buono, il brutto, il cattivo', '02:41:00', NULL, NULL);
-INSERT INTO `cinemadb`.`Film` (`id`, `nome`, `durata`, `casa_cinematografica`, `cast`) VALUES (DEFAULT, 'Fight Club', '02:19:00', NULL, NULL);
-INSERT INTO `cinemadb`.`Film` (`id`, `nome`, `durata`, `casa_cinematografica`, `cast`) VALUES (DEFAULT, 'Matrix', '02:16:00', NULL, NULL);
-INSERT INTO `cinemadb`.`Film` (`id`, `nome`, `durata`, `casa_cinematografica`, `cast`) VALUES (DEFAULT, 'Amici miei', '02:20:00', NULL, NULL);
+INSERT INTO `cinemadb`.`Film` (`id`, `nome`, `durata`, `casa_cinematografica`, `cast`) VALUES (DEFAULT, 'Pulp Fiction', '02:34:00', 'Miramax, ALTRO', NULL);
+INSERT INTO `cinemadb`.`Film` (`id`, `nome`, `durata`, `casa_cinematografica`, `cast`) VALUES (DEFAULT, 'Il buono, il brutto, il cattivo', '02:41:00', 'PEA', NULL);
+INSERT INTO `cinemadb`.`Film` (`id`, `nome`, `durata`, `casa_cinematografica`, `cast`) VALUES (DEFAULT, 'Fight Club', '02:19:00', 'Linson Films', NULL);
+INSERT INTO `cinemadb`.`Film` (`id`, `nome`, `durata`, `casa_cinematografica`, `cast`) VALUES (DEFAULT, 'Matrix', '02:16:00', 'Warner Bros., ALTRO', NULL);
+INSERT INTO `cinemadb`.`Film` (`id`, `nome`, `durata`, `casa_cinematografica`, `cast`) VALUES (DEFAULT, 'Amici miei', '02:20:00', 'Rizzoli Film, ALTRO', NULL);
 
 COMMIT;
 
@@ -979,12 +1065,29 @@ STARTS TIMESTAMP(DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL 1 MONTH), '%Y-%m-1'))
 DO
 	DELETE FROM `Prenotazioni` WHERE `data` < CURDATE();
     
+DROP EVENT IF EXISTS `cinemadb`.`scadenza_prenotazioni`;
+CREATE EVENT `cinemadb`.`scadenza_prenotazioni`
+ON SCHEDULE EVERY 1 MINUTE
+STARTS TIMESTAMP(CURDATE())
+DO
+    UPDATE `Prenotazioni` SET `stato`='Scaduta'
+    WHERE `codice` IN (SELECT `codice`
+						FROM `Prenotazioni` JOIN `Proiezioni` ON `Prenotazioni`.`cinema` = `Proiezioni`.`cinema`
+																AND `Prenotazioni`.`sala` = `Proiezioni`.`sala`
+																AND `Prenotazioni`.`data` = `Proiezioni`.`data`
+																AND `Prenotazioni`.`ora` = `Proiezioni`.`ora`
+											JOIN `Film` ON `film` = `id`
+						WHERE `stato` = 'Confermata'
+							AND CURRENT_TIMESTAMP() > TIMESTAMP(`Prenotazioni`.`data`,
+								SEC_TO_TIME(TIME_TO_SEC(`Proiezioni`.`ora`) + TIME_TO_SEC(`durata`))));
+
 DROP EVENT IF EXISTS `cinemadb`.`pulizia_proiezioni`;
 CREATE EVENT `cinemadb`.`pulizia_proiezioni`
 ON SCHEDULE EVERY 1 DAY
 STARTS TIMESTAMP(CURDATE())
 DO
 	DELETE FROM `Proiezioni` WHERE `data` < CURDATE();
+
 -- end attached script 'Eventi'
 -- begin attached script 'Popolazione'
 -- -----------------------------------------------------
