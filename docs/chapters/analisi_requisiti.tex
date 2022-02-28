@@ -42,7 +42,7 @@
        & Il termine "ciascun" viene utilizzato per indicare in maniera implicita
       "ogni posto" complicando la comprensione del testo.
       \\ \hline
-      24, 25
+      23, 24, 25
        & amministratori della catena
        & amministratori
        & I termini "della catena" sono pleonastici.
@@ -156,8 +156,8 @@
       di prenotazione.
       \newline
       \newline
-      La catena cinematografica gestisce anche i propri dipendenti, divisi in
-      maschere e proiezionisti.
+      Gli amministratori gestiscono i dipendenti, divisi in maschere
+      e proiezionisti. \hfill \linebreak
       Gli amministratori definiscono i turni, di otto ore massimo.
       I turni sono gestiti su base settimanale.
       Un report permette di sapere agli amministratori se qualche proiezione
@@ -347,24 +347,36 @@
       SDL 6
       \\\hline
       R6                                                                      &
+      Gli amministratori gestiscono i cinema potendo:
+      \begin{itemize}
+            \item visualizzare le informazioni dei cinema
+            \item aggiungere un cinema
+            \item rimuovere un cinema
+            \item visualizzare le informazioni delle sale
+            \item aggiungere una sala
+            \item rimuovere una sala
+      \end{itemize}                           &
+      SDL 4
+      \\\hline
+      R7                                                                      &
       In ogni sala si possono proiettare più film nello stesso giorno.        &
       SDL 8
       \\\hline
-      R7                                                                      &
+      R8                                                                      &
       Ogni film può essere proiettato più volte nello stesso giorno ed
       in sale differenti.                                                     &
       SDL 8, 9
       \\\hline
-      R8                                                                      &
+      R9                                                                      &
       Ogni film ha una durata, un nome, un cast e una casa cinematografica.   &
       SDL 10
       \\\hline
-      R9                                                                      &
+      R10                                                                     &
       Il prezzo di una prenotazione dipende dal film proiettato, dalla
       sala, dalla data e dall'orario in cui avviene la proiezione.            &
       I11, SDL 10, 11, 12
       \\\hline
-      R10                                                                     &
+      R11                                                                     &
       Gli amministratori gestiscono la programmazione delle proiezioni
       potendo:
       \begin{itemize}
@@ -373,19 +385,19 @@
             \item eliminare proiezioni esistenti in programma
             \item assegnare ad una proiezione in programma un proiezionista
       \end{itemize}         &
-      I1
+      SDL4, I1
       \\\hline
-      R11                                                                     &
+      R12                                                                     &
       I clienti possono prenotare un posto per una proiezione completando
       la procedura di prenotazione.                                           &
       SDL 14, 15
       \\\hline
-      R12                                                                     &
+      R13                                                                     &
       I clienti hanno a disposizione 10 minuti per completare la procedura
       di prenotazione.                                                        &
       SDL 16
       \\\hline
-      R13                                                                     &
+      R14                                                                     &
       La procedura di prenotazione è formata dai seguenti passaggi:
       \begin{enumerate}
             \item il cliente seleziona un cinema
@@ -409,17 +421,17 @@
       \end{enumerate}                   &
       I3, SDL 16, 17, 18, 19
       \\\hline
-      R14                                                                     &
+      R15                                                                     &
       I clienti possono annullare la propria prenotazione completando la
       procedura di annullamento di una prenotazione.                          &
       SDL 20
       \\\hline
-      R15                                                                     &
+      R16                                                                     &
       I clienti possono annullare la propria prenotazione entro 30 minuti
       dall'inizio della proiezione.                                           &
       SDL 19, 20
       \\\hline
-      R16                                                                     &
+      R17                                                                     &
       La procedura di annullamento di una prenotazione è formata dai
       seguenti passaggi:
       \begin{enumerate}
@@ -432,34 +444,43 @@
       \end{enumerate}             &
       SDL 20, 21
       \\\hline
-      R17                                                                     &
-      I dipendenti sono divisi in maschere e proiezionisti.                   &
-      SDL 23, 24
-      \\\hline
       R18                                                                     &
+      Gli amministratori gestiscono i dipendenti potendo:
+      \begin{itemize}
+            \item visualizzare le informazioni dei dipendenti
+            \item aggiungere un dipendente
+            \item rimuovere un dipendente
+      \end{itemize}                       &
+      SDL 23
+      \\\hline
+      R19                                                                     &
+      I dipendenti sono divisi in maschere e proiezionisti.                   &
+      SDL 23
+      \\\hline
+      R20                                                                     &
       Ogni dipendente può effettuare un turno in un qualunque cinema.         &
       I10
       \\\hline
-      R19                                                                     &
+      R21                                                                     &
       Gli amministratori gestiscono la programmazione dei turni
       potendo:
       \begin{itemize}
             \item visualizzare i turni in programma
             \item creare nuovi turni in programma
             \item eliminare turni esistenti in programma
-      \end{itemize}                           &
+      \end{itemize}                            &
       SDL 24
       \\\hline
-      R20                                                                     &
+      R22                                                                     &
       La durata di una giornata lavorativa di un dipendente deve essere di
       massimo otto ore.                                                       &
       SDL 24
       \\\hline
-      R21                                                                     &
+      R23                                                                     &
       I turni sono gestiti su base settimanale.                               &
       SDL 24, 25
       \\\hline
-      R22                                                                     &
+      R24                                                                     &
       Gli amministratori possono generare un report che permette di sapere se:
       \begin{itemize}
             \item qualche proiezione è sprovvista di proiezionista
@@ -468,22 +489,22 @@
       \end{itemize}             &
       SDL 25, 26, 27
       \\\hline
-      R23                                                                     &
+      R25                                                                     &
       Le maschere validano le prenotazioni mediante il codice di prenotazione
       presente sui biglietti.                                                 &
       SDL 29, 30
       \\\hline
-      R24                                                                     &
+      R26                                                                     &
       Una prenotazione validata viene associata al fatto che quel determinato
       posto, per quella determinata proiezione, è stato occupato dal cliente. &
       SDL 30, 31
       \\\hline
-      R25                                                                     &
+      R27                                                                     &
       Non è possibile utilizzare più volte lo stesso codice di prenotazione
       per accedere al cinema.                                                 &
       SDL 32
       \\\hline
-      R26                                                                     &
+      R28                                                                     &
       Gli amministratori possono generare dei report mensili che mostrano
       per ogni cinema e per ogni sala:
       \begin{itemize}
@@ -692,6 +713,16 @@
 
       Ogni dipendente può effettuare un turno in un qualunque cinema.
 
+      Gli amministratori gestiscono i cinema potendo:
+      \begin{itemize}
+            \item visualizzare le informazioni dei cinema
+            \item aggiungere un cinema
+            \item rimuovere un cinema
+            \item visualizzare le informazioni delle sale
+            \item aggiungere una sala
+            \item rimuovere una sala
+      \end{itemize}
+
       Gli amministratori possono generare un report che permette di
       sapere se:
       \begin{itemize}
@@ -856,9 +887,40 @@
       \hline
       \rowcolor{tblhdrcolor}
       \textbf{Frasi relative agli amministratori} \\\hline
-      Gli amministratori gestiscono la programmazione delle proiezioni.
 
-      Gli amministratori gestiscono la programmazione dei turni.
+      Gli amministratori gestiscono i cinema potendo:
+      \begin{itemize}
+            \item visualizzare le informazioni dei cinema
+            \item aggiungere un cinema
+            \item rimuovere un cinema
+            \item visualizzare le informazioni delle sale
+            \item aggiungere una sala
+            \item rimuovere una sala
+      \end{itemize}
+
+      Gli amministratori gestiscono la programmazione delle proiezioni
+      potendo:
+      \begin{itemize}
+            \item visualizzare le proiezioni in programma
+            \item creare nuove proiezioni in programma
+            \item eliminare proiezioni esistenti in programma
+            \item assegnare ad una proiezione in programma un proiezionista
+      \end{itemize}
+
+      Gli amministratori gestiscono la programmazione dei turni
+      potendo:
+      \begin{itemize}
+            \item visualizzare i turni in programma
+            \item creare nuovi turni in programma
+            \item eliminare turni esistenti in programma
+      \end{itemize}
+
+      Gli amministratori gestiscono i dipendenti potendo:
+      \begin{itemize}
+            \item visualizzare le informazioni dei dipendenti
+            \item aggiungere un dipendente
+            \item rimuovere un dipendente
+      \end{itemize}
 
       Gli amministratori possono generare un report che permette di
       sapere se:
@@ -885,6 +947,13 @@
       I dipendenti sono divisi in maschere e proiezionisti.
 
       Ogni dipendente può effettuare un turno in un qualunque cinema.
+
+      Gli amministratori gestiscono i dipendenti potendo:
+      \begin{itemize}
+            \item visualizzare le informazioni dei dipendenti
+            \item aggiungere un dipendente
+            \item rimuovere un dipendente
+      \end{itemize}
       \\ \hline
 \end{tabularx}
 

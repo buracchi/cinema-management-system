@@ -140,68 +140,101 @@
      & \multicolumn{1}{|c|}{\textbf{Frequenza attesa}}
     \\ \hline
     Op. 1
-     & Mostra le proiezioni in programma.
-     &
-    \\ \hline
-    Op. 2
-     & Inserisci una nuova proiezione in programma.
-     & 4/mese
-    \\ \hline
-    Op. 3
-     & Elimina una proiezione in programma.
-     &
-    \\ \hline
-    Op. 4
-     & Assegna un proiezionista ad una proiezione in programma.
-     & 1400/settimana
-    \\ \hline
-    Op. 5
      & Mostra tutti i cinema e i loro relativi dati.
      & 5000/giorno
     \\ \hline
+    Op. 2
+     & Inserisci un nuovo cinema.
+     & 1/anno
+    \\ \hline
+    Op. 3
+     & Rimuovi un cinema.
+     & 1/lustro
+    \\ \hline
+    Op. 4
+     & Mostra le sale di un cinema e i loro relativi dati.
+     & 1/anno
+    \\ \hline
+    Op. 5
+     & Inserisci una nuova sala.
+     & 1/anno
+    \\ \hline
     Op. 6
+     & Rimuovi una sala.
+     & 1/lustro
+    \\ \hline
+    Op. 7
+     & Mostra tutte le proiezioni in programma ed i dati relativi al
+    proiezionista assegnato.
+     & 40/mese
+    \\ \hline
+    Op. 8
+     & Inserisci una nuova proiezione in programma.
+     & 4/mese
+    \\ \hline
+    Op. 9
+     & Elimina una proiezione in programma.
+     & 1/mese
+    \\ \hline
+    Op. 10
+     & Assegna un proiezionista ad una proiezione in programma.
+     & 1400/settimana
+    \\ \hline
+    Op. 11
      & Mostra tutte le proiezioni in programma in un cinema e le informazioni
     sui relativi film proiettati.
      & 5000/giorno
     \\ \hline
-    Op. 7
+    Op. 12
      & Mostra tutti i posti disponibili per una proiezione.
      & 5000/giorno
     \\ \hline
-    Op. 8
+    Op. 13
      & Effettua un pagamento ed inserisci una nuova prenotazione.
      & 5000/giorno
     \\ \hline
-    Op. 9
+    Op. 14
      & Effettua un rimborso ed annulla una prenotazione.
      & 500/giorno
     \\ \hline
-    Op. 10
+    Op. 15
      & Valida una prenotazione.
      & 4500/giorno
     \\ \hline
-    Op. 11
-     & Mostra i turni in programma.
-     &
+    Op. 16
+     & Mostra i dipendenti e i loro relativi dati.
+     & 50/settimana
     \\ \hline
-    Op. 12
+    Op. 17
+     & Inserisci un nuovo dipendente.
+     & 10/anno
+    \\ \hline
+    Op. 18
+     & Rimuovi un dipendente.
+     & 10/anno
+    \\ \hline
+    Op. 19
+     & Mostra i turni in programma.
+     & 50/settimana
+    \\ \hline
+    Op. 20
      & Inserisci un nuovo turno assegnato ad un dipendente.
      & 50/settimana
     \\ \hline
-    Op. 13
+    Op. 21
      & Elimina un turno assegnato ad un dipendente.
      & 50/settimana
     \\ \hline
-    Op. 14
+    Op. 22
      & Mostra tutte le proiezioni che non sono associate ad un proiezionista.
      & 1/giorno
     \\ \hline
-    Op. 15
+    Op. 23
      & Mostra tutti i periodi temporali in cui un cinema è sprovvisto di
     almeno due maschere durante la propria fascia oraria d'apertura.
      & 1/giorno
     \\ \hline
-    Op. 16
+    Op. 24
      & Mostra per ogni cinema e per ogni sala il numero delle prenotazioni
     confermate, il numero delle prenotazioni annullate ed il numero delle
     prenotazioni scadute.
@@ -217,10 +250,124 @@
 % scrittura di un dato sia doppio rispetto a quello in lettura.
 %
 
-\begin{tabularx}{\linewidth}{|l|X|X|X|}
+\begin{tabularx}{\linewidth}{|X|X|X|X|}
     \hline
     \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
     \textbf{Operazione 1}}                      \\\hline
+    \rowcolor{tblhdrcolor}
+    \multicolumn{1}{|c|}{\textbf{Concetto}}
+     & \multicolumn{1}{|c|}{\textbf{Costrutto}}
+     & \multicolumn{1}{|c|}{\textbf{Accessi}}
+     & \multicolumn{1}{|c|}{\textbf{Tipo}}
+    \\ \hline
+    Cinema
+     & E
+     & 1
+     & L
+    \\\hline
+    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
+    Costo: 5 000/giorno}                        \\\hline
+\end{tabularx}
+
+\begin{tabularx}{\linewidth}{|X|X|X|X|}
+    \hline
+    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
+    \textbf{Operazione 2}}                      \\\hline
+    \rowcolor{tblhdrcolor}
+    \multicolumn{1}{|c|}{\textbf{Concetto}}
+     & \multicolumn{1}{|c|}{\textbf{Costrutto}}
+     & \multicolumn{1}{|c|}{\textbf{Accessi}}
+     & \multicolumn{1}{|c|}{\textbf{Tipo}}
+    \\ \hline
+    
+     & 
+     & 
+     & 
+    \\\hline
+    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
+    Costo: /}                        \\\hline
+\end{tabularx}
+
+\begin{tabularx}{\linewidth}{|X|X|X|X|}
+    \hline
+    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
+    \textbf{Operazione 3}}                      \\\hline
+    \rowcolor{tblhdrcolor}
+    \multicolumn{1}{|c|}{\textbf{Concetto}}
+     & \multicolumn{1}{|c|}{\textbf{Costrutto}}
+     & \multicolumn{1}{|c|}{\textbf{Accessi}}
+     & \multicolumn{1}{|c|}{\textbf{Tipo}}
+    \\ \hline
+    
+     & 
+     & 
+     & 
+    \\\hline
+    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
+    Costo: /}                        \\\hline
+\end{tabularx}
+
+\begin{tabularx}{\linewidth}{|X|X|X|X|}
+    \hline
+    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
+    \textbf{Operazione 4}}                      \\\hline
+    \rowcolor{tblhdrcolor}
+    \multicolumn{1}{|c|}{\textbf{Concetto}}
+     & \multicolumn{1}{|c|}{\textbf{Costrutto}}
+     & \multicolumn{1}{|c|}{\textbf{Accessi}}
+     & \multicolumn{1}{|c|}{\textbf{Tipo}}
+    \\ \hline
+    
+     & 
+     & 
+     & 
+    \\\hline
+    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
+    Costo: /}                        \\\hline
+\end{tabularx}
+
+\begin{tabularx}{\linewidth}{|X|X|X|X|}
+    \hline
+    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
+    \textbf{Operazione 5}}                      \\\hline
+    \rowcolor{tblhdrcolor}
+    \multicolumn{1}{|c|}{\textbf{Concetto}}
+     & \multicolumn{1}{|c|}{\textbf{Costrutto}}
+     & \multicolumn{1}{|c|}{\textbf{Accessi}}
+     & \multicolumn{1}{|c|}{\textbf{Tipo}}
+    \\ \hline
+    
+     & 
+     & 
+     & 
+    \\\hline
+    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
+    Costo: /}                        \\\hline
+\end{tabularx}
+
+\begin{tabularx}{\linewidth}{|X|X|X|X|}
+    \hline
+    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
+    \textbf{Operazione 6}}                      \\\hline
+    \rowcolor{tblhdrcolor}
+    \multicolumn{1}{|c|}{\textbf{Concetto}}
+     & \multicolumn{1}{|c|}{\textbf{Costrutto}}
+     & \multicolumn{1}{|c|}{\textbf{Accessi}}
+     & \multicolumn{1}{|c|}{\textbf{Tipo}}
+    \\ \hline
+    
+     & 
+     & 
+     & 
+    \\\hline
+    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
+    Costo: /}                        \\\hline
+\end{tabularx}
+
+\begin{tabularx}{\linewidth}{|l|X|X|X|}
+    \hline
+    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
+    \textbf{Operazione 7}}                      \\\hline
     \rowcolor{tblhdrcolor}
     \multicolumn{1}{|c|}{\textbf{Concetto}}
      & \multicolumn{1}{|c|}{\textbf{Costrutto}}
@@ -239,7 +386,7 @@
 \begin{tabularx}{\linewidth}{|X|X|X|X|}
     \hline
     \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
-    \textbf{Operazione 2}}                      \\\hline
+    \textbf{Operazione 8}}                      \\\hline
     \rowcolor{tblhdrcolor}
     \multicolumn{1}{|c|}{\textbf{Concetto}}
      & \multicolumn{1}{|c|}{\textbf{Costrutto}}
@@ -268,7 +415,7 @@
 \begin{tabularx}{\linewidth}{|l|X|X|X|}
     \hline
     \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
-    \textbf{Operazione 3}}                      \\\hline
+    \textbf{Operazione 9}}                      \\\hline
     \rowcolor{tblhdrcolor}
     \multicolumn{1}{|c|}{\textbf{Concetto}}
      & \multicolumn{1}{|c|}{\textbf{Costrutto}}
@@ -287,7 +434,7 @@
 \begin{tabularx}{\linewidth}{|X|X|X|X|}
     \hline
     \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
-    \textbf{Operazione 4}}                      \\\hline
+    \textbf{Operazione 10}}                     \\\hline
     \rowcolor{tblhdrcolor}
     \multicolumn{1}{|c|}{\textbf{Concetto}}
      & \multicolumn{1}{|c|}{\textbf{Costrutto}}
@@ -336,26 +483,7 @@
 \begin{tabularx}{\linewidth}{|X|X|X|X|}
     \hline
     \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
-    \textbf{Operazione 5}}                      \\\hline
-    \rowcolor{tblhdrcolor}
-    \multicolumn{1}{|c|}{\textbf{Concetto}}
-     & \multicolumn{1}{|c|}{\textbf{Costrutto}}
-     & \multicolumn{1}{|c|}{\textbf{Accessi}}
-     & \multicolumn{1}{|c|}{\textbf{Tipo}}
-    \\ \hline
-    Cinema
-     & E
-     & 1
-     & L
-    \\\hline
-    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
-    Costo: 5 000/giorno}                        \\\hline
-\end{tabularx}
-
-\begin{tabularx}{\linewidth}{|X|X|X|X|}
-    \hline
-    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
-    \textbf{Operazione 6}}                      \\\hline
+    \textbf{Operazione 11}}                     \\\hline
     \rowcolor{tblhdrcolor}
     \multicolumn{1}{|c|}{\textbf{Concetto}}
      & \multicolumn{1}{|c|}{\textbf{Costrutto}}
@@ -384,7 +512,7 @@
 \begin{tabularx}{\linewidth}{|l|X|X|X|}
     \hline
     \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
-    \textbf{Operazione 7}}                      \\\hline
+    \textbf{Operazione 12}}                     \\\hline
     \rowcolor{tblhdrcolor}
     \multicolumn{1}{|c|}{\textbf{Concetto}}
      & \multicolumn{1}{|c|}{\textbf{Costrutto}}
@@ -418,7 +546,7 @@
 \begin{tabularx}{\linewidth}{|l|X|X|X|}
     \hline
     \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
-    \textbf{Operazione 8}}                      \\\hline
+    \textbf{Operazione 13}}                     \\\hline
     \rowcolor{tblhdrcolor}
     \multicolumn{1}{|c|}{\textbf{Concetto}}
      & \multicolumn{1}{|c|}{\textbf{Costrutto}}
@@ -437,7 +565,7 @@
 \begin{tabularx}{\linewidth}{|l|X|X|X|}
     \hline
     \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
-    \textbf{Operazione 9}}                      \\\hline
+    \textbf{Operazione 14}}                     \\\hline
     \rowcolor{tblhdrcolor}
     \multicolumn{1}{|c|}{\textbf{Concetto}}
      & \multicolumn{1}{|c|}{\textbf{Costrutto}}
@@ -461,7 +589,7 @@
 \begin{tabularx}{\linewidth}{|l|X|X|X|}
     \hline
     \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
-    \textbf{Operazione 10}}                     \\\hline
+    \textbf{Operazione 15}}                     \\\hline
     \rowcolor{tblhdrcolor}
     \multicolumn{1}{|c|}{\textbf{Concetto}}
      & \multicolumn{1}{|c|}{\textbf{Costrutto}}
@@ -482,10 +610,67 @@
     Costo: 18 000/giorno}                       \\\hline
 \end{tabularx}
 
+\begin{tabularx}{\linewidth}{|X|X|X|X|}
+    \hline
+    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
+    \textbf{Operazione 16}}                      \\\hline
+    \rowcolor{tblhdrcolor}
+    \multicolumn{1}{|c|}{\textbf{Concetto}}
+     & \multicolumn{1}{|c|}{\textbf{Costrutto}}
+     & \multicolumn{1}{|c|}{\textbf{Accessi}}
+     & \multicolumn{1}{|c|}{\textbf{Tipo}}
+    \\ \hline
+    
+     & 
+     & 
+     & 
+    \\\hline
+    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
+    Costo: /}                        \\\hline
+\end{tabularx}
+
+\begin{tabularx}{\linewidth}{|X|X|X|X|}
+    \hline
+    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
+    \textbf{Operazione 17}}                      \\\hline
+    \rowcolor{tblhdrcolor}
+    \multicolumn{1}{|c|}{\textbf{Concetto}}
+     & \multicolumn{1}{|c|}{\textbf{Costrutto}}
+     & \multicolumn{1}{|c|}{\textbf{Accessi}}
+     & \multicolumn{1}{|c|}{\textbf{Tipo}}
+    \\ \hline
+    
+     & 
+     & 
+     & 
+    \\\hline
+    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
+    Costo: /}                        \\\hline
+\end{tabularx}
+
+\begin{tabularx}{\linewidth}{|X|X|X|X|}
+    \hline
+    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
+    \textbf{Operazione 18}}                      \\\hline
+    \rowcolor{tblhdrcolor}
+    \multicolumn{1}{|c|}{\textbf{Concetto}}
+     & \multicolumn{1}{|c|}{\textbf{Costrutto}}
+     & \multicolumn{1}{|c|}{\textbf{Accessi}}
+     & \multicolumn{1}{|c|}{\textbf{Tipo}}
+    \\ \hline
+    
+     & 
+     & 
+     & 
+    \\\hline
+    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
+    Costo: /}                        \\\hline
+\end{tabularx}
+
 \begin{tabularx}{\linewidth}{|l|X|X|X|}
     \hline
     \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
-    \textbf{Operazione 11}}                     \\\hline
+    \textbf{Operazione 19}}                     \\\hline
     \rowcolor{tblhdrcolor}
     \multicolumn{1}{|c|}{\textbf{Concetto}}
      & \multicolumn{1}{|c|}{\textbf{Costrutto}}
@@ -504,7 +689,7 @@
 \begin{tabularx}{\linewidth}{|X|X|X|X|}
     \hline
     \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
-    \textbf{Operazione 12}}                     \\\hline
+    \textbf{Operazione 20}}                     \\\hline
     \rowcolor{tblhdrcolor}
     \multicolumn{1}{|c|}{\textbf{Concetto}}
      & \multicolumn{1}{|c|}{\textbf{Costrutto}}
@@ -528,7 +713,7 @@
 \begin{tabularx}{\linewidth}{|X|X|X|X|}
     \hline
     \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
-    \textbf{Operazione 13}}                     \\\hline
+    \textbf{Operazione 21}}                     \\\hline
     \rowcolor{tblhdrcolor}
     \multicolumn{1}{|c|}{\textbf{Concetto}}
      & \multicolumn{1}{|c|}{\textbf{Costrutto}}
@@ -552,7 +737,7 @@
 \begin{tabularx}{\linewidth}{|l|X|X|X|}
     \hline
     \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
-    \textbf{Operazione 14}}                     \\\hline
+    \textbf{Operazione 22}}                     \\\hline
     \rowcolor{tblhdrcolor}
     \multicolumn{1}{|c|}{\textbf{Concetto}}
      & \multicolumn{1}{|c|}{\textbf{Costrutto}}
@@ -576,7 +761,7 @@
 \begin{tabularx}{\linewidth}{|X|X|X|X|}
     \hline
     \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
-    \textbf{Operazione 15}}                     \\\hline
+    \textbf{Operazione 23}}                     \\\hline
     \rowcolor{tblhdrcolor}
     \multicolumn{1}{|c|}{\textbf{Concetto}}
      & \multicolumn{1}{|c|}{\textbf{Costrutto}}
@@ -635,7 +820,7 @@
 \begin{tabularx}{\linewidth}{|l|X|X|X|}
     \hline
     \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
-    \textbf{Operazione 16}}                     \\\hline
+    \textbf{Operazione 24}}                     \\\hline
     \rowcolor{tblhdrcolor}
     \multicolumn{1}{|c|}{\textbf{Concetto}}
      & \multicolumn{1}{|c|}{\textbf{Costrutto}}
@@ -709,10 +894,10 @@ accorpamento comporterebbe una riduzione dei costi.
 Pertanto le entità figlie della generalizzazione verranno accorpate nel
 genitore aggiungendo un attributo Stato all'entità Prenotazione.
 In questo modo
-l'Operazione 9 consisterà in un'unica scrittura riguardante
+l'Operazione 14 consisterà in un'unica scrittura riguardante
 l'entità Prenotazione ed il suo costo si ridurrà da 2000 a 1000 accessi
 al giorno,
-l'Operazione 10 consisterà in un'unica scrittura riguardante
+l'Operazione 15 consisterà in un'unica scrittura riguardante
 l'entità Prenotazione ed il suo costo si ridurrà da 18000 a 9000 accessi
 al giorno,
 per finire l'attributo Stato comporta uno spreco di memoria pari a
@@ -720,16 +905,16 @@ per finire l'attributo Stato comporta uno spreco di memoria pari a
 137 kB circa che risulta accettabile se comparato al guadagno in termini di
 prestazioni.
 
-L'attributo multivalore Cast viene coinvolto unicamente durante l'Operazione 6,
+L'attributo multivalore Cast viene coinvolto unicamente durante l'Operazione 11,
 pertanto anziché introdurre un'entità Cast ed una relazione CastFilm
 l'attributo multivalore verrà ridotto ad un semplice attributo Cast il cui
 dominio sarà quello di una stringa.
-In questo modo il costo dell'operazione 6 anziché incrementare a 25000
+In questo modo il costo dell'operazione 11 anziché incrementare a 25000
 rimarrà di 15000 accessi al giorno.
 
-Per ridurre il costo dell'operazione più costosa, ovvero l'Operazione 7 è
+Per ridurre il costo dell'operazione più costosa, ovvero l'Operazione 12 è
 possibile introdurre una relazione PostoDisponibile tra le entità Proiezione e
-Posto con cardinalità (0,N)|(0,N) riducendo il costo dell'Operazione 7 da
+Posto con cardinalità (0,N)|(0,N) riducendo il costo dell'Operazione 12 da
 20000 a 10000 accessi al giorno.
 La ridondanza comporta uno spreco di memoria pari a
 % 1 400 * 200 * (4 + 1 + 4 + 4) byte
