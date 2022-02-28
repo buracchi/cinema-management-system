@@ -720,6 +720,102 @@ END$$
 DELIMITER ;
 
 -- -----------------------------------------------------
+-- procedure inserisci_cinema
+-- -----------------------------------------------------
+
+DELIMITER $$
+USE `cinemadb`$$
+CREATE PROCEDURE `inserisci_cinema` (
+	IN _indirizzo VARCHAR(128),
+    IN _apertura TIME,
+    IN _chiusura TIME)
+BEGIN
+	INSERT INTO `Cinema` (`indirizzo`, `apertura`, `chiusura`)
+    VALUES (_indirizzo, _apertura, _chiusura);
+END$$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- procedure elimina_cinema
+-- -----------------------------------------------------
+
+DELIMITER $$
+USE `cinemadb`$$
+CREATE PROCEDURE `elimina_cinema` (IN _id INT)
+BEGIN
+	DELETE FROM `Cinema`
+    WHERE `id` = _id;
+END$$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- procedure mostra_sale
+-- -----------------------------------------------------
+
+DELIMITER $$
+USE `cinemadb`$$
+CREATE PROCEDURE `mostra_sale` (IN _cinema INT)
+BEGIN
+	SELECT `cinema`, `sala`,
+		COUNT(DISTINCT fila) AS numero_file,
+        COUNT(DISTINCT numero) AS posti_per_fila
+    FROM `Posti`
+    WHERE `cinema` = _cinema
+    GROUP BY `cinema`, `sala`;
+END$$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- procedure inserisci_sala
+-- -----------------------------------------------------
+
+DELIMITER $$
+USE `cinemadb`$$
+CREATE PROCEDURE `inserisci_sala` (
+	IN _cinema INT,
+    IN _numero INT,
+    IN _file INT,
+    IN _posti_per_fila INT)
+BEGIN
+	INSERT INTO `Sale` (`cinema`, `numero`)
+    VALUES (_cinema, _numero);
+	INSERT INTO `Posti` (`cinema`, `sala`, `fila`, `numero`)
+	WITH RECURSIVE numeri AS (SELECT 1 AS numero
+								UNION ALL
+								SELECT numero + 1
+								FROM numeri
+								WHERE numero + 1 <= _posti_per_fila),
+					lettere AS (SELECT 'A' AS lettera
+								UNION ALL
+								SELECT CHAR(ASCII(lettera) + 1 USING ASCII)
+								FROM lettere
+								WHERE ASCII(lettera) + 1 <= ASCII('A') + _file)
+	SELECT _cinema, _numero, lettera, numeri.numero
+	FROM lettere CROSS JOIN numeri;
+END$$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- procedure elimina_sala
+-- -----------------------------------------------------
+
+DELIMITER $$
+USE `cinemadb`$$
+CREATE PROCEDURE `elimina_sala` (
+	IN _cinema INT,
+	IN _numero INT)
+BEGIN
+	DELETE FROM `Sale`
+    WHERE `cinema` = _cinema AND `numero` = _numero;
+END$$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
 -- View `cinemadb`.`Palinsesti`
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `cinemadb`.`Palinsesti`;
@@ -914,61 +1010,8 @@ BEGIN
 END$$
 
 USE `cinemadb`$$
-CREATE TRIGGER `cinemadb`.`Proiezioni_BEFORE_UPDATE_Check_Turno`
-BEFORE UPDATE ON `Proiezioni`
-FOR EACH ROW
-BEGIN
-	DECLARE esiste_turno BOOL;
-	SET esiste_turno = (SELECT COUNT(*)
-					FROM `Proiezioni` JOIN `Film` ON `film` = `id` 
-									JOIN `Turni` ON `Proiezioni`.`cinema` = `Turni`.`cinema`
-												AND GIORNO_DELLA_SETTIMANA(`Proiezioni`.`data`) = `Turni`.`giorno`
-					WHERE `Proiezioni`.`cinema` = NEW.`cinema`
-						AND `Proiezioni`.`sala` = NEW.`sala`
-						AND `Proiezioni`.`data` = NEW.`data`
-						AND `Proiezioni`.`ora` = NEW.`ora`
-                        AND `Turni`.`dipendente` = NEW.`proiezionista`
-						AND `inizio` <= `ora`
-						AND SEC_TO_TIME(TIME_TO_SEC(`ora`) + TIME_TO_SEC(`Film`.`durata`))
-						<= SEC_TO_TIME(TIME_TO_SEC(`inizio`) + TIME_TO_SEC(`Turni`.`durata`)));
-	IF (NEW.`proiezionista` IS NOT NULL AND esiste_turno = FALSE) THEN
-		SET @err_msg = MESSAGGIO_ERRORE(45005);
-		SIGNAL SQLSTATE '45005'
-		SET MESSAGE_TEXT = @err_msg;
-	END IF;
-END$$
-
-USE `cinemadb`$$
-CREATE TRIGGER `cinemadb`.`Proiezioni_BEFORE_UPDATE_Check_Proiezionista_Occupato`
-BEFORE UPDATE ON `Proiezioni`
-FOR EACH ROW
-BEGIN
-	DECLARE _fine TIME;
-	DECLARE impegnato BOOL;
-    SET _fine = (SELECT SEC_TO_TIME(TIME_TO_SEC(`ora`) + TIME_TO_SEC(`durata`))
-					FROM `Proiezioni` JOIN `Film` ON `id` = `film`
-                    WHERE `Proiezioni`.`cinema` = NEW.`cinema`
-						AND `Proiezioni`.`sala` = NEW.`sala`
-						AND `Proiezioni`.`data` = NEW.`data`
-						AND `Proiezioni`.`ora` = NEW.`ora`);
-    SET impegnato = (SELECT COUNT(*)
-						FROM `Proiezioni` JOIN `Film` ON `id` = `film`
-						WHERE `cinema` = NEW.`cinema`
-						AND `data` = NEW.`data`
-						AND `proiezionista` = NEW.`proiezionista`
-						AND `ora` <= _fine
-						AND SEC_TO_TIME(TIME_TO_SEC(`ora`) + TIME_TO_SEC(`durata`))
-							>= NEW.`ora`);
-	IF (NEW.`proiezionista` IS NOT NULL AND impegnato = TRUE) THEN
-		SET @err_msg = MESSAGGIO_ERRORE(45006);
-		SIGNAL SQLSTATE '45006'
-		SET MESSAGE_TEXT = @err_msg;
-	END IF;
-END$$
-
-USE `cinemadb`$$
-CREATE TRIGGER `cinemadb`.`Proiezioni_BEFORE_UPDATE_Check_Cinema_Aperto`
-BEFORE UPDATE ON `Proiezioni`
+CREATE TRIGGER `cinemadb`.`Proiezioni_BEFORE_INSERT_Check_Cinema_Aperto`
+BEFORE INSERT ON `Proiezioni`
 FOR EACH ROW
 BEGIN
 	DECLARE ora_apertura_cinema TIME;
@@ -1017,8 +1060,70 @@ BEGIN
 END$$
 
 USE `cinemadb`$$
-CREATE TRIGGER `cinemadb`.`Proiezioni_BEFORE_INSERT_Check_Cinema_Aperto`
+CREATE TRIGGER `cinemadb`.`Proiezioni_BEFORE_INSERT_Check_Proiezionista`
 BEFORE INSERT ON `Proiezioni`
+FOR EACH ROW
+BEGIN
+	DECLARE _ruolo VARCHAR(15);
+    SET _ruolo = (SELECT `ruolo` FROM `Dipendenti` WHERE `matricola` = NEW.`proiezionista`);
+    IF (NEW.`proiezionista` IS NOT NULL AND _ruolo != 'Proiezionista') THEN
+		SET @err_msg = MESSAGGIO_ERRORE(45004);
+		SIGNAL SQLSTATE '45004'
+		SET MESSAGE_TEXT = @err_msg;
+    END IF;
+END$$
+
+USE `cinemadb`$$
+CREATE TRIGGER `cinemadb`.`Proiezioni_BEFORE_INSERT_Check_Proiezionista_Occupato`
+BEFORE INSERT ON `Proiezioni`
+FOR EACH ROW
+BEGIN
+	DECLARE _fine TIME;
+	DECLARE impegnato BOOL;
+    SET _fine = (SELECT SEC_TO_TIME(TIME_TO_SEC(NEW.`ora`) + TIME_TO_SEC(`durata`))
+					FROM `Film`
+                    WHERE `id` = NEW.`film`);
+    SET impegnato = (SELECT COUNT(*)
+						FROM `Proiezioni` JOIN `Film` ON `id` = `film`
+						WHERE `cinema` = NEW.`cinema`
+						AND `data` = NEW.`data`
+						AND `proiezionista` = NEW.`proiezionista`
+						AND `ora` <= _fine
+						AND SEC_TO_TIME(TIME_TO_SEC(`ora`) + TIME_TO_SEC(`durata`))
+							>= NEW.`ora`);
+	IF (NEW.`proiezionista` IS NOT NULL AND impegnato = TRUE) THEN
+		SET @err_msg = MESSAGGIO_ERRORE(45006);
+		SIGNAL SQLSTATE '45006'
+		SET MESSAGE_TEXT = @err_msg;
+	END IF;
+END$$
+
+USE `cinemadb`$$
+CREATE TRIGGER `cinemadb`.`Proiezioni_BEFORE_INSERT_Check_Turno`
+BEFORE INSERT ON `Proiezioni`
+FOR EACH ROW
+BEGIN
+    DECLARE _durata TIME;
+	DECLARE esiste_turno BOOL;
+    SET _durata = (SELECT `durata` FROM `Film` WHERE NEW.`film` = `id`);
+	SET esiste_turno = (SELECT COUNT(*)
+						FROM `Turni`
+						WHERE `Turni`.`cinema` = NEW.`cinema`
+							AND `Turni`.`giorno` = GIORNO_DELLA_SETTIMANA(NEW.`data`)
+							AND `Turni`.`dipendente` = NEW.`proiezionista`
+							AND `inizio` <= NEW.`ora`
+							AND SEC_TO_TIME(TIME_TO_SEC(NEW.`ora`) + TIME_TO_SEC(_durata))
+							<= SEC_TO_TIME(TIME_TO_SEC(`inizio`) + TIME_TO_SEC(`durata`)));
+	IF (NEW.`proiezionista` IS NOT NULL AND esiste_turno = FALSE) THEN
+		SET @err_msg = MESSAGGIO_ERRORE(45005);
+		SIGNAL SQLSTATE '45005'
+		SET MESSAGE_TEXT = @err_msg;
+	END IF;
+END$$
+
+USE `cinemadb`$$
+CREATE TRIGGER `cinemadb`.`Proiezioni_BEFORE_UPDATE_Check_Cinema_Aperto`
+BEFORE UPDATE ON `Proiezioni`
 FOR EACH ROW
 BEGIN
 	DECLARE ora_apertura_cinema TIME;
@@ -1036,6 +1141,41 @@ BEGIN
 END$$
 
 USE `cinemadb`$$
+CREATE TRIGGER `cinemadb`.`Proiezioni_BEFORE_UPDATE_Check_Sala_Libera`
+BEFORE UPDATE ON `Proiezioni`
+FOR EACH ROW
+BEGIN
+	DECLARE inizio_proiezione TIMESTAMP;
+	DECLARE fine_proiezione TIMESTAMP;
+	DECLARE fine_proiezione_prec TIMESTAMP;
+	DECLARE inizio_proiezione_succ TIMESTAMP;
+    SET inizio_proiezione = TIMESTAMP(NEW.`data`, NEW.`ora`);
+    SET fine_proiezione = TIMESTAMP(NEW.`data`, NEW.`ora` + (SELECT `durata` FROM `Film` WHERE `id` = NEW.`film`));
+	SET inizio_proiezione_succ = (SELECT TIMESTAMP(`data`, `ora`)
+										FROM `Proiezioni`
+										WHERE `cinema` = NEW.`cinema` AND `sala` = NEW.`sala`
+											AND (`data` > NEW.`data` OR (`data` = NEW.`data` AND `ora` > NEW.`ora`))
+											AND (`cinema`, `sala`, `data`, `ora`) NOT IN
+												(SELECT OLD.`cinema`, OLD.`sala`, OLD.`data`, OLD.`ora`)
+										ORDER BY `data` ASC, `ora` ASC
+										LIMIT 1);
+	SET fine_proiezione_prec = (SELECT TIMESTAMP(`data`, `ora` + `durata`)
+										FROM `Proiezioni` JOIN `Film` on `id` = `film`
+										WHERE `cinema` = NEW.`cinema` AND `sala` = NEW.`sala`
+											AND (`data` < NEW.`data` OR (`data` = NEW.`data` AND `ora` <= NEW.`ora`))
+											AND (`cinema`, `sala`, `data`, `ora`) NOT IN
+												(SELECT OLD.`cinema`, OLD.`sala`, OLD.`data`, OLD.`ora`)
+										ORDER BY `data` DESC, `ora` DESC
+										LIMIT 1);
+    IF ((fine_proiezione_prec IS NOT NULL AND fine_proiezione_prec > inizio_proiezione)
+		OR (inizio_proiezione_succ IS NOT NULL AND inizio_proiezione_succ < fine_proiezione)) THEN
+		SET @err_msg = MESSAGGIO_ERRORE(45002);
+		SIGNAL SQLSTATE '45002'
+		SET MESSAGE_TEXT = @err_msg;
+    END IF;
+END$$
+
+USE `cinemadb`$$
 CREATE TRIGGER `cinemadb`.`Proiezioni_BEFORE_UPDATE_Check_Proiezionista`
 BEFORE UPDATE ON `Proiezioni`
 FOR EACH ROW
@@ -1047,6 +1187,54 @@ BEGIN
 		SIGNAL SQLSTATE '45004'
 		SET MESSAGE_TEXT = @err_msg;
     END IF;
+END$$
+
+USE `cinemadb`$$
+CREATE TRIGGER `cinemadb`.`Proiezioni_BEFORE_UPDATE_Check_Proiezionista_Occupato`
+BEFORE UPDATE ON `Proiezioni`
+FOR EACH ROW
+BEGIN
+	DECLARE _fine TIME;
+	DECLARE impegnato BOOL;
+    SET _fine = (SELECT SEC_TO_TIME(TIME_TO_SEC(NEW.`ora`) + TIME_TO_SEC(`durata`))
+					FROM `Film`
+                    WHERE `id` = NEW.`film`);
+    SET impegnato = (SELECT COUNT(*)
+						FROM `Proiezioni` JOIN `Film` ON `id` = `film`
+						WHERE `cinema` = NEW.`cinema`
+						AND `data` = NEW.`data`
+						AND `proiezionista` = NEW.`proiezionista`
+						AND `ora` <= _fine
+						AND SEC_TO_TIME(TIME_TO_SEC(`ora`) + TIME_TO_SEC(`durata`))
+							>= NEW.`ora`);
+	IF (NEW.`proiezionista` IS NOT NULL AND impegnato = TRUE) THEN
+		SET @err_msg = MESSAGGIO_ERRORE(45006);
+		SIGNAL SQLSTATE '45006'
+		SET MESSAGE_TEXT = @err_msg;
+	END IF;
+END$$
+
+USE `cinemadb`$$
+CREATE TRIGGER `cinemadb`.`Proiezioni_BEFORE_UPDATE_Check_Turno`
+BEFORE UPDATE ON `Proiezioni`
+FOR EACH ROW
+BEGIN
+    DECLARE _durata TIME;
+	DECLARE esiste_turno BOOL;
+    SET _durata = (SELECT `durata` FROM `Film` WHERE NEW.`film` = `id`);
+	SET esiste_turno = (SELECT COUNT(*)
+						FROM `Turni`
+						WHERE `Turni`.`cinema` = NEW.`cinema`
+							AND `Turni`.`giorno` = GIORNO_DELLA_SETTIMANA(NEW.`data`)
+							AND `Turni`.`dipendente` = NEW.`proiezionista`
+							AND `inizio` <= NEW.`ora`
+							AND SEC_TO_TIME(TIME_TO_SEC(NEW.`ora`) + TIME_TO_SEC(_durata))
+							<= SEC_TO_TIME(TIME_TO_SEC(`inizio`) + TIME_TO_SEC(`durata`)));
+	IF (NEW.`proiezionista` IS NOT NULL AND esiste_turno = FALSE) THEN
+		SET @err_msg = MESSAGGIO_ERRORE(45005);
+		SIGNAL SQLSTATE '45005'
+		SET MESSAGE_TEXT = @err_msg;
+	END IF;
 END$$
 
 USE `cinemadb`$$
@@ -1106,6 +1294,12 @@ GRANT EXECUTE ON procedure `cinemadb`.`mostra_cinema_senza_maschere` TO 'amminis
 GRANT EXECUTE ON procedure `cinemadb`.`mostra_dipendenti` TO 'amministratore';
 GRANT EXECUTE ON procedure `cinemadb`.`inserisci_dipendente` TO 'amministratore';
 GRANT EXECUTE ON procedure `cinemadb`.`elimina_dipendente` TO 'amministratore';
+GRANT EXECUTE ON procedure `cinemadb`.`mostra_cinema` TO 'amministratore';
+GRANT EXECUTE ON procedure `cinemadb`.`inserisci_cinema` TO 'amministratore';
+GRANT EXECUTE ON procedure `cinemadb`.`elimina_cinema` TO 'amministratore';
+GRANT EXECUTE ON procedure `cinemadb`.`mostra_sale` TO 'amministratore';
+GRANT EXECUTE ON procedure `cinemadb`.`inserisci_sala` TO 'amministratore';
+GRANT EXECUTE ON procedure `cinemadb`.`elimina_sala` TO 'amministratore';
 GRANT EXECUTE ON procedure `cinemadb`.`mostra_cinema` TO 'cliente';
 GRANT EXECUTE ON procedure `cinemadb`.`mostra_palinsesto` TO 'cliente';
 GRANT EXECUTE ON procedure `cinemadb`.`mostra_posti_disponibili` TO 'cliente';
