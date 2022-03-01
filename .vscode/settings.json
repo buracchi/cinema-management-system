@@ -17,6 +17,7 @@
         "proiettabile",
         "SQLSTATE",
         "superchiave",
+        "TINYINT",
         "VARCHAR"
     ]
 }

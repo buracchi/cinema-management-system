@@ -9,15 +9,44 @@
 
 \subsubsection*{Ruoli}
 
-\begin{tabularx}{\linewidth}{|X|X|}
+\begin{tabularx}{\linewidth}{|X|p{12cm}|}
     \hline
     \rowcolor{tblhdrcolor}
     \multicolumn{1}{|c|}{\textbf{Nome}}
                    & \multicolumn{1}{|c|}{\textbf{Privilegi}}
     \\\hline
-    Cliente        &                                          \\\hline
-    Maschera       &                                          \\\hline
-    Amministratore &                                          \\\hline
+    Cliente        &
+    mostra\_cinema(EXECUTE) \linebreak
+    mostra\_palinsesto(EXECUTE) \linebreak
+    mostra\_posti\_disponibili(EXECUTE) \linebreak
+    effettua\_prenotazione(EXECUTE) \linebreak
+    annulla\_prenotazione(EXECUTE)
+    \\\hline
+    Maschera       &
+    valida\_prenotazione(EXECUTE)
+    \\\hline
+    Amministratore &
+    mostra\_cinema(EXECUTE) \linebreak
+    inserisci\_cinema(EXECUTE) \linebreak
+    elimina\_cinema(EXECUTE) \linebreak
+    mostra\_sale(EXECUTE) \linebreak
+    inserisci\_sala(EXECUTE) \linebreak
+    elimina\_sala(EXECUTE) \linebreak
+    mostra\_proiezioni(EXECUTE) \linebreak
+    inserisci\_proiezione(EXECUTE) \linebreak
+    elimina\_proiezionisti\_disponibili(EXECUTE) \linebreak
+    assegna\_proiezionista(EXECUTE) \linebreak
+    elimina\_proiezione(EXECUTE) \linebreak
+    mostra\_dipendenti(EXECUTE) \linebreak
+    inserisci\_dipendente(EXECUTE) \linebreak
+    elimina\_dipendente(EXECUTE) \linebreak
+    mostra\_turni(EXECUTE) \linebreak
+    inserisci\_turno(EXECUTE) \linebreak
+    elimina\_turno(EXECUTE) \linebreak
+    mostra\_proiezioni\_senza\_proiezionista(EXECUTE) \linebreak
+    mostra\_cinema\_senza\_maschere(EXECUTE) \linebreak
+    mostra\_turni(EXECUTE)
+    \\\hline
 \end{tabularx}
 
 \subsubsection*{Utenti}
@@ -119,7 +148,22 @@
 \begin{tabularx}{\linewidth}{|X|X|X|}
     \hline
     \multicolumn{3}{|>{\columncolor{tblhdrcolor}}l|}{
-    \textbf{Dipendente}}                           \\\hline
+    \textbf{Ruoli}}                                \\\hline
+    \rowcolor{tblhdrcolor}
+    \multicolumn{1}{|c|}{\textbf{Colonna}}
+     & \multicolumn{1}{|c|}{\textbf{Tipo di dato}}
+     & \multicolumn{1}{|c|}{\textbf{Attributi}}
+    \\\hline
+    nome
+     & VARCHAR(15)
+     & PK, NN
+    \\ \hline
+\end{tabularx}
+
+\begin{tabularx}{\linewidth}{|X|X|X|}
+    \hline
+    \multicolumn{3}{|>{\columncolor{tblhdrcolor}}l|}{
+    \textbf{Dipendenti}}                           \\\hline
     \rowcolor{tblhdrcolor}
     \multicolumn{1}{|c|}{\textbf{Colonna}}
      & \multicolumn{1}{|c|}{\textbf{Tipo di dato}}
@@ -138,7 +182,7 @@
      & NN
     \\ \hline
     ruolo
-     & ENUM('maschera', 'proiezionista')
+     & VARCHAR(15)
      & NN
     \\ \hline
 \end{tabularx}
@@ -146,7 +190,26 @@
 \begin{tabularx}{\linewidth}{|X|X|X|}
     \hline
     \multicolumn{3}{|>{\columncolor{tblhdrcolor}}l|}{
-    \textbf{Turni}}                                          \\\hline
+    \textbf{Giorni}}                               \\\hline
+    \rowcolor{tblhdrcolor}
+    \multicolumn{1}{|c|}{\textbf{Colonna}}
+     & \multicolumn{1}{|c|}{\textbf{Tipo di dato}}
+     & \multicolumn{1}{|c|}{\textbf{Attributi}}
+    \\\hline
+    nome
+     & VARCHAR(15)
+     & PK, NN
+    \\\hline
+    numero
+     & TINYINT(1)
+     & NN, UQ, UN
+    \\ \hline
+\end{tabularx}
+
+\begin{tabularx}{\linewidth}{|X|X|X|}
+    \hline
+    \multicolumn{3}{|>{\columncolor{tblhdrcolor}}l|}{
+    \textbf{Turni}}                                \\\hline
     \rowcolor{tblhdrcolor}
     \multicolumn{1}{|c|}{\textbf{Colonna}}
      & \multicolumn{1}{|c|}{\textbf{Tipo di dato}}
@@ -157,7 +220,7 @@
      & PK, NN
     \\ \hline
     giorno
-     & ENUM('lun', 'mar', 'mer', 'gio', 'ven', 'sab', 'dom')
+     & VARCHAR(15)
      & PK, NN
     \\ \hline
     inizio
@@ -196,7 +259,7 @@
      & NN
     \\ \hline
     casa\_cinematografica
-     & VARCHAR(45)
+     & VARCHAR(256)
      &
     \\ \hline
     cast
@@ -247,6 +310,21 @@
 \begin{tabularx}{\linewidth}{|X|X|X|}
     \hline
     \multicolumn{3}{|>{\columncolor{tblhdrcolor}}l|}{
+    \textbf{StatiPrenotazioni}}                    \\\hline
+    \rowcolor{tblhdrcolor}
+    \multicolumn{1}{|c|}{\textbf{Colonna}}
+     & \multicolumn{1}{|c|}{\textbf{Tipo di dato}}
+     & \multicolumn{1}{|c|}{\textbf{Attributi}}
+    \\\hline
+    nome
+     & VARCHAR(15)
+     & PK, NN
+    \\ \hline
+\end{tabularx}
+
+\begin{tabularx}{\linewidth}{|X|X|X|}
+    \hline
+    \multicolumn{3}{|>{\columncolor{tblhdrcolor}}l|}{
     \textbf{Prenotazioni}}                                    \\\hline
     \rowcolor{tblhdrcolor}
     \multicolumn{1}{|c|}{\textbf{Colonna}}
@@ -260,10 +338,6 @@
     transazione
      & VARCHAR(256)
      & NN, UQ
-    \\ \hline
-    stato
-     & ENUM('confermata', 'annullata', 'validata', 'scaduta')
-     & NN
     \\ \hline
     cinema
      & INT
@@ -289,7 +363,13 @@
      & TIME
      & NN
     \\ \hline
+    stato
+     & VARCHAR(15)
+     & NN
+    \\ \hline
 \end{tabularx}
+
+\pagebreak
 
 \subsection*{Indici}
 %
@@ -311,6 +391,8 @@
      & \textlangle{}nome\textrangle{}
     \\ \hline
 \end{tabularx}
+
+\pagebreak
 
 \subsection*{Trigger}
 %
@@ -493,7 +575,7 @@ END
 Gli eventi sono istanziati unicamente in fase di configurazione del sistema
 
 \begin{verbatim}
-CREATE EVENT `cinemadb`.`pulizia_prenotazioni`
+CREATE EVENT `pulizia_prenotazioni`
 ON SCHEDULE EVERY 1 MONTH
 STARTS TIMESTAMP(DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL 1 MONTH), '%Y-%m-1'))
 DO
@@ -501,7 +583,28 @@ DO
 \end{verbatim}
 
 \begin{verbatim}
-CREATE EVENT `cinemadb`.`pulizia_proiezioni`
+CREATE EVENT `scadenza_prenotazioni`
+ON SCHEDULE EVERY 1 MINUTE
+STARTS TIMESTAMP(CURDATE())
+DO
+    UPDATE `Prenotazioni` SET `stato`='Scaduta'
+    WHERE `codice` IN
+        (SELECT `codice`
+        FROM `Prenotazioni` JOIN `Proiezioni`
+                ON `Prenotazioni`.`cinema` = `Proiezioni`.`cinema`
+                AND `Prenotazioni`.`sala` = `Proiezioni`.`sala`
+                AND `Prenotazioni`.`data` = `Proiezioni`.`data`
+                AND `Prenotazioni`.`ora` = `Proiezioni`.`ora`
+            JOIN `Film` ON `film` = `id`
+        WHERE `stato` = 'Confermata'
+            AND CURRENT_TIMESTAMP() > TIMESTAMP(`Prenotazioni`.`data`,
+                SEC_TO_TIME(TIME_TO_SEC(`Proiezioni`.`ora`)
+                + TIME_TO_SEC(`durata`))));
+\end{verbatim}
+
+
+\begin{verbatim}
+CREATE EVENT `pulizia_proiezioni`
 ON SCHEDULE EVERY 1 DAY
 STARTS TIMESTAMP(CURDATE())
 DO
@@ -513,6 +616,17 @@ DO
 % Mostrare e commentare il codice SQL necessario a creare tutte le viste
 % necessarie per l’implementazione dell’applicazione.
 %
+
+\begin{verbatim}
+CREATE VIEW `Palinsesti` AS
+    SELECT `data`, `ora`, `cinema`, `sala`, `prezzo`,
+        `id` AS movie_id, `nome`, `durata`,
+        `casa_cinematografica`, `cast`
+    FROM `Proiezioni` JOIN `Film` ON `film` = `id`
+    WHERE `data` > CURDATE()
+        OR (`data` = CURDATE() AND `ora` > TIME(NOW()))
+    ORDER BY `data`, `ora`, `cinema`, `sala`;
+\end{verbatim}
 
 \pagebreak
 \subsection*{Stored Procedures e transazioni}

@@ -279,13 +279,13 @@
      & \multicolumn{1}{|c|}{\textbf{Accessi}}
      & \multicolumn{1}{|c|}{\textbf{Tipo}}
     \\ \hline
-    
-     & 
-     & 
-     & 
+    Cinema
+     & E
+     & 1
+     & S
     \\\hline
     \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
-    Costo: /}                        \\\hline
+    Costo: 2/anno}                              \\\hline
 \end{tabularx}
 
 \begin{tabularx}{\linewidth}{|X|X|X|X|}
@@ -298,13 +298,13 @@
      & \multicolumn{1}{|c|}{\textbf{Accessi}}
      & \multicolumn{1}{|c|}{\textbf{Tipo}}
     \\ \hline
-    
-     & 
-     & 
-     & 
+    Cinema
+     & E
+     & 1
+     & S
     \\\hline
     \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
-    Costo: /}                        \\\hline
+    Costo: 2/lustro}                            \\\hline
 \end{tabularx}
 
 \begin{tabularx}{\linewidth}{|X|X|X|X|}
@@ -317,13 +317,23 @@
      & \multicolumn{1}{|c|}{\textbf{Accessi}}
      & \multicolumn{1}{|c|}{\textbf{Tipo}}
     \\ \hline
-    
-     & 
-     & 
-     & 
+    CinemaSala
+     & R
+     & 1
+     & L
+    \\\hline
+    SalaPosto
+     & R
+     & 1
+     & L
+    \\\hline
+    Posto
+     & E
+     & 1
+     & L
     \\\hline
     \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
-    Costo: /}                        \\\hline
+    Costo: 3/anno}                              \\\hline
 \end{tabularx}
 
 \begin{tabularx}{\linewidth}{|X|X|X|X|}
@@ -336,13 +346,18 @@
      & \multicolumn{1}{|c|}{\textbf{Accessi}}
      & \multicolumn{1}{|c|}{\textbf{Tipo}}
     \\ \hline
-    
-     & 
-     & 
-     & 
+    Sala
+     & E
+     & 1
+     & S
+    \\\hline
+    Posto
+     & E
+     & 1
+     & S
     \\\hline
     \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
-    Costo: /}                        \\\hline
+    Costo: 4/anno}                              \\\hline
 \end{tabularx}
 
 \begin{tabularx}{\linewidth}{|X|X|X|X|}
@@ -355,16 +370,16 @@
      & \multicolumn{1}{|c|}{\textbf{Accessi}}
      & \multicolumn{1}{|c|}{\textbf{Tipo}}
     \\ \hline
-    
-     & 
-     & 
-     & 
+    Sala
+     & E
+     & 1
+     & S
     \\\hline
     \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
-    Costo: /}                        \\\hline
+    Costo: 2/lustro}                            \\\hline
 \end{tabularx}
 
-\begin{tabularx}{\linewidth}{|l|X|X|X|}
+\begin{tabularx}{\linewidth}{|X|X|X|X|}
     \hline
     \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
     \textbf{Operazione 7}}                      \\\hline
@@ -379,8 +394,18 @@
      & 1
      & L
     \\\hline
+    FilmProiezione
+     & R
+     & 1
+     & L
+    \\\hline
+    Film
+     & E
+     & 1
+     & L
+    \\\hline
     \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
-    Costo: }                                    \\\hline
+    Costo: 120/mese}                            \\\hline
 \end{tabularx}
 
 \begin{tabularx}{\linewidth}{|X|X|X|X|}
@@ -393,26 +418,16 @@
      & \multicolumn{1}{|c|}{\textbf{Accessi}}
      & \multicolumn{1}{|c|}{\textbf{Tipo}}
     \\ \hline
-    Film
-     & E
-     & 1
-     & L
-    \\\hline
     Proiezione
      & E
      & 1
      & S
     \\\hline
-    Sala
-     & E
-     & 1
-     & L
-    \\\hline
     \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
-    Costo: 16/mese}                             \\\hline
+    Costo: 8/mese}                              \\\hline
 \end{tabularx}
 
-\begin{tabularx}{\linewidth}{|l|X|X|X|}
+\begin{tabularx}{\linewidth}{|X|X|X|X|}
     \hline
     \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
     \textbf{Operazione 9}}                      \\\hline
@@ -428,10 +443,10 @@
      & S
     \\\hline
     \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
-    Costo: }                                    \\\hline
+    Costo: 2/mese}                              \\\hline
 \end{tabularx}
 
-\begin{tabularx}{\linewidth}{|X|X|X|X|}
+\begin{tabularx}{\linewidth}{|l|X|X|X|}
     \hline
     \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
     \textbf{Operazione 10}}                     \\\hline
@@ -441,43 +456,13 @@
      & \multicolumn{1}{|c|}{\textbf{Accessi}}
      & \multicolumn{1}{|c|}{\textbf{Tipo}}
     \\ \hline
-    Proiezione
-     & E
-     & 1
-     & L
-    \\\hline
-    ProiezioneSala
+    ProiezioneProiezionista
      & R
-     & 1
-     & L
-    \\\hline
-    CinemaTurno
-     & R
-     & 1
-     & L
-    \\\hline
-    Turno
-     & E
-     & 1
-     & L
-    \\\hline
-    DipendenteTurno
-     & R
-     & 1
-     & L
-    \\\hline
-    Proiezionista
-     & E
-     & 1
-     & L
-    \\\hline
-    Proiezione
-     & E
      & 1
      & S
     \\\hline
     \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
-    Costo: 11 200/settimana}                    \\\hline
+    Costo: 2 800/settimana}                     \\\hline
 \end{tabularx}
 
 \begin{tabularx}{\linewidth}{|X|X|X|X|}
@@ -524,7 +509,7 @@
      & 1
      & L
     \\\hline
-    PrenotazioneConfermata
+    Prenotazione confermata
      & E
      & 1
      & L
@@ -553,7 +538,7 @@
      & \multicolumn{1}{|c|}{\textbf{Accessi}}
      & \multicolumn{1}{|c|}{\textbf{Tipo}}
     \\ \hline
-    Prenotazione Confermata
+    Prenotazione confermata
      & E
      & 1
      & S
@@ -572,12 +557,12 @@
      & \multicolumn{1}{|c|}{\textbf{Accessi}}
      & \multicolumn{1}{|c|}{\textbf{Tipo}}
     \\ \hline
-    Prenotazione Confermata
+    Prenotazione confermata
      & E
      & 1
      & S
     \\ \hline
-    Prenotazione Annullata
+    Prenotazione annullata
      & E
      & 1
      & S
@@ -596,12 +581,12 @@
      & \multicolumn{1}{|c|}{\textbf{Accessi}}
      & \multicolumn{1}{|c|}{\textbf{Tipo}}
     \\ \hline
-    Prenotazione Confermata
+    Prenotazione confermata
      & E
      & 1
      & S
     \\ \hline
-    Prenotazione Validata
+    Prenotazione validata
      & E
      & 1
      & S
@@ -613,58 +598,58 @@
 \begin{tabularx}{\linewidth}{|X|X|X|X|}
     \hline
     \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
-    \textbf{Operazione 16}}                      \\\hline
+    \textbf{Operazione 16}}                     \\\hline
     \rowcolor{tblhdrcolor}
     \multicolumn{1}{|c|}{\textbf{Concetto}}
      & \multicolumn{1}{|c|}{\textbf{Costrutto}}
      & \multicolumn{1}{|c|}{\textbf{Accessi}}
      & \multicolumn{1}{|c|}{\textbf{Tipo}}
     \\ \hline
-    
-     & 
-     & 
-     & 
-    \\\hline
+    Dipendente
+     & E
+     & 1
+     & L
+    \\ \hline
     \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
-    Costo: /}                        \\\hline
+    Costo: 50/settimana}                        \\\hline
 \end{tabularx}
 
 \begin{tabularx}{\linewidth}{|X|X|X|X|}
     \hline
     \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
-    \textbf{Operazione 17}}                      \\\hline
+    \textbf{Operazione 17}}                     \\\hline
     \rowcolor{tblhdrcolor}
     \multicolumn{1}{|c|}{\textbf{Concetto}}
      & \multicolumn{1}{|c|}{\textbf{Costrutto}}
      & \multicolumn{1}{|c|}{\textbf{Accessi}}
      & \multicolumn{1}{|c|}{\textbf{Tipo}}
     \\ \hline
-    
-     & 
-     & 
-     & 
-    \\\hline
+    Dipendente
+     & E
+     & 1
+     & S
+    \\ \hline
     \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
-    Costo: /}                        \\\hline
+    Costo: 20/anno}                             \\\hline
 \end{tabularx}
 
 \begin{tabularx}{\linewidth}{|X|X|X|X|}
     \hline
     \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
-    \textbf{Operazione 18}}                      \\\hline
+    \textbf{Operazione 18}}                     \\\hline
     \rowcolor{tblhdrcolor}
     \multicolumn{1}{|c|}{\textbf{Concetto}}
      & \multicolumn{1}{|c|}{\textbf{Costrutto}}
      & \multicolumn{1}{|c|}{\textbf{Accessi}}
      & \multicolumn{1}{|c|}{\textbf{Tipo}}
     \\ \hline
-    
-     & 
-     & 
-     & 
-    \\\hline
+    Dipendente
+     & E
+     & 1
+     & S
+    \\ \hline
     \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
-    Costo: /}                        \\\hline
+    Costo: 20/anno}                             \\\hline
 \end{tabularx}
 
 \begin{tabularx}{\linewidth}{|l|X|X|X|}
@@ -683,7 +668,7 @@
      & L
     \\\hline
     \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
-    Costo: }                                    \\\hline
+    Costo: 50/settimana}                        \\\hline
 \end{tabularx}
 
 \begin{tabularx}{\linewidth}{|X|X|X|X|}
@@ -696,18 +681,13 @@
      & \multicolumn{1}{|c|}{\textbf{Accessi}}
      & \multicolumn{1}{|c|}{\textbf{Tipo}}
     \\ \hline
-    Dipendente
-     & E
-     & 1
-     & L
-    \\\hline
     Turno
      & E
      & 1
      & S
     \\\hline
     \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
-    Costo: 150/settimana}                       \\\hline
+    Costo: 100/settimana}                       \\\hline
 \end{tabularx}
 
 \begin{tabularx}{\linewidth}{|X|X|X|X|}
@@ -720,8 +700,8 @@
      & \multicolumn{1}{|c|}{\textbf{Accessi}}
      & \multicolumn{1}{|c|}{\textbf{Tipo}}
     \\ \hline
-    Dipendente
-     & E
+    DipendenteTurno
+     & R
      & 1
      & L
     \\\hline
@@ -770,51 +750,31 @@
     \\ \hline
     Cinema
      & E
-     & 1
-     & L
-    \\\hline
-    Proiezione
-     & E
-     & 1
-     & L
-    \\\hline
-    ProiezioneSala
-     & R
-     & 1
-     & L
-    \\\hline
-    FilmProiezione
-     & R
-     & 1
-     & L
-    \\\hline
-    Film
-     & E
-     & 1
+     & 3
      & L
     \\\hline
     CinemaTurno
      & R
-     & 1
+     & 2
      & L
     \\\hline
     Turno
      & E
-     & 1
+     & 2
      & L
     \\\hline
     DipendenteTurno
      & R
-     & 1
+     & 2
      & L
     \\\hline
     Maschera
      & E
-     & 1
+     & 2
      & L
     \\\hline
     \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
-    Costo: 9/giorno}                            \\\hline
+    Costo: 11/giorno}                           \\\hline
 \end{tabularx}
 
 \begin{tabularx}{\linewidth}{|l|X|X|X|}
@@ -842,8 +802,18 @@
      & 1
      & L
     \\\hline
+    Sala
+     & E
+     & 1
+     & L
+    \\\hline
+    PostoPrenotazione
+     & E
+     & 1
+     & L
+    \\\hline
     \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
-    Costo: 3/giorno}                            \\\hline
+    Costo: 5/giorno}                            \\\hline
 \end{tabularx}
 
 \pagebreak
@@ -1021,19 +991,12 @@ Posti(cinema, sala, fila, numero)
 Notiamo che nessuna tabella presenta dipendenze funzionali non banali
 $X \rightarrow Y$ tali che $X$ non sia una superchiave.
 
-Notiamo che lo schema non contiene tabelle contenenti gruppi ripetuti di
-attributi e ciascun attributo è definito su un dominio con valori atomici,
-pertanto lo schema è in 1NF.
-In particolare ricordiamo che l'attributo Film(cast) è definito
-sul dominio delle stringhe e non vi è nessun vincolo su di esso, pertanto
-i valori che può assumere risultano atomici (la responsabilità di garantire
-la loro validità o efficacia è lasciata all'amministratore).
+Notiamo inoltre che lo schema non contiene tabelle contenenti gruppi ripetuti
+di attributi e ciascun attributo è definito su un dominio con valori atomici,
+ricordiamo difatti che l'attributo Film(cast) è definito sul dominio delle
+stringhe e non vi è nessun vincolo su di esso, pertanto i valori che può
+assumere risultano atomici (la responsabilità di garantire la loro validità o
+efficacia è lasciata all'amministratore).
 
-Notiamo che lo schema non presenta dipendenze parziali, pertanto lo schema è in
-2NF.
-
-Notiamo che non sono definite dipendenze transitive, pertanto lo schema è in
-3NF.
-
-Notiamo che non sono presenti dipendenze funzionali non bali, pertanto lo
-schema è in BCNF.
+La naturale assenza di dipendenze parziali e transitive che consegue dalla
+prima osservazione ci permette quindi di concludere che lo schema è in BCNF.
