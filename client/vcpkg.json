@@ -1,0 +1,17 @@
+{
+  "name": "client",
+  "version": "0.1",
+  "dependencies": [
+    "libmariadb",
+    {
+      "name": "tre",
+      "platform": "windows"
+    }
+  ],
+  "features": {
+    "tests": {
+      "description": "Build Tests",
+      "dependencies": [ "gtest" ]
+    }
+  }
+}
