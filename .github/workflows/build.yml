@@ -27,16 +27,16 @@ jobs:
         key: ${{ runner.os }}-vcpkg-${{ hashFiles('**/vcpkg.json') }}
 
     - name: Configure CMake
-      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} #-DENABLE_TEST_COVERAGE=ON
+      run: cmake -B ${{github.workspace}}/client/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} #-DENABLE_TEST_COVERAGE=ON
 
     - name: Build
-      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+      run: cmake --build ${{github.workspace}}/client/build --config ${{env.BUILD_TYPE}}
 
 #    - name: Setup tmate session
 #      uses: mxschmitt/action-tmate@v3
 
     - name: Test
-      working-directory: ${{github.workspace}}/build
+      working-directory: ${{github.workspace}}/client/build
       run: ctest -C ${{env.BUILD_TYPE}} --output-on-failure
 
 #    - name: Codecov
