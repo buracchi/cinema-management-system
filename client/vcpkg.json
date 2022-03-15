@@ -2,6 +2,7 @@
   "name": "client",
   "version": "0.1",
   "dependencies": [
+    "libcommon",
     "libmariadb",
     {
       "name": "tre",
