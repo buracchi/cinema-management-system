@@ -18,7 +18,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3.0.0
-      submodules: 'true'
+        submodules: 'true'
 
     - uses: actions/cache@v2.1.7
       id: vcpkg-cache
