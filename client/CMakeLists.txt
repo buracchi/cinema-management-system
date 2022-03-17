@@ -28,15 +28,13 @@ endif ()
 
 if (BUILD_TESTS)
     enable_testing()
-    find_package(GTest REQUIRED)
+    find_package(GTest CONFIG REQUIRED)
     # Notice that GTest::GTest and GTest::Main are deprecated since CMake 3.20 
     # and should be replaced with GTest::gtest and GTest::gtest_main but this
     # will make CMake 3.16.3 fails.
 endif ()
 
 # Code Coverage Configuration
-
-option(ENABLE_TEST_COVERAGE "Enable coverage reporting" OFF)
 
 add_library(coverage_config INTERFACE)
 
