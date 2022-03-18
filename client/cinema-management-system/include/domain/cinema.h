@@ -2,9 +2,12 @@
 
 #include <stdint.h>
 
-typedef struct cinema* cinema_t {
-	int32_t id;
-	char* address;
-	char opening_time[9];	// "hh:mm:ss" format
-	char closing_time[9];	// "hh:mm:ss" format
-};
+typedef struct cinema* cinema_t;
+
+extern int32_t get_id(cinema_t cinema);
+
+extern char* get_address(cinema_t cinema);
+
+extern char* get_opening_time(cinema_t cinema);
+
+extern char* get_closing_time(cinema_t cinema);

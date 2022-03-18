@@ -4,7 +4,8 @@
 
 #include "cinema.h"
 
-typedef struct hall* hall_t {
-	uint8_t number;
-	cinema_t cinema;
-};
+typedef struct hall* hall_t;
+
+extern uint8_t get_number(hall_t hall);
+
+extern cinema_t get_cinema(hall_t hall);
