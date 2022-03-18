@@ -4,6 +4,6 @@ extern "C" {
     // include header
 }
 
-TEST(client, method_do_something_expected) {
+TEST(booking-validator, do_something_expected) {
     ASSERT_EQ(true, true);
 }

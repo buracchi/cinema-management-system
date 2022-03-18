@@ -1,6 +1,6 @@
-#include "domain/hall.h"
+#include "domain/screening.h"
 
-typedef struct screening {
+struct screening {
 	hall_t hall;
 	char date[11];	//'YYYY-MM-DD' format
 	char time[9];	//'hh:mm:ss' format
@@ -10,30 +10,30 @@ typedef struct screening {
 	employee_t projectionist;
 };
 
-extern hall_t get_hall(screening_t screening) {
+extern hall_t screening_get_hall(screening_t screening) {
 	return screening->hall;
 }
 
-extern char get_date(screening_t screening) {
+extern char screening_get_date(screening_t screening) {
 	return screening->date;
 }
 
-extern char get_time(screening_t screening) {
+extern char screening_get_time(screening_t screening) {
 	return screening->time;
 }
 
-extern uint64_t get_price_decimal(screening_t screening) {
+extern uint64_t screening_get_price_decimal(screening_t screening) {
 	return screening->price_decimal;
 }
 
-extern uint8_t get_price_cents(screening_t screening) {
+extern uint8_t screening_get_price_cents(screening_t screening) {
 	return screening->price_cents;
 }
 
-extern film_t get_film(screening_t screening) {
+extern film_t screening_get_film(screening_t screening) {
 	return screening->film;
 }
 
-extern employee_t get_projectionist(screening_t screening) {
+extern employee_t screening_get_projectionist(screening_t screening) {
 	return screening->projectionist;
 }

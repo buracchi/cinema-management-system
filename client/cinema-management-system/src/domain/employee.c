@@ -7,18 +7,18 @@ struct employee {
 	enum role role;
 };
 
-extern int32_t get_id(employee_t employee) {
+extern int32_t employee_get_id(employee_t employee) {
 	return employee->id;
 }
 
-extern char* get_name(employee_t employee) {
+extern char* employee_get_name(employee_t employee) {
 	return employee->name;
 }
 
-extern char* get_surname(employee_t employee) {
+extern char* employee_get_surname(employee_t employee) {
 	return employee->surname;
 }
 
-extern enum role get_role(employee_t employee) {
+extern enum role employee_get_role(employee_t employee) {
 	return employee->role;
 }

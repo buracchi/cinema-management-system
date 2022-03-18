@@ -7,12 +7,12 @@
 #define _api(name, namespace) extern errno_t namespace##_##name( \
 									cinema_management_system_t system, \
 									const struct namespace##_##name##_request* request, \
-									struct namespace##_##name##_response response)
+									struct namespace##_##name##_response* response)
 #define API(name) _api(name, cinema_management_system)
 
 typedef struct cinema_management_system* cinema_management_system_t;
 
-extern cinema_management_system_t cinema_management_system_init();
+extern cinema_management_system_t cinema_management_system_init(void);
 
 struct login_request { void* credentials; };
 struct login_response { void* param; };
