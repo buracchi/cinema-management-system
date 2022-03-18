@@ -46,3 +46,4 @@ endif ()
 # Subprojects
 
 add_subdirectory ("client")
+add_subdirectory ("cinema-management-system")
