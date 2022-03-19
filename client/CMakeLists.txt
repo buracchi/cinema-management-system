@@ -45,7 +45,7 @@ endif ()
 
 # Subprojects
 
-add_subdirectory ("cinema-management-system")
+add_subdirectory ("cinema-management-service")
 #add_subdirectory ("admin-dashboard")
 #add_subdirectory ("cinema-booker")
 add_subdirectory ("booking-validatior")

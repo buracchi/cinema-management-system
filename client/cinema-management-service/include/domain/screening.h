@@ -10,9 +10,9 @@ typedef struct screening* screening_t;
 
 extern hall_t screening_get_hall(screening_t screening);
 
-extern char screening_get_date(screening_t screening);
+extern char* screening_get_date(screening_t screening);
 
-extern char screening_get_time(screening_t screening);
+extern char* screening_get_time(screening_t screening);
 
 extern uint64_t screening_get_price_decimal(screening_t screening);
 

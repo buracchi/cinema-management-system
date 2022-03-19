@@ -2,7 +2,7 @@
 
 add_executable(booking-validator "src/main.c")
 target_link_libraries(booking-validator PRIVATE buracchi::libcommon::utilities)
-target_link_libraries(booking-validator PRIVATE cinema-management-system)
+target_link_libraries(booking-validator PRIVATE cinema-management-service)
 target_link_libraries(booking-validator INTERFACE $<BUILD_INTERFACE:coverage_config>)
 
 if (${WIN32})

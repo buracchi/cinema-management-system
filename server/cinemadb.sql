@@ -307,6 +307,7 @@ BEGIN
 	# -----------------------------------------------------------------------
     INSERT INTO `Prenotazioni` (`transazione`, `stato`, `cinema`, `sala`, `data`, `ora`, `fila`, `numero`)
 		VALUES (tid, 'Confermata', _cinema_id, _sala_id, _data, _ora, _fila, _numero);
+	SELECT `codice` FROM `Prenotazioni` WHERE `transazione` = tid;
 END$$
 
 DELIMITER ;
