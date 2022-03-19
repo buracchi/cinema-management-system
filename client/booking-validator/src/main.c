@@ -8,7 +8,16 @@
 #include "cinema-management-service.h"
 #include "booking.h"
 
+void setup_env(void) {
+	putenv("HOST=localhost");
+	getenv("DB=cinemadb");
+	getenv("PORT=3306");
+	getenv("PROJECTIONIST_USERNAME=proiezionista");
+	getenv("PROJECTIONIST_PASSWORD=pippo");
+}
+
 int main(int argc, char** argv) {
+	setup_env();
 	if (argc != 2) {
 		fprintf(stderr, "stub of usage message");
 		goto fail;

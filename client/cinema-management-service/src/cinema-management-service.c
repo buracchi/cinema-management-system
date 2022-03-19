@@ -73,14 +73,7 @@ static errno_t connect(cinema_management_service_t service, const char* username
 	char* host = getenv("HOST");
 	char* db = getenv("DB");
 	unsigned int port = atoi(getenv("PORT"));
-	mysql_real_connect(
-		service->db_connection,
-		getenv("HOST"),
-		username,
-		password,
-		getenv("DB"),
-		atoi(getenv("PORT")),
-		NULL,
+	mysql_real_connect(service->db_connection, host, username, password, db, port, NULL,
 		CLIENT_MULTI_STATEMENTS | CLIENT_MULTI_RESULTS | CLIENT_COMPRESS | CLIENT_INTERACTIVE | CLIENT_REMEMBER_OPTIONS);
 	mysql_options(service->db_connection, MYSQL_OPT_CONNECT_TIMEOUT, &timeout);
 	mysql_options(service->db_connection, MYSQL_OPT_RECONNECT, &reconnect);
