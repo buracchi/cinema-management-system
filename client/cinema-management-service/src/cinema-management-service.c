@@ -9,41 +9,48 @@
 #include "utilities/db.h"
 #include "utilities/utilities.h"
 
+#define FIELD_TYPE enum enum_field_types
+
 struct cinema_management_service {
 	MYSQL* db_connection;
 	cmn_map_t mysql_statement_map;
 };
 
+/*
+* FIELD_TYPE_NULL or MYSQL_TYPE_NULL are used as list terminator,
+* do not use it for data values * always NULL, just pick the right data type.
+*/
 static struct {
 	const char* name;
 	const char* template;
+	FIELD_TYPE* param_types;
 } statements[] = {
-	{ "cancel_booking",								"call annulla_prenotazione(?)" },
-	{ "assign_projectionist",						"call assegna_proiezionista(?, ?, ?, ?, ?)" },
-	{ "book_seat",									"call effettua_prenotazione(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)" },
-	{ "delete_cinema",								"call elimina_cinema(?)" },
-	{ "delete_employee",							"call elimina_dipendente(?)" },
-	{ "delete_screening",							"call elimina_proiezione(?, ?, ?, ?)" },
-	{ "delete_hall",								"call elimina_sala(?, ?)" },
-	{ "delete_shift",								"call elimina_turno(?, ?, ?)" },
-	{ "add_cinema",									"call inserisci_cinema(?, ?, ?)" },
-	{ "add_employee",								"call inserisci_dipendente(?, ?, ?)" },
-	{ "add_screening",								"call inserisci_proiezione(?, ?, ?, ?, ?, ?)" },
-	{ "add_hall",									"call inserisci_sala(?, ?, ?, ?)" },
-	{ "add_shift",									"call inserisci_turno(?, ?, ?, ?, ?)" },
-	{ "get_all_cinema",								"call mostra_cinema()" },
-	{ "report_cinema_without_ushers",				"call mostra_cinema_senza_maschere()" },
-	{ "get_employees",								"call mostra_dipendenti()" },
-	{ "get_cinema_screenings",						"call mostra_palinsesto(?)" },
-	{ "get_avalilable_seats",						"call mostra_posti_disponibili(?, ?, ?, ?)" },
-	{ "get_screenings",								"call mostra_proiezioni()" },
-	{ "report_screenings_without_projectionist",	"call mostra_proiezioni_senza_proiezionista()" },
-	{ "get_available_projectionists",				"call mostra_proiezionisti_disponibili(?, ?, ?, ?)" },
-	{ "get_halls",									"call mostra_sale(?)" },
-	{ "report_reservations_status",					"call mostra_stato_prenotazioni()" },
-	{ "get_shifts",									"call mostra_turni()" },
-	{ "validate_booking",							"call valida_prenotazione(?)" },
-	{ NULL, NULL }
+	{ "cancel_booking",								"call annulla_prenotazione(?)",									(FIELD_TYPE[2]) { FIELD_TYPE_LONG, FIELD_TYPE_NULL }},
+	{ "assign_projectionist",						"call assegna_proiezionista(?, ?, ?, ?, ?)",					(FIELD_TYPE[6]) { FIELD_TYPE_LONG, FIELD_TYPE_LONG, FIELD_TYPE_LONG, FIELD_TYPE_DATE, FIELD_TYPE_TIME, FIELD_TYPE_NULL } },
+	{ "book_seat",									"call effettua_prenotazione(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",		(FIELD_TYPE[11]){ FIELD_TYPE_LONG, FIELD_TYPE_LONG, FIELD_TYPE_DATE, FIELD_TYPE_TIME, FIELD_TYPE_STRING, FIELD_TYPE_LONG, FIELD_TYPE_STRING, FIELD_TYPE_NEWDECIMAL, FIELD_TYPE_DATE, FIELD_TYPE_NEWDECIMAL, FIELD_TYPE_NULL } },
+	{ "delete_cinema",								"call elimina_cinema(?)",										(FIELD_TYPE[2]) { FIELD_TYPE_LONG, FIELD_TYPE_NULL } },
+	{ "delete_employee",							"call elimina_dipendente(?)",									(FIELD_TYPE[2]) { FIELD_TYPE_LONG, FIELD_TYPE_NULL } },
+	{ "delete_screening",							"call elimina_proiezione(?, ?, ?, ?)",							(FIELD_TYPE[5]) { FIELD_TYPE_LONG, FIELD_TYPE_LONG, FIELD_TYPE_DATE, FIELD_TYPE_TIME, FIELD_TYPE_NULL } },
+	{ "delete_hall",								"call elimina_sala(?, ?)",										(FIELD_TYPE[3]) { FIELD_TYPE_LONG, FIELD_TYPE_LONG, FIELD_TYPE_NULL } },
+	{ "delete_shift",								"call elimina_turno(?, ?, ?)",									(FIELD_TYPE[4]) { FIELD_TYPE_LONG, FIELD_TYPE_STRING, FIELD_TYPE_TIME, FIELD_TYPE_NULL } },
+	{ "add_cinema",									"call inserisci_cinema(?, ?, ?)",								(FIELD_TYPE[4]) { FIELD_TYPE_STRING, FIELD_TYPE_TIME, FIELD_TYPE_TIME, FIELD_TYPE_NULL } },
+	{ "add_employee",								"call inserisci_dipendente(?, ?, ?)",							(FIELD_TYPE[4]) { FIELD_TYPE_STRING, FIELD_TYPE_STRING, FIELD_TYPE_STRING, FIELD_TYPE_NULL } },
+	{ "add_screening",								"call inserisci_proiezione(?, ?, ?, ?, ?, ?)",					(FIELD_TYPE[7]) { FIELD_TYPE_LONG, FIELD_TYPE_LONG, FIELD_TYPE_DATE, FIELD_TYPE_TIME, FIELD_TYPE_NEWDECIMAL, FIELD_TYPE_LONG, FIELD_TYPE_NULL } },
+	{ "add_hall",									"call inserisci_sala(?, ?, ?, ?)",								(FIELD_TYPE[5]) { FIELD_TYPE_LONG, FIELD_TYPE_LONG, FIELD_TYPE_LONG, FIELD_TYPE_LONG, FIELD_TYPE_NULL } },
+	{ "add_shift",									"call inserisci_turno(?, ?, ?, ?, ?)",							(FIELD_TYPE[6]) { FIELD_TYPE_LONG, FIELD_TYPE_STRING, FIELD_TYPE_TIME, FIELD_TYPE_TIME, FIELD_TYPE_LONG, FIELD_TYPE_NULL } },
+	{ "get_all_cinema",								"call mostra_cinema()",											(FIELD_TYPE[1]) { FIELD_TYPE_NULL } },
+	{ "report_cinema_without_ushers",				"call mostra_cinema_senza_maschere()",							(FIELD_TYPE[1]) { FIELD_TYPE_NULL } },
+	{ "get_employees",								"call mostra_dipendenti()",										(FIELD_TYPE[1]) { FIELD_TYPE_NULL } },
+	{ "get_cinema_screenings",						"call mostra_palinsesto(?)",									(FIELD_TYPE[2]) { FIELD_TYPE_LONG, FIELD_TYPE_NULL } },
+	{ "get_avalilable_seats",						"call mostra_posti_disponibili(?, ?, ?, ?)",					(FIELD_TYPE[5]) { FIELD_TYPE_LONG, FIELD_TYPE_LONG, FIELD_TYPE_DATE, FIELD_TYPE_TIME, FIELD_TYPE_NULL } },
+	{ "get_screenings",								"call mostra_proiezioni()",										(FIELD_TYPE[1]) { FIELD_TYPE_NULL } },
+	{ "report_screenings_without_projectionist",	"call mostra_proiezioni_senza_proiezionista()",					(FIELD_TYPE[1]) { FIELD_TYPE_NULL } },
+	{ "get_available_projectionists",				"call mostra_proiezionisti_disponibili(?, ?, ?, ?)",			(FIELD_TYPE[5]) { FIELD_TYPE_LONG, FIELD_TYPE_LONG, FIELD_TYPE_DATE, FIELD_TYPE_TIME, FIELD_TYPE_NULL } },
+	{ "get_halls",									"call mostra_sale(?)",											(FIELD_TYPE[2]) { FIELD_TYPE_LONG, FIELD_TYPE_NULL } },
+	{ "report_reservations_status",					"call mostra_stato_prenotazioni()",								(FIELD_TYPE[1]) { FIELD_TYPE_NULL } },
+	{ "get_shifts",									"call mostra_turni()",											(FIELD_TYPE[1]) { FIELD_TYPE_NULL } },
+	{ "validate_booking",							"call valida_prenotazione(?)",									(FIELD_TYPE[2]) { FIELD_TYPE_LONG, FIELD_TYPE_NULL } },
+	{ NULL,											NULL,															NULL }
 };
 
 static bool initialize_prepared_stmts(void);
