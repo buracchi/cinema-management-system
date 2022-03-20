@@ -11,10 +11,10 @@
 
 void setup_env(void) {
 	putenv("HOST=localhost");
-	getenv("DB=cinemadb");
-	getenv("PORT=3306");
-	getenv("PROJECTIONIST_USERNAME=proiezionista");
-	getenv("PROJECTIONIST_PASSWORD=pippo");
+	putenv("DB=cinemadb");
+	putenv("PORT=3306");
+	putenv("USHER_USERNAME=maschera");
+	putenv("USHER_PASSWORD=pippo");
 }
 
 int main(int argc, char** argv) {
@@ -25,8 +25,8 @@ int main(int argc, char** argv) {
 	setup_env();
 	cinema_management_service_t cms;
 	struct validate_booking_request request;
-	char* username = getenv("PROJECTIONIST_USERNAME");
-	char* password = getenv("PROJECTIONIST_PASSWORD");
+	char* username = getenv("USHER_USERNAME");
+	char* password = getenv("USHER_PASSWORD");
 	try(strtoi(argv[1], &(request.booking_code)), 1, fail);
 	try(cms = cinema_management_service_init(username, password), NULL, fail);
 	try(validate_booking(cms, request, NULL), !0, fail);

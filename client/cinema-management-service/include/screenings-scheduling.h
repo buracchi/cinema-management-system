@@ -9,7 +9,7 @@
 struct get_screenings_response { struct screening_t* screenings; };
 extern errno_t get_screenings(cinema_management_service_t service, struct get_screenings_response* response);
 
-struct add_screening_request { int32_t cinema_id; uint8_t hall_number; char day[11]; char start_time[9]; uint64_t price_decimal; uint8_t price_cents; int32_t film_id; };
+struct add_screening_request { int32_t cinema_id; uint8_t hall_number; char day[11]; char start_time[9]; char price[18]; int32_t film_id; };
 extern errno_t add_screening(cinema_management_service_t service, struct add_screening_request request);
 
 struct get_available_projectionists_request { int32_t employee_id; char day[11]; char start_time[9]; char duration[9]; int32_t cinema_id; };

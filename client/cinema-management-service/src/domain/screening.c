@@ -4,8 +4,7 @@ struct screening {
 	hall_t hall;
 	char date[11];	//'YYYY-MM-DD' format
 	char time[9];	//'hh:mm:ss' format
-	uint64_t price_decimal : 50;
-	uint8_t price_cents;
+	char price[18];
 	film_t film;
 	employee_t projectionist;
 };
@@ -22,12 +21,8 @@ extern char* screening_get_time(screening_t screening) {
 	return screening->time;
 }
 
-extern uint64_t screening_get_price_decimal(screening_t screening) {
-	return screening->price_decimal;
-}
-
-extern uint8_t screening_get_price_cents(screening_t screening) {
-	return screening->price_cents;
+extern char* screening_get_price(screening_t screening) {
+	return screening->price;
 }
 
 extern film_t screening_get_film(screening_t screening) {

@@ -7,14 +7,14 @@ add_library(cinema-management-service STATIC
     "src/domain/film.c"
     "src/domain/hall.c"
     "src/domain/screening.c"
+    "src/domain/seat.c"
     "src/domain/shift.c"
     "src/cinema-management-service.c"
     "src/booking.c"
-    "src/utilities/db.c"
-    "src/utilities/db.h"
+    "src/utilities/dbutil.c"
+    "src/utilities/dbutil.h"
     "src/utilities/utilities.c"
-    "src/utilities/utilities.h"
-    "src/domain/seat.c")
+    "src/utilities/utilities.h")
 target_include_directories(cinema-management-service PUBLIC
                            "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
                            "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
