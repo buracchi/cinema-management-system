@@ -4,6 +4,6 @@ extern "C" {
     // include header
 }
 
-TEST(client, method_do_something_expected) {
+TEST(cinema_management_service, method_do_something_expected) {
     ASSERT_EQ(true, true);
 }

@@ -5,7 +5,6 @@
 #include <mysql.h>
 
 #include "db.h"
-#include "../model/db.h"
 
 void print_stmt_error (MYSQL_STMT *stmt, char *message)
 {
@@ -33,7 +32,7 @@ void print_error(MYSQL *conn, char *message)
 }
 
 
-bool setup_prepared_stmt(MYSQL_STMT **stmt, char *statement, MYSQL *conn)
+bool setup_prepared_stmt(MYSQL_STMT **stmt, const char *statement, MYSQL *conn)
 {
 	bool update_length = true;
 

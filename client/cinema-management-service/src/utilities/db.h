@@ -10,7 +10,7 @@
 
 extern void print_stmt_error (MYSQL_STMT *stmt, char *message);
 extern void print_error(MYSQL *conn, char *message);
-extern bool setup_prepared_stmt(MYSQL_STMT **stmt, char *statement, MYSQL *conn);
+extern bool setup_prepared_stmt(MYSQL_STMT **stmt, const char *statement, MYSQL *conn);
 extern void finish_with_error(MYSQL *conn, char *message);
 extern void finish_with_stmt_error(MYSQL *conn, MYSQL_STMT *stmt, char *message, bool close_stmt);
 extern void set_binding_param(MYSQL_BIND *param, enum enum_field_types type, void *buffer, unsigned long len);

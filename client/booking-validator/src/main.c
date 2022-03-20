@@ -3,8 +3,9 @@
 #include <stdint.h>
 
 // port argparser to windows and include it here
-#include "buracchi/libcommon/utilities/try.h"
-#include "buracchi/libcommon/utilities/utilities.h"
+#include <buracchi/common/utilities/try.h>
+#include <buracchi/common/utilities/utilities.h>
+
 #include "cinema-management-service.h"
 #include "booking.h"
 
@@ -17,16 +18,18 @@ void setup_env(void) {
 }
 
 int main(int argc, char** argv) {
-	setup_env();
 	if (argc != 2) {
 		fprintf(stderr, "stub of usage message");
 		goto fail;
 	}
-	int32_t booking_code;
-	try(strtoi(argv[1], &booking_code), 1, fail);
+	setup_env();
 	cinema_management_service_t cms;
-	try(cms = cinema_management_service_init(getenv("PROJECTIONIST_USERNAME"), getenv("PROJECTIONIST_PASSWORD")), NULL, fail);
-	try(validate_booking(cms, { booking_code }, NULL), !0, fail);
+	struct validate_booking_request request;
+	char* username = getenv("PROJECTIONIST_USERNAME");
+	char* password = getenv("PROJECTIONIST_PASSWORD");
+	try(strtoi(argv[1], &(request.booking_code)), 1, fail);
+	try(cms = cinema_management_service_init(username, password), NULL, fail);
+	try(validate_booking(cms, request, NULL), !0, fail);
 	printf("Validated\n");
 	try(cinema_management_service_destroy(cms), !0, fail);
 	return EXIT_SUCCESS;

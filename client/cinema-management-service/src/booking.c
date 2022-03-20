@@ -6,15 +6,15 @@ extern errno_t get_all_cinema(cinema_management_service_t service, struct get_al
 	return 0;
 }
 
-extern errno_t get_cinema_screenings(cinema_management_service_t service, struct get_cinema_screenings_request request) {
+extern errno_t get_cinema_screenings(cinema_management_service_t service, struct get_cinema_screenings_request request, struct get_cinema_screenings_response* response) {
 	return 0;
 }
 
-extern errno_t get_avalilable_seats(cinema_management_service_t service, struct get_avalilable_seats_request request) {
+extern errno_t get_avalilable_seats(cinema_management_service_t service, struct get_avalilable_seats_request request, struct get_avalilable_seats_response* response) {
 	return 0;
 }
 
-extern errno_t book_seat(cinema_management_service_t service, struct book_seat_request request) {
+extern errno_t book_seat(cinema_management_service_t service, struct book_seat_request request, struct book_seat_response* response) {
 	return 0;
 }
 

@@ -1,10 +1,9 @@
 #include "cinema-management-service.h"
 
 #include <mysql.h>
-#include <buracchi/libcommon/containers/map/linked_list_map.h>
-#include <buracchi/libcommon/containers/map.h>
-#include <buracchi/libcommon/iterators/iterator.h>
-#include <buracchi/libcommon/utilities/utilities.h>
+#include <buracchi/common/containers/map/linked_list_map.h>
+#include <buracchi/common/utilities/utilities.h>
+#include <buracchi/common/utilities/try.h>
 
 #include "utilities/db.h"
 #include "utilities/utilities.h"
@@ -13,7 +12,12 @@
 
 struct cinema_management_service {
 	MYSQL* db_connection;
-	cmn_map_t mysql_statement_map;
+	cmn_map_t mysql_statement_data_map;
+};
+
+struct mysql_statement_data {
+	MYSQL_STMT* statement;
+	FIELD_TYPE* param_types;
 };
 
 /*
@@ -53,21 +57,21 @@ static struct {
 	{ NULL,											NULL,															NULL }
 };
 
-static bool initialize_prepared_stmts(void);
-static int close_prepared_statements(void);
+static bool initialize_prepared_stmts(cinema_management_service_t service);
+static int close_prepared_statements(cinema_management_service_t service);
 static errno_t connect(cinema_management_service_t service, const char* username, const char* password);
 
 extern cinema_management_service_t cinema_management_service_init(const char* username, const char* password) {
 	cinema_management_service_t this;
 	try(this = malloc(sizeof * this), NULL, fail);
-	try(this->mysql_statement_map = (cmn_map_t)cmn_linked_list_map_init(), NULL, fail2);
-	cmn_map_set_key_comparer(this->mysql_statement_map, string_comparer);
+	try(this->mysql_statement_data_map = (cmn_map_t) cmn_linked_list_map_init(), NULL, fail2);
+	cmn_map_set_key_comparer(this->mysql_statement_data_map, string_comparer);
 	try(mysql_init(this->db_connection), NULL, fail3);
 	connect(this, username, password);
 	initialize_prepared_stmts(this);
 	return this;
 fail3:
-	cmn_map_destroy(this->mysql_statement_map);
+	cmn_map_destroy(this->mysql_statement_data_map);
 fail2:
 	free(this);
 fail:
@@ -90,26 +94,31 @@ static errno_t connect(cinema_management_service_t service, const char* username
 extern errno_t cinema_management_service_destroy(cinema_management_service_t service) {
 	close_prepared_stmts(service);
 	mysql_close(service->db_connection);
-	cmn_map_destroy(service->mysql_statement_map);
+	cmn_map_destroy(service->mysql_statement_data_map);
 	free(service);
 	return 0;
 }
 
 static bool initialize_prepared_stmts(cinema_management_service_t service) {
 	for (int i = 0; statements[i].name; i++) {
-		static MYSQL_STMT* new_statement;
-		if (!setup_prepared_stmt(&new_statement, statements[i].template, service->db_connection)) {
+		struct mysql_statement_data * statement_data;
+		try(statement_data = malloc(sizeof * statement_data), NULL, fail);
+		statement_data->param_types = statements[i].param_types;
+		if (!setup_prepared_stmt(&(statement_data->statement), statements[i].template, service->db_connection)) {
 			char* message;
 			asprintf(&message, "%s %s %s\n", "Unable to initialize", statements[i].name, "statement");
+			free(statement_data);
 			return false;
 		}
-		cmn_map_insert(service->mysql_statement_map, statements[i].name, new_statement, NULL);
+		cmn_map_insert(service->mysql_statement_data_map, (void*) statements[i].name, statement_data, NULL);
 	}
 	return true;
+fail:
+	return false;
 }
 
 static int close_prepared_stmts(cinema_management_service_t service) {
-	cmn_iterator_t iterator = cmn_map_begin(service->mysql_statement_map);
+	cmn_iterator_t iterator = cmn_map_begin(service->mysql_statement_data_map);
 	while (!cmn_iterator_end(iterator)) {
 		MYSQL_STMT* statement = cmn_iterator_data(iterator);
 		if (statement) {
