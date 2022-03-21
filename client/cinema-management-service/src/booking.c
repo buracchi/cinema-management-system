@@ -1,7 +1,8 @@
 #include "booking.h"
 
-#include "type/cinema-management-service.h"
-#include "utilities/dbutil.h"
+#include "prepared-statement.h"
+
+extern int execute_prepared_stmt(cinema_management_service_t service, enum statement_operation operation, void** result_set, ...);
 
 extern errno_t get_all_cinema(cinema_management_service_t service, struct get_all_cinema_response* response) {
 	return 0;
@@ -24,8 +25,6 @@ extern errno_t cancel_booking(cinema_management_service_t service, struct cancel
 }
 
 extern errno_t validate_booking(cinema_management_service_t service, struct validate_booking_request request, struct validate_booking_response* response) {
-	struct mysql_statement_data* data;
-	cmn_map_at(service->mysql_statement_data_map, "validate_booking", &data);
-	execute_prepared_stmt(data, NULL, &request.booking_code);
+	execute_prepared_stmt(service, VALIDATE_BOOKING, NULL, &request.booking_code);
 	return 0;
 }

@@ -13,8 +13,7 @@ add_library(cinema-management-service STATIC
     "src/booking.c"
     "src/utilities/dbutil.c"
     "src/utilities/dbutil.h"
-    "src/utilities/utilities.c"
-    "src/utilities/utilities.h")
+    "src/prepared-statement.h")
 target_include_directories(cinema-management-service PUBLIC
                            "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
                            "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
