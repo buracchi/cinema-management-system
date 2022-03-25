@@ -25,6 +25,7 @@ int main(int argc, char** argv) {
 	setup_env();
 	cinema_management_service_t cms;
 	struct validate_booking_request request;
+	struct validate_booking_response* response;
 	char* username = getenv("USHER_USERNAME");
 	char* password = getenv("USHER_PASSWORD");
 	try(strtoi(argv[1], &(request.booking_code)), 1, fail);
