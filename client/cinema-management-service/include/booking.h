@@ -38,5 +38,5 @@ struct cancel_booking_request { int32_t booking_code; };
 extern errno_t cancel_booking(cinema_management_service_t service, struct cancel_booking_request request);
 
 struct validate_booking_request { int32_t booking_code; };
-struct validate_booking_response { void* param; };
-extern errno_t validate_booking(cinema_management_service_t service, struct validate_booking_request request, struct validate_booking_response* response);
+struct validate_booking_response { struct response; };
+extern errno_t validate_booking(cinema_management_service_t service, struct validate_booking_request request, struct validate_booking_response** response);
