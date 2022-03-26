@@ -27,9 +27,8 @@
       },
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
-        "CMAKE_C_FLAGS_DEBUG": "/std:c17 /Wall /fsanitize=address /Zi",
-        "CMAKE_CXX_FLAGS_DEBUG": "/Wall /fsanitize=address /Zi",
-        "CMAKE_MSVC_RUNTIME_LIBRARY": "MultiThreadedDebug"
+        "CMAKE_C_FLAGS_DEBUG": "/std:c17 /Wall /Zi",
+        "CMAKE_CXX_FLAGS_DEBUG": "/Wall /Zi"
       }
     },
     {

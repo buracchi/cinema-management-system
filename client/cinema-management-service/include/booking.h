@@ -31,8 +31,8 @@ struct book_seat_request {
 	uint64_t card_number;
 	const char expiry_date[11];
 	uint8_t security_code;};
-struct book_seat_response { int32_t booking_code; };
-extern errno_t book_seat(cinema_management_service_t service, struct book_seat_request request, struct book_seat_response* response);
+struct book_seat_response { struct result_response; struct book_seat_result { int32_t booking_code; } result[]; };
+extern errno_t book_seat(cinema_management_service_t service, struct book_seat_request request, struct book_seat_response** response);
 
 struct cancel_booking_request { int32_t booking_code; };
 extern errno_t cancel_booking(cinema_management_service_t service, struct cancel_booking_request request);
