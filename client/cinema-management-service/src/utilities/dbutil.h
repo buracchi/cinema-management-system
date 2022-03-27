@@ -5,10 +5,6 @@
 #include <stdbool.h>
 #include <mysql.h>
 
-#define DATE_LEN 11
-#define TIME_LEN 6
-#define DATETIME_LEN (DATE_LEN + TIME_LEN)
-
 extern void print_stmt_error (MYSQL_STMT *stmt, char *message);
 extern void print_error(MYSQL *conn, char *message);
 extern bool setup_prepared_stmt(MYSQL_STMT **stmt, const char *statement, MYSQL *conn);
@@ -20,3 +16,4 @@ extern void time_to_mysql_time(char *str, MYSQL_TIME *time);
 extern void init_mysql_timestamp(MYSQL_TIME *time);
 extern void mysql_timestamp_to_string(MYSQL_TIME *time, char *str);
 extern void mysql_date_to_string(MYSQL_TIME *date, char *str);
+extern void mysql_time_to_string(MYSQL_TIME* time, char* str);

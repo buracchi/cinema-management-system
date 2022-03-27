@@ -9,6 +9,10 @@
 
 #include <buracchi/common/utilities/try.h>
 
+#define DATE_LEN 11
+#define TIME_LEN 9
+#define DATETIME_LEN (DATE_LEN + TIME_LEN)
+
 void print_stmt_error (MYSQL_STMT *stmt, char *message) {
 	fprintf (stderr, "%s\n", message);
 	if (stmt != NULL) {
@@ -78,7 +82,7 @@ void date_to_mysql_time(char *str, MYSQL_TIME *time) {
 
 void time_to_mysql_time(char *str, MYSQL_TIME *time) {
 	memset(time, 0, sizeof(*time));
-	sscanf(str, "%02d:%02d", &time->hour, &time->minute);
+	sscanf(str, "%02d:%02d:%02d", &time->hour, &time->minute, &time->second);
 	time->time_type = MYSQL_TIMESTAMP_TIME;
 }
 
@@ -93,4 +97,8 @@ void mysql_timestamp_to_string(MYSQL_TIME *time, char *str) {
 
 void mysql_date_to_string(MYSQL_TIME *date, char *str) {
 	snprintf(str, DATE_LEN, "%4d-%02d-%02d", date->year, date->month, date->day);
+}
+
+void mysql_time_to_string(MYSQL_TIME* time, char* str) {
+	snprintf(str, DATE_LEN, "%02d:%02d:%02d", time->hour, time->minute, time->second);
 }

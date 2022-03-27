@@ -53,7 +53,7 @@ static const struct statement_data {
 	[REPORT_CINEMA_WITHOUT_USHERS] = { .statement = NULL, .query = "call mostra_cinema_senza_maschere()" },
 	[GET_EMPLOYEES] = { .statement = NULL, .query = "call mostra_dipendenti()" },
 	[GET_CINEMA_SCREENINGS] = { .statement = NULL, .query = "call mostra_palinsesto(?)" },
-	[GET_AVAILABLE_PROJECTIONISTS] = { .statement = NULL, .query = "call mostra_posti_disponibili(?, ?, ?, ?)" },
+	[GET_AVALILABLE_SEATS] = { .statement = NULL, .query = "call mostra_posti_disponibili(?, ?, ?, ?)" },
 	[GET_SCREENINGS] = { .statement = NULL, .query = "call mostra_proiezioni()" },
 	[REPORT_SCREENINGS_WITHOUT_PROJECTIONIST] = { .statement = NULL, .query = "call mostra_proiezioni_senza_proiezionista()" },
 	[GET_AVAILABLE_PROJECTIONISTS] = { .statement = NULL, .query = "call mostra_proiezionisti_disponibili(?, ?, ?, ?)" },

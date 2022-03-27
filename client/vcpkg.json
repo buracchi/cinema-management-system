@@ -4,6 +4,7 @@
   "dependencies": [
     "libcommon",
     "libmariadb",
+    "libfort",
     {
       "name": "tre",
       "platform": "windows"

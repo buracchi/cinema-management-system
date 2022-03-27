@@ -10,6 +10,9 @@
 									struct namespace##_##name##_response* response)
 #define API(name) _api(name, cinema_management_service)
 
+#define DATE_LEN 11
+#define TIME_LEN 9
+
 typedef struct cinema_management_service* cinema_management_service_t;
 
 struct response {
