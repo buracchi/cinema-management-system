@@ -1,28 +1,24 @@
 #pragma once
 
 #include <stdint.h>
-#include <errno.h>
+#include <stdbool.h>
 
-#include "cinema-management-service.h"
-#include "domain/cinema.h"
-#include "domain/employee.h"
-#include "domain/screening.h"
-#include "domain/seat.h"
+#include "cms.h"
 
-struct get_all_cinema_response {
-	struct result_response;
-	struct cinema {
+struct cms_get_all_cinema_response {
+	struct cms_result_response;
+	struct cms_cinema {
 		int32_t id;
 		char address[128];
 		char opening_time[TIME_LEN];	// "hh:mm:ss" format
 		char closing_time[TIME_LEN];	// "hh:mm:ss" format
 	} result[]; };
-extern errno_t get_all_cinema(cinema_management_service_t service, struct get_all_cinema_response** response);
+extern bool cms_get_all_cinema(cms_t cms, struct cms_get_all_cinema_response** response);
 
-struct get_cinema_screenings_request { int32_t cinema_id; };
-struct get_cinema_screenings_response{
-	struct result_response;
-	struct screening {
+struct cms_get_cinema_screenings_request { int32_t cinema_id; };
+struct cms_get_cinema_screenings_response{
+	struct cms_result_response;
+	struct cms_screening {
 		int32_t cinema_id;
 		int32_t hall_id;
 		char date[DATE_LEN];			//'YYYY-MM-DD' format
@@ -33,27 +29,27 @@ struct get_cinema_screenings_response{
 		char film_studio[256];
 		char cast[1024];
 	} result[]; };
-extern errno_t get_cinema_screenings(cinema_management_service_t service, struct get_cinema_screenings_request request, struct get_cinema_screenings_response** response);
+extern bool cms_get_cinema_screenings(cms_t cms, struct cms_get_cinema_screenings_request request, struct cms_get_cinema_screenings_response** response);
 
-struct get_available_seats_request {
+struct cms_get_available_seats_request {
 	int32_t cinema_id;
 	int32_t hall_id;
 	const char date[DATE_LEN];
 	const char start_time[TIME_LEN]; };
-struct get_available_seats_response {
-	struct result_response; 
-	struct hall_info {
+struct cms_get_available_seats_response {
+	struct cms_result_response; 
+	struct cms_hall_info {
 		int32_t num_rows;
 		int32_t num_cols;
 	} hall_info_result;
-	struct seat {
+	struct cms_seat {
 		char row;
 		uint8_t number;
 	} seat_result[];
 };
-extern errno_t get_available_seats(cinema_management_service_t service, struct get_available_seats_request request, struct get_available_seats_response** response);
+extern bool cms_get_available_seats(cms_t cms, struct cms_get_available_seats_request request, struct cms_get_available_seats_response** response);
 
-struct book_seat_request {
+struct cms_book_seat_request {
 	int32_t cinema_id;
 	int32_t hall_id;
 	const char date[11];
@@ -64,12 +60,13 @@ struct book_seat_request {
 	const char card_number[17];
 	const char expiry_date[DATE_LEN];
 	const char security_code[4]; };
-struct book_seat_response { struct result_response; struct book_seat_result { int32_t booking_code; } result[]; };
-extern errno_t book_seat(cinema_management_service_t service, struct book_seat_request request, struct book_seat_response** response);
+struct cms_book_seat_response { struct cms_result_response; struct cms_book_seat_result { int32_t booking_code; } result[]; };
+extern bool cms_book_seat(cms_t cms, struct cms_book_seat_request request, struct cms_book_seat_response** response);
 
-struct cancel_booking_request { int32_t booking_code; };
-extern errno_t cancel_booking(cinema_management_service_t service, struct cancel_booking_request request);
+struct cms_cancel_booking_request { int32_t booking_code; };
+struct cms_cancel_booking_response { struct cms_response; };
+extern bool cms_cancel_booking(cms_t cms, struct cms_cancel_booking_request request, struct cms_cancel_booking_response** response);
 
-struct validate_booking_request { int32_t booking_code; };
-struct validate_booking_response { struct response; };
-extern errno_t validate_booking(cinema_management_service_t service, struct validate_booking_request request, struct validate_booking_response** response);
+struct cms_validate_booking_request { int32_t booking_code; };
+struct cms_validate_booking_response { struct cms_response; };
+extern bool cms_validate_booking(cms_t cms, struct cms_validate_booking_request request, struct cms_validate_booking_response** response);

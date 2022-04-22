@@ -1,27 +1,27 @@
 #pragma once
 
 #include <stdint.h>
-#include <errno.h>
+#include <stdbool.h>
 
-#include "cinema-management-service.h"
+#include "cms.h"
 #include "domain/cinema.h"
 #include "domain/hall.h"
 
-struct get_all_cinema_response { cinema_t* cinema; };
-extern errno_t get_all_cinema(cinema_management_service_t service, struct get_all_cinema_response* response);
+struct cms_get_all_cinema_response { cinema_t* cinema; };
+extern bool cms_get_all_cinema(cms_t cms, struct get_all_cinema_response* response);
 
-struct add_cinema_request { const char* address; char[9] opening_time; char[9] closing_time; };
-extern errno_t add_cinema(cinema_management_service_t service, struct add_cinema_request request);
+struct cms_add_cinema_request { const char* address; char[9] opening_time; char[9] closing_time; };
+extern bool cms_add_cinema(cms_t cms, struct add_cinema_request request);
 
-struct delete_cinema_request { int32_t id; };
-extern errno_t delete_cinema(cinema_management_service_t service, struct delete_cinema_request request);
+struct cms_delete_cinema_request { int32_t id; };
+extern bool cms_delete_cinema(cms_t cms, struct delete_cinema_request request);
 
-struct get_halls_request { int32_t cinema_id; };
-struct get_halls_response { hall_t* halls; };
-extern errno_t get_halls(cinema_management_service_t service, struct get_halls_request request, struct get_halls_response* response);
+struct cms_get_halls_request { int32_t cinema_id; };
+struct cms_get_halls_response { hall_t* halls; };
+extern bool cms_get_halls(cms_t cms, struct get_halls_request request, struct get_halls_response* response);
 
-struct add_hall_request { int32_t cinema_id; uint8_t hall_number; uint8_t rows; uint8_t rows_seats; };
-extern errno_t add_hall(cinema_management_service_t service, struct add_hall_request request);
+struct cms_add_hall_request { int32_t cinema_id; uint8_t hall_number; uint8_t rows; uint8_t rows_seats; };
+extern bool cms_add_hall(cms_t cms, struct add_hall_request request);
 
-struct delete_hall_request { int32_t cinema_id; uint8_t hall_number; };
-extern errno_t delete_hall(cinema_management_service_t service, struct delete_hall_request request);
+struct cms_delete_hall_request { int32_t cinema_id; uint8_t hall_number; };
+extern bool cms_delete_hall(cms_t cms, struct delete_hall_request request);

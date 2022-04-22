@@ -7,11 +7,11 @@
 #include "prepared-statement.h"
 #include "utilities/dbutil.h"
 
-extern errno_t get_all_cinema(cinema_management_service_t service, struct get_all_cinema_response** response) {
+extern bool cms_get_all_cinema(cms_t cms, struct cms_get_all_cinema_response** response) {
 	MYSQL_STMT* statement;
 	MYSQL_TIME opening;
 	MYSQL_TIME closing;
-	struct cinema rset_current_row = { 0 };
+	struct cms_cinema rset_current_row = { 0 };
 	unsigned long long num_rows;
 	MYSQL_BIND rparams[4] = {
 		{.buffer_type = MYSQL_TYPE_LONG,		.buffer = &rset_current_row.id,			.buffer_length = sizeof((*response)->result->id) },
@@ -19,7 +19,7 @@ extern errno_t get_all_cinema(cinema_management_service_t service, struct get_al
 		{.buffer_type = MYSQL_TYPE_TIME,		.buffer = &opening,						.buffer_length = sizeof(opening) },
 		{.buffer_type = MYSQL_TYPE_TIME,		.buffer = &closing,						.buffer_length = sizeof(closing) }
 	};
-	try(statement = get_prepared_stmt(service, GET_ALL_CINEMA), NULL, fail);
+	try(statement = get_prepared_stmt(cms, GET_ALL_CINEMA), NULL, fail);
 	try((mysql_stmt_execute(statement) == 0), false, fail2);
 	try((mysql_stmt_bind_result(statement, rparams) == 0), false, fail2);
 	mysql_stmt_store_result(statement);
@@ -36,7 +36,7 @@ extern errno_t get_all_cinema(cinema_management_service_t service, struct get_al
 	while (mysql_stmt_next_result(statement) != -1);
 	mysql_stmt_free_result(statement);
 	mysql_stmt_reset(statement);
-	return 0;
+	return true;
 fail3:
 	free(*response);
 fail2:
@@ -44,15 +44,15 @@ fail2:
 	asprintf(&((*response)->error_message), "%s", mysql_stmt_error(statement));
 	mysql_stmt_free_result(statement);
 	mysql_stmt_reset(statement);
-	return 1;
+	return false;
 fail:
 	*response = malloc(sizeof * *response);
-	asprintf(&((*response)->error_message), "%s", get_last_error(service));
+	asprintf(&((*response)->error_message), "%s", cms_get_error_message(cms));
 	(*response)->num_elements = 0;
-	return 1;
+	return false;
 }
 
-extern errno_t get_cinema_screenings(cinema_management_service_t service, struct get_cinema_screenings_request request, struct get_cinema_screenings_response** response) {
+extern bool cms_get_cinema_screenings(cms_t cms, struct cms_get_cinema_screenings_request request, struct cms_get_cinema_screenings_response** response) {
 	MYSQL_STMT* statement;
 	MYSQL_TIME date;
 	MYSQL_TIME time;
@@ -60,7 +60,7 @@ extern errno_t get_cinema_screenings(cinema_management_service_t service, struct
 	MYSQL_BIND binding_params[1] = {
 		{.buffer_type = MYSQL_TYPE_LONG,		.buffer = &request.cinema_id,				.buffer_length = sizeof(request.cinema_id) }
 	};
-	struct screening rset_current_row = { 0 };
+	struct cms_screening rset_current_row = { 0 };
 	unsigned long long num_rows;
 	MYSQL_BIND rparams[9] = {
 		{.buffer_type = MYSQL_TYPE_DATE,		.buffer = &date,							.buffer_length = sizeof(date) },
@@ -73,7 +73,7 @@ extern errno_t get_cinema_screenings(cinema_management_service_t service, struct
 		{.buffer_type = MYSQL_TYPE_VAR_STRING,	.buffer = &rset_current_row.film_studio,	.buffer_length = sizeof((*response)->result->film_studio) },
 		{.buffer_type = MYSQL_TYPE_VAR_STRING,	.buffer = &rset_current_row.cast,			.buffer_length = sizeof((*response)->result->cast) }
 	};
-	try(statement = get_prepared_stmt(service, GET_CINEMA_SCREENINGS), NULL, fail);
+	try(statement = get_prepared_stmt(cms, GET_CINEMA_SCREENINGS), NULL, fail);
 	try((mysql_stmt_bind_param(statement, binding_params) == 0), false, fail);
 	try((mysql_stmt_execute(statement) == 0), false, fail2);
 	try((mysql_stmt_bind_result(statement, rparams) == 0), false, fail2);
@@ -92,7 +92,7 @@ extern errno_t get_cinema_screenings(cinema_management_service_t service, struct
 	while (mysql_stmt_next_result(statement) != -1);
 	mysql_stmt_free_result(statement);
 	mysql_stmt_reset(statement);
-	return 0;
+	return true;
 fail3:
 	free(*response);
 fail2:
@@ -100,15 +100,15 @@ fail2:
 	asprintf(&((*response)->error_message), "%s", mysql_stmt_error(statement));
 	mysql_stmt_free_result(statement);
 	mysql_stmt_reset(statement);
-	return 1;
+	return false;
 fail:
 	*response = malloc(sizeof * *response);
-	asprintf(&((*response)->error_message), "%s", get_last_error(service));
+	asprintf(&((*response)->error_message), "%s", cms_get_error_message(cms));
 	(*response)->num_elements = 0;
-	return 1;
+	return false;
 }
 
-extern errno_t get_available_seats(cinema_management_service_t service, struct get_available_seats_request request, struct get_available_seats_response** response) {
+extern bool cms_get_available_seats(cms_t cms, struct cms_get_available_seats_request request, struct cms_get_available_seats_response** response) {
 	MYSQL_STMT* statement;
 	MYSQL_TIME date;
 	MYSQL_TIME start_time;
@@ -120,8 +120,8 @@ extern errno_t get_available_seats(cinema_management_service_t service, struct g
 		{.buffer_type = MYSQL_TYPE_DATE,		.buffer = &date,							.buffer_length = sizeof(date) },
 		{.buffer_type = MYSQL_TYPE_TIME,		.buffer = &start_time,						.buffer_length = sizeof(start_time) }
 	};
-	struct hall_info hi_rset_current_row = { 0 };
-	struct seat seat_rset_current_row = { 0 };
+	struct cms_hall_info hi_rset_current_row = { 0 };
+	struct cms_seat seat_rset_current_row = { 0 };
 	unsigned long long num_rows;
 	MYSQL_BIND hall_info_rparams[2] = {
 		{.buffer_type = MYSQL_TYPE_LONG,		.buffer = &hi_rset_current_row.num_rows,	.buffer_length = sizeof(hi_rset_current_row.num_rows) },
@@ -131,7 +131,7 @@ extern errno_t get_available_seats(cinema_management_service_t service, struct g
 		{.buffer_type = MYSQL_TYPE_STRING,		.buffer = &seat_rset_current_row.row,		.buffer_length = sizeof(seat_rset_current_row.row) },
 		{.buffer_type = MYSQL_TYPE_LONG,		.buffer = &seat_rset_current_row.number,	.buffer_length = sizeof(seat_rset_current_row.number) },
 	};
-	try(statement = get_prepared_stmt(service, GET_AVALILABLE_SEATS), NULL, fail);
+	try(statement = get_prepared_stmt(cms, GET_AVALILABLE_SEATS), NULL, fail);
 	try((mysql_stmt_bind_param(statement, binding_params) == 0), false, fail);
 	try((mysql_stmt_execute(statement) == 0), false, fail2);
 	try((mysql_stmt_bind_result(statement, hall_info_rparams) == 0), false, fail2);
@@ -152,7 +152,7 @@ extern errno_t get_available_seats(cinema_management_service_t service, struct g
 	while (mysql_stmt_next_result(statement) != -1);
 	mysql_stmt_free_result(statement);
 	mysql_stmt_reset(statement);
-	return 0;
+	return true;
 fail3:
 	free(*response);
 fail2:
@@ -160,15 +160,15 @@ fail2:
 	asprintf(&((*response)->error_message), "%s", mysql_stmt_error(statement));
 	mysql_stmt_free_result(statement);
 	mysql_stmt_reset(statement);
-	return 1;
+	return false;
 fail:
 	*response = malloc(sizeof * *response);
-	asprintf(&((*response)->error_message), "%s", get_last_error(service));
+	asprintf(&((*response)->error_message), "%s", cms_get_error_message(cms));
 	(*response)->num_elements = 0;
-	return 1;
+	return false;
 }
 
-extern errno_t book_seat(cinema_management_service_t service, struct book_seat_request request, struct book_seat_response** response) {
+extern bool cms_book_seat(cms_t cms, struct cms_book_seat_request request, struct cms_book_seat_response** response) {
 	MYSQL_STMT* statement;
 	MYSQL_TIME date;
 	MYSQL_TIME start_time;
@@ -188,12 +188,12 @@ extern errno_t book_seat(cinema_management_service_t service, struct book_seat_r
 		{.buffer_type = MYSQL_TYPE_DATE,		.buffer = &expiry_date,						.buffer_length = sizeof(expiry_date) },
 		{.buffer_type = MYSQL_TYPE_NEWDECIMAL,	.buffer = &request.security_code,			.buffer_length = sizeof(request.security_code) }
 	};
-	struct book_seat_result rset_current_row = { 0 };
+	struct cms_book_seat_result rset_current_row = { 0 };
 	unsigned long long num_rows;
 	MYSQL_BIND rparams[1] = {
 		{.buffer_type = MYSQL_TYPE_LONG,		.buffer = &rset_current_row.booking_code,	.buffer_length = sizeof((*response)->result->booking_code) }
 	};
-	try(statement = get_prepared_stmt(service, BOOK_SEAT), NULL, fail);
+	try(statement = get_prepared_stmt(cms, BOOK_SEAT), NULL, fail);
 	try((mysql_stmt_bind_param(statement, binding_params) == 0), false, fail);
 	try((mysql_stmt_execute(statement) == 0), false, fail2);
 	try((mysql_stmt_bind_result(statement, rparams) == 0), false, fail2);
@@ -209,7 +209,7 @@ extern errno_t book_seat(cinema_management_service_t service, struct book_seat_r
 	while (mysql_stmt_next_result(statement) != -1);
 	mysql_stmt_free_result(statement);
 	mysql_stmt_reset(statement);
-	return 0;
+	return true;
 fail3:
 	free(*response);
 fail2:
@@ -217,38 +217,60 @@ fail2:
 	asprintf(&((*response)->error_message), "%s", mysql_stmt_error(statement));
 	mysql_stmt_free_result(statement);
 	mysql_stmt_reset(statement);
-	return 1;
+	return false;
 fail:
 	*response = malloc(sizeof **response);
-	asprintf(&((*response)->error_message), "%s", get_last_error(service));
+	asprintf(&((*response)->error_message), "%s", cms_get_error_message(cms));
 	(*response)->num_elements = 0;
-	return 1;
+	return false;
 }
 
-extern errno_t cancel_booking(cinema_management_service_t service, struct cancel_booking_request request) {
-	return 0;
-}
-
-extern errno_t validate_booking(cinema_management_service_t service, struct validate_booking_request request, struct validate_booking_response** response) {
+extern bool cms_cancel_booking(cms_t cms, struct cms_cancel_booking_request request, struct cms_cancel_booking_response** response) {
 	MYSQL_STMT* statement;
 	MYSQL_BIND binding_params[1] = {
 		{.buffer_type = MYSQL_TYPE_LONG, .buffer = &request.booking_code, .buffer_length = sizeof(request.booking_code) }
 	};
-	try(statement = get_prepared_stmt(service, VALIDATE_BOOKING), NULL, fail);
+	try(statement = get_prepared_stmt(cms, CANCEL_BOOKING), NULL, fail);
+	try((mysql_stmt_bind_param(statement, binding_params) == 0), false, fail);
+	try((mysql_stmt_execute(statement) == 0), false, fail2);
+	while (mysql_stmt_next_result(statement) != -1);
+	*response = malloc(sizeof **response);
+	memset(*response, 0, sizeof(*response));
+	mysql_stmt_free_result(statement);
+	mysql_stmt_reset(statement);
+	return true;
+fail2:
+	*response = malloc(sizeof * *response);
+	asprintf(&((*response)->error_message), "%s", mysql_stmt_error(statement));
+	mysql_stmt_free_result(statement);
+	mysql_stmt_reset(statement);
+	return false;
+fail:
+	*response = malloc(sizeof * *response);
+	asprintf(&((*response)->error_message), "%s", cms_get_error_message(cms));
+	return false;
+}
+
+extern bool cms_validate_booking(cms_t cms, struct cms_validate_booking_request request, struct cms_validate_booking_response** response) {
+	MYSQL_STMT* statement;
+	MYSQL_BIND binding_params[1] = {
+		{.buffer_type = MYSQL_TYPE_LONG, .buffer = &request.booking_code, .buffer_length = sizeof(request.booking_code) }
+	};
+	try(statement = get_prepared_stmt(cms, VALIDATE_BOOKING), NULL, fail);
 	try((mysql_stmt_bind_param(statement, binding_params) == 0), false, fail);
 	try((mysql_stmt_execute(statement) == 0), false, fail2);
 	while (mysql_stmt_next_result(statement) != -1);
 	mysql_stmt_free_result(statement);
 	mysql_stmt_reset(statement);
-	return 0;
+	return true;
 fail2:
 	*response = malloc(sizeof **response);
 	asprintf(&((*response)->error_message), "%s", mysql_stmt_error(statement));
 	mysql_stmt_free_result(statement);
 	mysql_stmt_reset(statement);
-	return 1;
+	return false;
 fail:
 	*response = malloc(sizeof **response);
-	asprintf(&((*response)->error_message), "%s", get_last_error(service));
-	return 1;
+	asprintf(&((*response)->error_message), "%s", cms_get_error_message(cms));
+	return false;
 }

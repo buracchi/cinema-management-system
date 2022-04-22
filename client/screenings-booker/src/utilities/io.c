@@ -21,7 +21,7 @@ static void leave(void) {
 		exit(EXIT_SUCCESS);
 }
 
-extern char *get_input(char *question, int len, char *buff, bool hide) {
+extern char* get_input_len(char *question, int len, char *buff, bool hide) {
 	printf("%s", question);
 
 #ifdef __unix__

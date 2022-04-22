@@ -6,10 +6,10 @@
 #include <buracchi/common/utilities/utilities.h>
 #include <buracchi/common/utilities/try.h>
 
-#include "cinema-management-service.h"
-#include "booking.h"
+#include <cms.h>
+#include <booking.h>
 
-//#define RUN_FROM_IDE
+#define RUN_FROM_IDE
 
 static int validate(const char* booking_code);
 
@@ -43,19 +43,19 @@ static int validate(const char* booking_code) {
 	putenv("USHER_PASSWORD=pippo");
 	booking_code = "4";
 #endif
-	cinema_management_service_t cms;
-	struct validate_booking_request request;
-	struct validate_booking_response* response;
+	cms_t cms;
+	struct cms_validate_booking_request request;
+	struct cms_validate_booking_response* response;
 	char* username = getenv("USHER_USERNAME");
 	char* password = getenv("USHER_PASSWORD");
 	try(strtoi(booking_code, &(request.booking_code)), 1, fail);
-	try(cms = cinema_management_service_init(username, password), NULL, fail);
-	if (validate_booking(cms, request, &response)) {
-		printf("%s\n", response->error_message);
-		cinema_management_service_destroy(cms);
+	try(cms = cms_init(username, password), NULL, fail);
+	if (!cms_validate_booking(cms, request, &response)) {
+		fprintf(stderr, "%s\n", response->error_message);
+		cms_destroy(cms);
 fail:
 		return EXIT_FAILURE;
 	}
-	cinema_management_service_destroy(cms);
+	cms_destroy(cms);
 	return EXIT_SUCCESS;
 }

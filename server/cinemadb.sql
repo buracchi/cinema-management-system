@@ -224,7 +224,7 @@ USE `cinemadb` ;
 -- -----------------------------------------------------
 -- Placeholder table for view `cinemadb`.`Palinsesti`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `cinemadb`.`Palinsesti` (`data` INT, `ora` INT, `cinema` INT, `sala` INT, `prezzo` INT, `movie_id` INT, `nome` INT, `durata` INT, `casa_cinematografica` INT, `cast` INT);
+CREATE TABLE IF NOT EXISTS `cinemadb`.`Palinsesti` (`data` INT, `ora` INT, `cinema` INT, `sala` INT, `prezzo` INT, `nome` INT, `durata` INT, `casa_cinematografica` INT, `cast` INT);
 
 -- -----------------------------------------------------
 -- procedure mostra_cinema
@@ -248,6 +248,11 @@ DELIMITER $$
 USE `cinemadb`$$
 CREATE PROCEDURE `mostra_palinsesto` (IN _cinema_id INT)
 BEGIN
+	IF (_cinema_id NOT IN (SELECT `id` FROM `Cinema`)) THEN
+		SET @err_msg = MESSAGGIO_ERRORE(45014);
+		SIGNAL SQLSTATE '45014'
+		SET MESSAGE_TEXT = @err_msg;
+	END IF;
 	SELECT *
     FROM `Palinsesti`
     WHERE `cinema` = _cinema_id;
@@ -267,12 +272,15 @@ CREATE PROCEDURE `mostra_posti_disponibili` (
     IN _data DATE,
     IN _ora TIME)
 BEGIN
+	# TODO: Verificare che la prenotazione esista
+	SELECT COUNT(DISTINCT `fila`) AS numero_file, COUNT(DISTINCT `numero`) AS posti_per_fila
+	FROM `Posti`
+    WHERE `cinema` = _cinema_id AND `sala` = _sala_id
+    GROUP BY `cinema`, `sala`;
 	SELECT `fila`, `numero`
-	FROM `Posti` JOIN `Proiezioni` ON (`Proiezioni`.`cinema` = _cinema_id
-										AND `Proiezioni`.`sala` = _sala_id
-										AND `Proiezioni`.`data` = _data
-										AND `Proiezioni`.`ora` = _ora)
-	WHERE (`fila`, `numero`) NOT IN (SELECT `fila`, `numero`
+	FROM `Posti`
+	WHERE `Posti`.`cinema` = _cinema_id AND `Posti`.`sala` = _sala_id
+		AND (`fila`, `numero`) NOT IN (SELECT `fila`, `numero`
 										FROM `Prenotazioni`
 										WHERE `Prenotazioni`.`cinema` = _cinema_id
 											AND `Prenotazioni`.`sala` = _sala_id
@@ -303,7 +311,7 @@ CREATE PROCEDURE `effettua_prenotazione` (
 BEGIN
 	# Mock servizio di pagamento---------------------------------------------
     DECLARE tid INT;
-    SET tid = (SELECT IFNULL(MAX(`transazione`) + 1, 1) FROM `Prenotazioni`);
+    SET tid = (SELECT IFNULL(MAX(CAST(`transazione` AS UNSIGNED INTEGER)) + 1, 1) FROM `Prenotazioni`);
 	# -----------------------------------------------------------------------
     INSERT INTO `Prenotazioni` (`transazione`, `stato`, `cinema`, `sala`, `data`, `ora`, `fila`, `numero`)
 		VALUES (tid, 'Confermata', _cinema_id, _sala_id, _data, _ora, _fila, _numero);
@@ -320,6 +328,11 @@ DELIMITER $$
 USE `cinemadb`$$
 CREATE PROCEDURE `annulla_prenotazione` (IN _codice INT)
 BEGIN
+	IF (_codice NOT IN (SELECT `codice` FROM `Prenotazioni`)) THEN
+		SET @err_msg = MESSAGGIO_ERRORE(45013);
+		SIGNAL SQLSTATE '45013'
+		SET MESSAGE_TEXT = @err_msg;
+	END IF;
     UPDATE `Prenotazioni` SET `stato`='Annullata'
     WHERE `codice` = _codice;
 	# Mock servizio di pagamento---------------------------------------------
@@ -336,6 +349,11 @@ DELIMITER $$
 USE `cinemadb`$$
 CREATE PROCEDURE `valida_prenotazione` (IN _codice INT)
 BEGIN
+	IF (_codice NOT IN (SELECT `codice` FROM `Prenotazioni`)) THEN
+		SET @err_msg = MESSAGGIO_ERRORE(45013);
+		SIGNAL SQLSTATE '45013'
+		SET MESSAGE_TEXT = @err_msg;
+	END IF;
     UPDATE `Prenotazioni` SET `stato` = 'Validata'
     WHERE `codice` = _codice;
 END$$
@@ -671,6 +689,10 @@ BEGIN
 				WHEN _codice = 45010 THEN "Impossibile creare una prenotazione non confermata."
 				WHEN _codice = 45011 THEN "Impossibile cambiare lo stato di una prenotazione annullata, scaduta o validata."
 				WHEN _codice = 45012 THEN "Non è possibile annullare una prenotazione raggiunti i trenta minuti precedenti l'inizio della proiezione."
+				WHEN _codice = 45013 THEN "Codice prenotazione non valido."
+				WHEN _codice = 45014 THEN "Il cinema selezionato è invalido o inesistente."
+				WHEN _codice = 45015 THEN "Il posto selezionato è stato gia prenotato per la proiezione selezionata."
+				WHEN _codice = 45016 THEN "Il dipendente selezionato è invalido o inesistente."
 				ELSE NULL
 			END);
 END$$
@@ -715,6 +737,11 @@ DELIMITER $$
 USE `cinemadb`$$
 CREATE PROCEDURE `elimina_dipendente` (IN _matricola INT)
 BEGIN
+	IF (_matricola NOT IN (SELECT `matricola` FROM `Dipendenti`)) THEN
+		SET @err_msg = MESSAGGIO_ERRORE(45016);
+		SIGNAL SQLSTATE '45016'
+		SET MESSAGE_TEXT = @err_msg;
+	END IF;
 	DELETE FROM `Dipendenti`
     WHERE `matricola` = _matricola;
 END$$
@@ -746,6 +773,11 @@ DELIMITER $$
 USE `cinemadb`$$
 CREATE PROCEDURE `elimina_cinema` (IN _id INT)
 BEGIN
+	IF (_id NOT IN (SELECT `id` FROM `Cinema`)) THEN
+		SET @err_msg = MESSAGGIO_ERRORE(45014);
+		SIGNAL SQLSTATE '45014'
+		SET MESSAGE_TEXT = @err_msg;
+	END IF;
 	DELETE FROM `Cinema`
     WHERE `id` = _id;
 END$$
@@ -824,8 +856,7 @@ DROP TABLE IF EXISTS `cinemadb`.`Palinsesti`;
 USE `cinemadb`;
 CREATE  OR REPLACE VIEW `Palinsesti` AS
 	SELECT `data`, `ora`, `cinema`, `sala`, `prezzo`,
-		`id` AS movie_id, `nome`, `durata`,
-		`casa_cinematografica`, `cast`
+		`nome`, `durata`, `casa_cinematografica`, `cast`
     FROM `Proiezioni` JOIN `Film` ON `film` = `id`
     WHERE `data` > CURDATE()
 		OR (`data` = CURDATE() AND `ora` > TIME(NOW()))
@@ -1273,41 +1304,87 @@ BEGIN
 								FROM `Prenotazioni`
                                 WHERE `codice` = NEW.`codice`);
     IF (NEW.`stato` = 'Annullata'
-			AND inizio_proiezione > DATE_SUB(NOW(), INTERVAL 30 MINUTE)) THEN
+			AND NOW() > DATE_SUB(inizio_proiezione, INTERVAL 30 MINUTE)) THEN
 		SET @err_msg = MESSAGGIO_ERRORE(45012);
 		SIGNAL SQLSTATE '45012'
 		SET MESSAGE_TEXT = @err_msg;
     END IF;
 END$$
 
+USE `cinemadb`$$
+CREATE TRIGGER `cinemadb`.`Prenotazioni_BEFORE_INSERT_Check_Duplicati`
+BEFORE INSERT ON `Prenotazioni`
+FOR EACH ROW
+BEGIN
+	DECLARE esiste_duplicato BOOL;
+    SET esiste_duplicato = (SELECT COUNT(*)
+								FROM `Prenotazioni`
+                                WHERE `cinema` = NEW.`cinema`
+									AND `sala` = NEW.`sala`
+									AND `fila` = NEW.`fila`
+									AND `numero` = NEW.`numero`
+									AND `data` = NEW.`data`
+									AND `ora` = NEW.`ora`
+                                    AND `stato` != 'Annullata');
+    IF (esiste_duplicato) THEN
+		SET @err_msg = MESSAGGIO_ERRORE(45015);
+		SIGNAL SQLSTATE '45015'
+		SET MESSAGE_TEXT = @err_msg;
+    END IF;
+END$$
+
+USE `cinemadb`$$
+CREATE TRIGGER `cinemadb`.`Prenotazioni_BEFORE_UPDATE_Check_Duplicati`
+BEFORE UPDATE ON `Prenotazioni`
+FOR EACH ROW
+BEGIN
+	DECLARE esiste_duplicato BOOL;
+    SET esiste_duplicato = (SELECT COUNT(*)
+								FROM `Prenotazioni`
+                                WHERE (`cinema`, `sala`, `fila`, `numero`, `data`, `ora`) NOT IN
+									(SELECT OLD.`cinema`, OLD.`sala`, OLD.`fila`, OLD.`numero`, OLD.`data`, OLD.`ora`)
+									AND `cinema` = NEW.`cinema`
+									AND `sala` = NEW.`sala`
+									AND `fila` = NEW.`fila`
+									AND `numero` = NEW.`numero`
+									AND `data` = NEW.`data`
+									AND `ora` = NEW.`ora`
+                                    AND `stato` != 'Annullata');
+    IF (esiste_duplicato) THEN
+		SET @err_msg = MESSAGGIO_ERRORE(45015);
+		SIGNAL SQLSTATE '45015'
+		SET MESSAGE_TEXT = @err_msg;
+    END IF;
+END$$
+
 
 DELIMITER ;
-GRANT EXECUTE ON procedure `cinemadb`.`mostra_proiezioni` TO 'amministratore';
-GRANT EXECUTE ON procedure `cinemadb`.`inserisci_proiezione` TO 'amministratore';
-GRANT EXECUTE ON procedure `cinemadb`.`mostra_proiezionisti_disponibili` TO 'amministratore';
-GRANT EXECUTE ON procedure `cinemadb`.`assegna_proiezionista` TO 'amministratore';
-GRANT EXECUTE ON procedure `cinemadb`.`elimina_proiezione` TO 'amministratore';
-GRANT EXECUTE ON procedure `cinemadb`.`mostra_turni` TO 'amministratore';
-GRANT EXECUTE ON procedure `cinemadb`.`inserisci_turno` TO 'amministratore';
-GRANT EXECUTE ON procedure `cinemadb`.`elimina_turno` TO 'amministratore';
-GRANT EXECUTE ON procedure `cinemadb`.`mostra_stato_prenotazioni` TO 'amministratore';
-GRANT EXECUTE ON procedure `cinemadb`.`mostra_proiezioni_senza_proiezionista` TO 'amministratore';
-GRANT EXECUTE ON procedure `cinemadb`.`mostra_cinema_senza_maschere` TO 'amministratore';
-GRANT EXECUTE ON procedure `cinemadb`.`mostra_dipendenti` TO 'amministratore';
-GRANT EXECUTE ON procedure `cinemadb`.`inserisci_dipendente` TO 'amministratore';
-GRANT EXECUTE ON procedure `cinemadb`.`elimina_dipendente` TO 'amministratore';
-GRANT EXECUTE ON procedure `cinemadb`.`mostra_cinema` TO 'amministratore';
-GRANT EXECUTE ON procedure `cinemadb`.`inserisci_cinema` TO 'amministratore';
-GRANT EXECUTE ON procedure `cinemadb`.`elimina_cinema` TO 'amministratore';
-GRANT EXECUTE ON procedure `cinemadb`.`mostra_sale` TO 'amministratore';
-GRANT EXECUTE ON procedure `cinemadb`.`inserisci_sala` TO 'amministratore';
-GRANT EXECUTE ON procedure `cinemadb`.`elimina_sala` TO 'amministratore';
-GRANT EXECUTE ON procedure `cinemadb`.`mostra_cinema` TO 'cliente';
-GRANT EXECUTE ON procedure `cinemadb`.`mostra_palinsesto` TO 'cliente';
-GRANT EXECUTE ON procedure `cinemadb`.`mostra_posti_disponibili` TO 'cliente';
-GRANT EXECUTE ON procedure `cinemadb`.`effettua_prenotazione` TO 'cliente';
-GRANT EXECUTE ON procedure `cinemadb`.`annulla_prenotazione` TO 'cliente';
-GRANT EXECUTE ON procedure `cinemadb`.`valida_prenotazione` TO 'maschera';
+GRANT EXECUTE ON procedure `cinemadb`.`mostra_proiezioni` TO 'amministratore'@'localhost';
+GRANT EXECUTE ON procedure `cinemadb`.`inserisci_proiezione` TO 'amministratore'@'localhost';
+GRANT EXECUTE ON procedure `cinemadb`.`mostra_proiezionisti_disponibili` TO 'amministratore'@'localhost';
+GRANT EXECUTE ON procedure `cinemadb`.`assegna_proiezionista` TO 'amministratore'@'localhost';
+GRANT EXECUTE ON procedure `cinemadb`.`elimina_proiezione` TO 'amministratore'@'localhost';
+GRANT EXECUTE ON procedure `cinemadb`.`mostra_turni` TO 'amministratore'@'localhost';
+GRANT EXECUTE ON procedure `cinemadb`.`inserisci_turno` TO 'amministratore'@'localhost';
+GRANT EXECUTE ON procedure `cinemadb`.`elimina_turno` TO 'amministratore'@'localhost';
+GRANT EXECUTE ON procedure `cinemadb`.`mostra_stato_prenotazioni` TO 'amministratore'@'localhost';
+GRANT EXECUTE ON procedure `cinemadb`.`mostra_proiezioni_senza_proiezionista` TO 'amministratore'@'localhost';
+GRANT EXECUTE ON procedure `cinemadb`.`mostra_cinema_senza_maschere` TO 'amministratore'@'localhost';
+GRANT EXECUTE ON procedure `cinemadb`.`mostra_dipendenti` TO 'amministratore'@'localhost';
+GRANT EXECUTE ON procedure `cinemadb`.`inserisci_dipendente` TO 'amministratore'@'localhost';
+GRANT EXECUTE ON procedure `cinemadb`.`elimina_dipendente` TO 'amministratore'@'localhost';
+GRANT EXECUTE ON procedure `cinemadb`.`mostra_cinema` TO 'amministratore'@'localhost';
+GRANT EXECUTE ON procedure `cinemadb`.`inserisci_cinema` TO 'amministratore'@'localhost';
+GRANT EXECUTE ON procedure `cinemadb`.`elimina_cinema` TO 'amministratore'@'localhost';
+GRANT EXECUTE ON procedure `cinemadb`.`mostra_sale` TO 'amministratore'@'localhost';
+GRANT EXECUTE ON procedure `cinemadb`.`inserisci_sala` TO 'amministratore'@'localhost';
+GRANT EXECUTE ON procedure `cinemadb`.`elimina_sala` TO 'amministratore'@'localhost';
+GRANT EXECUTE ON procedure `cinemadb`.`mostra_cinema` TO 'cliente'@'localhost';
+GRANT EXECUTE ON procedure `cinemadb`.`mostra_palinsesto` TO 'cliente'@'localhost';
+GRANT EXECUTE ON procedure `cinemadb`.`mostra_posti_disponibili` TO 'cliente'@'localhost';
+GRANT EXECUTE ON procedure `cinemadb`.`effettua_prenotazione` TO 'cliente'@'localhost';
+GRANT EXECUTE ON procedure `cinemadb`.`annulla_prenotazione` TO 'cliente'@'localhost';
+GRANT EXECUTE ON procedure `cinemadb`.`valida_prenotazione` TO 'maschera'@'localhost';
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
