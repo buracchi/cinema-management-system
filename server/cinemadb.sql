@@ -189,7 +189,7 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `cinemadb`.`Prenotazioni` (
   `codice` INT NOT NULL AUTO_INCREMENT,
-  `transazione` VARCHAR(256) NOT NULL,
+  `transazione` VARCHAR(256) NULL,
   `cinema` INT NOT NULL,
   `sala` INT NOT NULL,
   `fila` CHAR(1) NOT NULL,
@@ -197,6 +197,7 @@ CREATE TABLE IF NOT EXISTS `cinemadb`.`Prenotazioni` (
   `data` DATE NOT NULL,
   `ora` TIME NOT NULL,
   `stato` VARCHAR(15) NOT NULL,
+  `timestamp` TIMESTAMP NOT NULL,
   PRIMARY KEY (`codice`),
   UNIQUE INDEX `transazione_UNIQUE` (`transazione` ASC) VISIBLE,
   INDEX `fk_Prenotazioni_Posti1_idx` (`cinema` ASC, `sala` ASC, `fila` ASC, `numero` ASC) VISIBLE,
@@ -220,11 +221,6 @@ CREATE TABLE IF NOT EXISTS `cinemadb`.`Prenotazioni` (
 ENGINE = InnoDB;
 
 USE `cinemadb` ;
-
--- -----------------------------------------------------
--- Placeholder table for view `cinemadb`.`Palinsesti`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `cinemadb`.`Palinsesti` (`data` INT, `ora` INT, `cinema` INT, `sala` INT, `prezzo` INT, `nome` INT, `durata` INT, `casa_cinematografica` INT, `cast` INT);
 
 -- -----------------------------------------------------
 -- procedure mostra_cinema
@@ -253,9 +249,13 @@ BEGIN
 		SIGNAL SQLSTATE '45014'
 		SET MESSAGE_TEXT = @err_msg;
 	END IF;
-	SELECT *
-    FROM `Palinsesti`
-    WHERE `cinema` = _cinema_id;
+	SELECT `data`, `ora`, `cinema`, `sala`, `prezzo`,
+		`nome`, `durata`, `casa_cinematografica`, `cast`
+    FROM `Proiezioni` JOIN `Film` ON `film` = `id`
+    WHERE `cinema` = _cinema_id
+		AND `data` > CURDATE()
+		OR (`data` = CURDATE() AND `ora` > TIME(NOW()))
+	ORDER BY `data`, `ora`, `cinema`, `sala`;
 END$$
 
 DELIMITER ;
@@ -272,11 +272,23 @@ CREATE PROCEDURE `mostra_posti_disponibili` (
     IN _data DATE,
     IN _ora TIME)
 BEGIN
+	IF (_cinema_id NOT IN (SELECT `id` FROM `Cinema`)) THEN
+		SET @err_msg = MESSAGGIO_ERRORE(45014);
+		SIGNAL SQLSTATE '45014'
+		SET MESSAGE_TEXT = @err_msg;
+	END IF;
+	IF ((_cinema_id, _sala_id) NOT IN (SELECT `cinema`, `numero` FROM `Sale`)) THEN
+		SET @err_msg = MESSAGGIO_ERRORE(45018);
+		SIGNAL SQLSTATE '45018'
+		SET MESSAGE_TEXT = @err_msg;
+	END IF;
 	# TODO: Verificare che la prenotazione esista
+    # TODO: Forse conviene eliminare il doppio risultato
 	SELECT COUNT(DISTINCT `fila`) AS numero_file, COUNT(DISTINCT `numero`) AS posti_per_fila
 	FROM `Posti`
     WHERE `cinema` = _cinema_id AND `sala` = _sala_id
     GROUP BY `cinema`, `sala`;
+    
 	SELECT `fila`, `numero`
 	FROM `Posti`
 	WHERE `Posti`.`cinema` = _cinema_id AND `Posti`.`sala` = _sala_id
@@ -309,13 +321,25 @@ CREATE PROCEDURE `effettua_prenotazione` (
     IN _scadenza DATE,
 	IN _CVV2 NUMERIC(3))
 BEGIN
-	# Mock servizio di pagamento---------------------------------------------
+	DECLARE codice_prenotazione INT;
     DECLARE tid INT;
+    INSERT INTO `Prenotazioni` (`stato`, `cinema`, `sala`, `data`, `ora`, `fila`, `numero`, `timestamp`)
+		VALUES ('Attesa', _cinema_id, _sala_id, _data, _ora, _fila, _numero, NOW());
+	SET codice_prenotazione = (SELECT `codice`
+								FROM `Prenotazioni`
+                                WHERE `stato` = 'Attesa'
+                                AND `cinema` = _cinema_id
+                                AND `sala` = _sala_id
+                                AND `data` = _data
+                                AND `ora` = _ora
+                                AND `fila` = _fila
+                                AND `numero` = _numero);
+	# Mock servizio di pagamento---------------------------------------------
     SET tid = (SELECT IFNULL(MAX(CAST(`transazione` AS UNSIGNED INTEGER)) + 1, 1) FROM `Prenotazioni`);
 	# -----------------------------------------------------------------------
-    INSERT INTO `Prenotazioni` (`transazione`, `stato`, `cinema`, `sala`, `data`, `ora`, `fila`, `numero`)
-		VALUES (tid, 'Confermata', _cinema_id, _sala_id, _data, _ora, _fila, _numero);
-	SELECT `codice` FROM `Prenotazioni` WHERE `transazione` = tid;
+    UPDATE `Prenotazioni` SET `stato` = 'Confermata', `transazione` = tid
+	WHERE `codice` = codice_prenotazione;
+	SELECT codice_prenotazione;
 END$$
 
 DELIMITER ;
@@ -527,6 +551,11 @@ CREATE PROCEDURE `elimina_turno` (
 	IN _giorno VARCHAR(15),
 	IN _inizio TIME)
 BEGIN
+	IF ((_dipendente, _giorno, _inizio) NOT IN (SELECT `dipendente`, `giorno`, `inizio` FROM `Turni`)) THEN
+		SET @err_msg = MESSAGGIO_ERRORE(45019);
+		SIGNAL SQLSTATE '45019'
+		SET MESSAGE_TEXT = @err_msg;
+	END IF;
 	DELETE FROM `Turni`
     WHERE `dipendente` = _dipendente
 		AND `giorno` = _giorno
@@ -565,6 +594,11 @@ CREATE PROCEDURE `elimina_proiezione` (
 	IN _data DATE,
 	IN _ora TIME)
 BEGIN
+	IF ((_cinema, _sala, _data, _ora) NOT IN (SELECT `cinema`, `sala`, `data`, `ora` FROM `Proiezioni`)) THEN
+		SET @err_msg = MESSAGGIO_ERRORE(45017);
+		SIGNAL SQLSTATE '45017'
+		SET MESSAGE_TEXT = @err_msg;
+	END IF;
 	DELETE FROM `Proiezioni`
     WHERE `cinema` = _cinema AND `sala` = _sala
 		AND `data` = _data AND `ora` = _ora;
@@ -636,6 +670,16 @@ CREATE PROCEDURE `mostra_proiezionisti_disponibili` (
 	IN _ora TIME)
 BEGIN
 	DECLARE _fine TIME;
+	IF (_cinema NOT IN (SELECT `id` FROM `Cinema`)) THEN
+		SET @err_msg = MESSAGGIO_ERRORE(45014);
+		SIGNAL SQLSTATE '45014'
+		SET MESSAGE_TEXT = @err_msg;
+	END IF;
+	IF ((_cinema, _sala) NOT IN (SELECT `cinema`, `numero` FROM `Sale`)) THEN
+		SET @err_msg = MESSAGGIO_ERRORE(45018);
+		SIGNAL SQLSTATE '45018'
+		SET MESSAGE_TEXT = @err_msg;
+	END IF;
     SET _fine = (SELECT SEC_TO_TIME(TIME_TO_SEC(`ora`) + TIME_TO_SEC(`durata`))
 					FROM `Proiezioni` JOIN `Film` ON `id` = `film`
                     WHERE `Proiezioni`.`cinema` = _cinema
@@ -686,13 +730,18 @@ BEGIN
 				WHEN _codice = 45007 THEN "Impossibile creare un turno di più di 8 ore."
 				WHEN _codice = 45008 THEN "La somma della durata dei turni nella giornata supera le 8 ore."
 				WHEN _codice = 45009 THEN "Il dipendente è già assegnato ad un turno nell'arco temporale selezionato."
-				WHEN _codice = 45010 THEN "Impossibile creare una prenotazione non confermata."
+				WHEN _codice = 45010 THEN "Impossibile creare una prenotazione non in attesa."
 				WHEN _codice = 45011 THEN "Impossibile cambiare lo stato di una prenotazione annullata, scaduta o validata."
 				WHEN _codice = 45012 THEN "Non è possibile annullare una prenotazione raggiunti i trenta minuti precedenti l'inizio della proiezione."
 				WHEN _codice = 45013 THEN "Codice prenotazione non valido."
 				WHEN _codice = 45014 THEN "Il cinema selezionato è invalido o inesistente."
 				WHEN _codice = 45015 THEN "Il posto selezionato è stato gia prenotato per la proiezione selezionata."
 				WHEN _codice = 45016 THEN "Il dipendente selezionato è invalido o inesistente."
+				WHEN _codice = 45017 THEN "La proiezione selezionata è invalida o inesistente."
+				WHEN _codice = 45018 THEN "La sala selezionata è invalida o inesistente."
+				WHEN _codice = 45019 THEN "Il turno selezionato è invalido o inesistente."
+				WHEN _codice = 45020 THEN "Impossibile confermare una prenotazione non in attesa."
+				WHEN _codice = 45021 THEN "Una prenotazione in attesa può essere solamente confermata."
 				ELSE NULL
 			END);
 END$$
@@ -792,6 +841,11 @@ DELIMITER $$
 USE `cinemadb`$$
 CREATE PROCEDURE `mostra_sale` (IN _cinema INT)
 BEGIN
+	IF (_cinema NOT IN (SELECT `id` FROM `Cinema`)) THEN
+		SET @err_msg = MESSAGGIO_ERRORE(45014);
+		SIGNAL SQLSTATE '45014'
+		SET MESSAGE_TEXT = @err_msg;
+	END IF;
 	SELECT `cinema`, `sala`,
 		COUNT(DISTINCT fila) AS numero_file,
         COUNT(DISTINCT numero) AS posti_per_fila
@@ -843,24 +897,16 @@ CREATE PROCEDURE `elimina_sala` (
 	IN _cinema INT,
 	IN _numero INT)
 BEGIN
+	IF ((_cinema, _numero) NOT IN (SELECT `cinema`, `numero` FROM `Sale`)) THEN
+		SET @err_msg = MESSAGGIO_ERRORE(45018);
+		SIGNAL SQLSTATE '45018'
+		SET MESSAGE_TEXT = @err_msg;
+	END IF;
 	DELETE FROM `Sale`
     WHERE `cinema` = _cinema AND `numero` = _numero;
 END$$
 
 DELIMITER ;
-
--- -----------------------------------------------------
--- View `cinemadb`.`Palinsesti`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `cinemadb`.`Palinsesti`;
-USE `cinemadb`;
-CREATE  OR REPLACE VIEW `Palinsesti` AS
-	SELECT `data`, `ora`, `cinema`, `sala`, `prezzo`,
-		`nome`, `durata`, `casa_cinematografica`, `cast`
-    FROM `Proiezioni` JOIN `Film` ON `film` = `id`
-    WHERE `data` > CURDATE()
-		OR (`data` = CURDATE() AND `ora` > TIME(NOW()))
-	ORDER BY `data`, `ora`, `cinema`, `sala`;
 USE `cinemadb`;
 
 DELIMITER $$
@@ -1030,16 +1076,19 @@ AFTER DELETE ON `Turni`
 FOR EACH ROW
 BEGIN
 	UPDATE `Proiezioni`
-    SET `proiezionista` = NULL
-    WHERE (`cinema`, `sala`, `data`, `ora`) IN
-		(SELECT `cinema`, `sala`, `data`, `ora`
-			FROM `Proiezioni` JOIN `Film` ON `film` = `id`
-			WHERE `proiezionista` = OLD.`dipendente`
-				AND `cinema` = OLD.`cinema`
-				AND GIORNO_DELLA_SETTIMANA(`data`) = OLD.`giorno`
-				AND `ora` >= OLD.`inizio`
-				AND SEC_TO_TIME(TIME_TO_SEC(`ora`) + TIME_TO_SEC(`Film`.`durata`))
-					<= SEC_TO_TIME(TIME_TO_SEC(OLD.`inizio`) + TIME_TO_SEC(OLD.`durata`)));
+    INNER JOIN (SELECT `cinema`, `sala`, `data`, `ora`
+				FROM `Proiezioni` JOIN `Film` ON `film` = `id`
+				WHERE `proiezionista` = OLD.`dipendente`
+					AND `cinema` = OLD.`cinema`
+					AND GIORNO_DELLA_SETTIMANA(`data`) = OLD.`giorno`
+					AND `ora` >= OLD.`inizio`
+					AND SEC_TO_TIME(TIME_TO_SEC(`ora`) + TIME_TO_SEC(`Film`.`durata`))
+						<= SEC_TO_TIME(TIME_TO_SEC(OLD.`inizio`) + TIME_TO_SEC(OLD.`durata`))
+			) P ON `Proiezioni`.`cinema` = P.`cinema`
+				AND `Proiezioni`.`sala` = P.`sala`
+                AND `Proiezioni`.`data` = P.`data`
+                AND `Proiezioni`.`ora` = P.`ora`
+    SET `proiezionista` = NULL;
 END$$
 
 USE `cinemadb`$$
@@ -1275,40 +1324,11 @@ CREATE TRIGGER `cinemadb`.`Prenotazioni_BEFORE_INSERT_Check_Stato`
 BEFORE INSERT ON `Prenotazioni`
 FOR EACH ROW
 BEGIN
-	IF (NEW.`stato` != 'Confermata') THEN
-		SET @err_msg = MESSAGGIO_ERRORE(45003);
+	IF (NEW.`stato` != 'Attesa') THEN
+		SET @err_msg = MESSAGGIO_ERRORE(45010);
 		SIGNAL SQLSTATE '45010'
 		SET MESSAGE_TEXT = @err_msg;
 	END IF;
-END$$
-
-USE `cinemadb`$$
-CREATE TRIGGER `cinemadb`.`Prenotazioni_BEFORE_UPDATE_Check_Stato`
-BEFORE UPDATE ON `Prenotazioni`
-FOR EACH ROW
-BEGIN
-	IF (OLD.`stato` != 'Confermata') THEN
-		SET @err_msg = MESSAGGIO_ERRORE(45011);
-		SIGNAL SQLSTATE '45011'
-		SET MESSAGE_TEXT = @err_msg;
-	END IF;
-END$$
-
-USE `cinemadb`$$
-CREATE TRIGGER `cinemadb`.`Prenotazioni_BEFORE_UPDATE_Check_Ora_Proiezione`
-BEFORE UPDATE ON `Prenotazioni`
-FOR EACH ROW
-BEGIN
-	DECLARE inizio_proiezione TIMESTAMP;
-    SET inizio_proiezione = (SELECT TIMESTAMP(`data`, `ora`)
-								FROM `Prenotazioni`
-                                WHERE `codice` = NEW.`codice`);
-    IF (NEW.`stato` = 'Annullata'
-			AND NOW() > DATE_SUB(inizio_proiezione, INTERVAL 30 MINUTE)) THEN
-		SET @err_msg = MESSAGGIO_ERRORE(45012);
-		SIGNAL SQLSTATE '45012'
-		SET MESSAGE_TEXT = @err_msg;
-    END IF;
 END$$
 
 USE `cinemadb`$$
@@ -1329,6 +1349,45 @@ BEGIN
     IF (esiste_duplicato) THEN
 		SET @err_msg = MESSAGGIO_ERRORE(45015);
 		SIGNAL SQLSTATE '45015'
+		SET MESSAGE_TEXT = @err_msg;
+    END IF;
+END$$
+
+USE `cinemadb`$$
+CREATE TRIGGER `cinemadb`.`Prenotazioni_BEFORE_UPDATE_Check_Stato`
+BEFORE UPDATE ON `Prenotazioni`
+FOR EACH ROW
+BEGIN
+	IF (OLD.`stato` = 'Attesa' AND NEW.`stato` != 'Confermata') THEN
+		SET @err_msg = MESSAGGIO_ERRORE(45021);
+		SIGNAL SQLSTATE '45021'
+		SET MESSAGE_TEXT = @err_msg;
+    END IF;
+	IF (OLD.`stato` != 'Attesa' AND NEW.`stato` = 'Confermata') THEN
+		SET @err_msg = MESSAGGIO_ERRORE(45020);
+		SIGNAL SQLSTATE '45020'
+		SET MESSAGE_TEXT = @err_msg;
+    END IF;
+	IF (OLD.`stato` != 'Attesa' AND OLD.`stato` != 'Confermata') THEN
+		SET @err_msg = MESSAGGIO_ERRORE(45011);
+		SIGNAL SQLSTATE '45011'
+		SET MESSAGE_TEXT = @err_msg;
+	END IF;
+END$$
+
+USE `cinemadb`$$
+CREATE TRIGGER `cinemadb`.`Prenotazioni_BEFORE_UPDATE_Check_Ora_Proiezione`
+BEFORE UPDATE ON `Prenotazioni`
+FOR EACH ROW
+BEGIN
+	DECLARE inizio_proiezione TIMESTAMP;
+    SET inizio_proiezione = (SELECT TIMESTAMP(`data`, `ora`)
+								FROM `Prenotazioni`
+                                WHERE `codice` = NEW.`codice`);
+    IF (NEW.`stato` = 'Annullata'
+			AND NOW() > DATE_SUB(inizio_proiezione, INTERVAL 30 MINUTE)) THEN
+		SET @err_msg = MESSAGGIO_ERRORE(45012);
+		SIGNAL SQLSTATE '45012'
 		SET MESSAGE_TEXT = @err_msg;
     END IF;
 END$$
@@ -1462,6 +1521,7 @@ INSERT INTO `cinemadb`.`StatiPrenotazione` (`nome`) VALUES ('Confermata');
 INSERT INTO `cinemadb`.`StatiPrenotazione` (`nome`) VALUES ('Validata');
 INSERT INTO `cinemadb`.`StatiPrenotazione` (`nome`) VALUES ('Scaduta');
 INSERT INTO `cinemadb`.`StatiPrenotazione` (`nome`) VALUES ('Annullata');
+INSERT INTO `cinemadb`.`StatiPrenotazione` (`nome`) VALUES ('Attesa');
 
 COMMIT;
 
@@ -1474,7 +1534,14 @@ ON SCHEDULE EVERY 1 MONTH
 STARTS TIMESTAMP(DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL 1 MONTH), '%Y-%m-1'))
 DO
 	DELETE FROM `Prenotazioni` WHERE `data` < CURDATE();
-    
+
+DROP EVENT IF EXISTS `cinemadb`.`scadenza_prenotazioni_in_attesa`;
+CREATE EVENT `cinemadb`.`scadenza_prenotazioni_in_attesa`
+ON SCHEDULE EVERY 1 MINUTE
+STARTS TIMESTAMP(CURDATE())
+DO
+	DELETE FROM `Prenotazioni` WHERE `timestamp` < DATE_SUB(NOW(), INTERVAL 10 MINUTE);
+
 DROP EVENT IF EXISTS `cinemadb`.`scadenza_prenotazioni`;
 CREATE EVENT `cinemadb`.`scadenza_prenotazioni`
 ON SCHEDULE EVERY 1 MINUTE

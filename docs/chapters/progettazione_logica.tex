@@ -60,24 +60,28 @@
     \\ \hline
     Prenotazione
      & E
-     & 140 000 (in media la prenotazione del 50\% dei posti disponibili al
-    giorno)
+     & 560 000 (in media la prenotazione del 50\% dei posti disponibili al
+    giorno in un mese)
     \\ \hline
-    Prenotazione annullata
+    Prenotazione in attesa
      & E
-     & 14 000 (in media il 10\% delle prenotazioni)
+     & 28 000 (in media il 5\% delle prenotazioni)
     \\ \hline
     Prenotazione confermata
      & E
-     & 126 000 (in media il 90\% delle prenotazioni)
+     & 532 000 (in media il 95\% delle prenotazioni)
     \\ \hline
     Prenotazione validata
      & E
-     & 113 400 (in media il 90\% delle prenotazioni confermate)
+     & 425 600 (in media l'80\% delle prenotazioni confermate)
     \\ \hline
     Prenotazione scaduta
      & E
-     & 12 600 (in media il 10\% delle prenotazioni confermate)
+     & 53 200 (in media il 10\% delle prenotazioni confermate)
+    \\ \hline
+    Prenotazione annullata
+     & E
+     & 53 200 (in media il 10\% delle prenotazioni confermate)
     \\ \hline
     CinemaSala
      & R
@@ -93,15 +97,15 @@
     \\ \hline
     PostoPrenotazione
      & R
-     & 140 000
+     & 560 000
     \\ \hline
     PrenotazioneProiezione
      & R
-     & 140 000
+     & 560 000
     \\ \hline
     ClientePrenotazione
      & R
-     & 140 000
+     & 560 000
     \\ \hline
     FilmProiezione
      & R
@@ -113,7 +117,7 @@
     \\ \hline
     Validazione
      & R
-     & 113 400
+     & 425 600
     \\ \hline
     DipendenteTurno
      & R
@@ -170,7 +174,7 @@
     \\ \hline
     Op. 8
      & Inserisci una nuova proiezione in programma.
-     & 4/mese
+     & 5600/mese
     \\ \hline
     Op. 9
      & Elimina una proiezione in programma.
@@ -317,13 +321,13 @@
      & \multicolumn{1}{|c|}{\textbf{Accessi}}
      & \multicolumn{1}{|c|}{\textbf{Tipo}}
     \\ \hline
-    CinemaSala
-     & R
+    Cinema
+     & E
      & 1
      & L
     \\\hline
-    SalaPosto
-     & R
+    Sala
+     & E
      & 1
      & L
     \\\hline
@@ -394,18 +398,13 @@
      & 1
      & L
     \\\hline
-    FilmProiezione
-     & R
-     & 1
-     & L
-    \\\hline
     Film
      & E
      & 1
      & L
     \\\hline
     \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
-    Costo: 120/mese}                            \\\hline
+    Costo: 80/mese}                             \\\hline
 \end{tabularx}
 
 \begin{tabularx}{\linewidth}{|X|X|X|X|}
@@ -424,7 +423,7 @@
      & S
     \\\hline
     \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
-    Costo: 8/mese}                              \\\hline
+    Costo: 11 200/mese}                         \\\hline
 \end{tabularx}
 
 \begin{tabularx}{\linewidth}{|X|X|X|X|}
@@ -456,8 +455,8 @@
      & \multicolumn{1}{|c|}{\textbf{Accessi}}
      & \multicolumn{1}{|c|}{\textbf{Tipo}}
     \\ \hline
-    ProiezioneProiezionista
-     & R
+    Proiezione
+     & E
      & 1
      & S
     \\\hline
@@ -480,18 +479,13 @@
      & 1
      & L
     \\\hline
-    FilmProiezione
-     & R
-     & 1
-     & L
-    \\\hline
     Film
      & E
      & 1
      & L
     \\\hline
     \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
-    Costo: 15 000/giorno}                       \\\hline
+    Costo: 10 000/giorno}                       \\\hline
 \end{tabularx}
 
 \begin{tabularx}{\linewidth}{|l|X|X|X|}
@@ -504,18 +498,13 @@
      & \multicolumn{1}{|c|}{\textbf{Accessi}}
      & \multicolumn{1}{|c|}{\textbf{Tipo}}
     \\ \hline
-    PrenotazioneProiezione
-     & R
+    Prenotazione in attesa
+     & E
      & 1
      & L
     \\\hline
     Prenotazione confermata
      & E
-     & 1
-     & L
-    \\\hline
-    PostoPrenotazione
-     & R
      & 1
      & L
     \\\hline
@@ -525,7 +514,7 @@
      & L
     \\\hline
     \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
-    Costo: 20 000/giorno}                       \\\hline
+    Costo: 15 000/giorno}                       \\\hline
 \end{tabularx}
 
 \begin{tabularx}{\linewidth}{|l|X|X|X|}
@@ -543,8 +532,13 @@
      & 1
      & S
     \\\hline
+    Prenotazione in attesa
+     & E
+     & 1
+     & S
+    \\\hline
     \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
-    Costo: 10 000/giorno}                       \\\hline
+    Costo: 20 000/giorno}                       \\\hline
 \end{tabularx}
 
 \begin{tabularx}{\linewidth}{|l|X|X|X|}
@@ -667,8 +661,13 @@
      & 1
      & L
     \\\hline
+    Dipendenti
+     & E
+     & 1
+     & L
+    \\\hline
     \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
-    Costo: 50/settimana}                        \\\hline
+    Costo: 100/settimana}                        \\\hline
 \end{tabularx}
 
 \begin{tabularx}{\linewidth}{|X|X|X|X|}
@@ -700,18 +699,13 @@
      & \multicolumn{1}{|c|}{\textbf{Accessi}}
      & \multicolumn{1}{|c|}{\textbf{Tipo}}
     \\ \hline
-    DipendenteTurno
-     & R
-     & 1
-     & L
-    \\\hline
     Turno
      & E
      & 1
      & S
     \\\hline
     \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
-    Costo: 150/settimana}                       \\\hline
+    Costo: 100/settimana}                       \\\hline
 \end{tabularx}
 
 \begin{tabularx}{\linewidth}{|l|X|X|X|}
@@ -729,13 +723,8 @@
      & 1
      & L
     \\\hline
-    ProiezioneProiezionista
-     & E
-     & 1
-     & L
-    \\\hline
     \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
-    Costo: 2/giorno}                            \\\hline
+    Costo: 1/giorno}                            \\\hline
 \end{tabularx}
 
 \begin{tabularx}{\linewidth}{|X|X|X|X|}
@@ -753,18 +742,8 @@
      & 3
      & L
     \\\hline
-    CinemaTurno
-     & R
-     & 2
-     & L
-    \\\hline
     Turno
      & E
-     & 2
-     & L
-    \\\hline
-    DipendenteTurno
-     & R
      & 2
      & L
     \\\hline
@@ -774,7 +753,7 @@
      & L
     \\\hline
     \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
-    Costo: 11/giorno}                           \\\hline
+    Costo: 7/giorno}                           \\\hline
 \end{tabularx}
 
 \begin{tabularx}{\linewidth}{|l|X|X|X|}
@@ -807,13 +786,8 @@
      & 1
      & L
     \\\hline
-    PostoPrenotazione
-     & E
-     & 1
-     & L
-    \\\hline
     \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
-    Costo: 5/giorno}                            \\\hline
+    Costo: 4/giorno}                            \\\hline
 \end{tabularx}
 
 \pagebreak
@@ -837,14 +811,14 @@ di prenotazione per per essere effettuate non è necessario richiedere ai client
 di identificarsi per interagire con il sistema, ciò implica che i dati
 contenuti nell'entità cliente e nella relazione ClientePrenotazione risultano
 superflui. Rimuovendo le due entità in questione è possibile ottenere un
-risparmio di memoria pari a %100 000 * (4 + 24 + 256) + 140 000 * 4 byte
-27.2 MB circa ed un iterazione con il sistema semplificata per i clienti.
+risparmio di memoria pari a %100 000 * (4 + 24 + 256) + 560 000 * 4 byte
+31.4 MB circa ed un iterazione con il sistema semplificata per i clienti.
 
 Poiché non esistono operazioni riguardanti le prenotazioni validate che
 richiedono la maschera validante, i dati nella relazione Validazione risultano
 superflui, rimuovendo la relazione è possibile ottenere un risparmio di memoria
-pari a % 113 400 * 4 byte
-443 kB circa.
+pari a % 425 600 * 4 byte
+1.6 MB circa.
 
 Le entità Maschera e Proiezionista sono distinte dalla relazione
 ProiezioneProiezionista, le operazioni che le riguardano fanno distinzione tra
@@ -857,40 +831,53 @@ L'aggiunta dell'attributo Ruolo comporta uno spreco di memoria irrisorio pari a
 %200 * 1 byte 
 200 byte che non è considerabile come un reale svantaggio.
 
-Le entità Proiezione Validata, Proiezione Confermata, Proiezione Scaduta e
-Proiezione Annullata non hanno attributi specifici che le distinguono,
-le operazioni che le riguardano fanno distinzione tra le due ma il loro
-accorpamento comporterebbe una riduzione dei costi.
+%controllare il nuovo spreco di memoria
+
+Le entità figlie dell'entità Prenotazione confermata non hanno attributi
+specifici che le distinguono, le operazioni che le riguardano fanno distinzione 
+tra i diversi tipi ma il loro accorpamento comporterebbe una riduzione dei
+costi.
 Pertanto le entità figlie della generalizzazione verranno accorpate nel
-genitore aggiungendo un attributo Stato all'entità Prenotazione.
-In questo modo
+genitore aggiungendo un attributo Stato all'entità Prenotazione confermata.
 l'Operazione 14 consisterà in un'unica scrittura riguardante
-l'entità Prenotazione ed il suo costo si ridurrà da 2000 a 1000 accessi
-al giorno,
+l'entità Prenotazione confermata ed il suo costo si ridurrà da 2000 a 1000
+accessi al giorno,
 l'Operazione 15 consisterà in un'unica scrittura riguardante
-l'entità Prenotazione ed il suo costo si ridurrà da 18000 a 9000 accessi
-al giorno,
+l'entità Prenotazione confermata ed il suo costo si ridurrà da 18000 a 9000
+accessi al giorno,
 per finire l'attributo Stato comporta uno spreco di memoria pari a
-% 140 000 * 1 byte
-137 kB circa che risulta accettabile se comparato al guadagno in termini di
+% 532 000 * 1 byte
+520 kB circa che risulta accettabile se comparato al guadagno in termini di
+prestazioni.
+
+Le entità figlie dell'entità Prenotazione hanno ora attributi specifici 
+distinti e le operazioni che le riguardano fanno distinzione tra i diversi
+tipi ma il loro accorpamento comporterebbe una riduzione dei costi in accesso.
+Pertanto le entità figlie della generalizzazione verranno accorpate nel
+genitore aggiungendo gli attributi Stato, Codice transazione e Timestamp
+all'entità Prenotazione.
+In questo modo il costo dell'Operazione 12 verrà ridotto di un terzo,
+passando da un costo di 15000 accessi a 10000 accessi al giorno mentre
+lo spreco di memoria sarà pari a
+% 56 000 * (1 + 4) byte + 560 000 * 4 byte
+2.4 MB circa che risulta accettabile se comparato al guadagno in termini di
 prestazioni.
 
 L'attributo multivalore Cast viene coinvolto unicamente durante l'Operazione 11,
 pertanto anziché introdurre un'entità Cast ed una relazione CastFilm
 l'attributo multivalore verrà ridotto ad un semplice attributo Cast il cui
 dominio sarà quello di una stringa.
-In questo modo il costo dell'operazione 11 anziché incrementare a 25000
-rimarrà di 15000 accessi al giorno.
+In questo modo il costo dell'operazione 11 anziché incrementare a 15000
+rimarrà di 10000 accessi al giorno.
 
-Per ridurre il costo dell'operazione più costosa, ovvero l'Operazione 12 è
-possibile introdurre una relazione PostoDisponibile tra le entità Proiezione e
-Posto con cardinalità (0,N)|(0,N) riducendo il costo dell'Operazione 12 da
-20000 a 10000 accessi al giorno.
+È possibile ridurre il costo dell'Operazione 12 introducendo una relazione
+PostoDisponibile tra le entità Proiezione e Posto con cardinalità (0,N)|(0,N)
+riducendo il costo da 15000 a 5000 accessi al giorno.
 La ridondanza comporta uno spreco di memoria pari a
 % 1 400 * 200 * (4 + 1 + 4 + 4) byte
 3.5 MB circa che risulta accettabile.
 Tuttavia per poter mantenere coerenti i dati della relazione introdotta il costo
-delle operazioni 8 e 9 raddoppia, portando il costo delle operazioni totali a
+delle operazioni 13 e 14 raddoppia, portando il costo delle operazioni totali a
 %10 000 + 1 000 - 10000
 1000 accessi accessi aggiuntivi al giorno rispetto alla soluzione originale.
 Pertanto non converrà introdurre la relazione PostoDisponibile
@@ -956,7 +943,8 @@ sala,
 data,
 ora,
 fila,
-numero)
+numero,
+timestamp)
 
 \quad Con i vincoli:
 

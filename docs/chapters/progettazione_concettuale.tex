@@ -68,6 +68,9 @@ pertanto registrare il codice identificante la transazione dal servizio
 utilizzato mentre non sarà necessario registrare i dati sensibili delle carte
 di credito nel sistema.
 
+Per poter far scadere una prenotazione in attesa dopo 10 minuti sarà necessario
+mantenere la data di creazione della richiesta di prenotazione.
+
 \begin{center}
     \includegraphics[width=16.5cm]{er_diagrams/er_5.png}
 \end{center}
@@ -130,7 +133,8 @@ identificativo artificiale.
     %\textlangle{}espressione\textrangle{} \\
     % Il prezzo di una prenotazione deve dipendere dal film, dalla sala
     % e dal momento in cui avviene la relativa proiezione.        \\\hline
-    La procedura di prenotazione deve scadere dopo 10 minuti.   \\\hline
+    Una prenotazione in attesa deve essere eliminata 10 minuti dopo
+    la sua creazione.                                           \\\hline
     Le prenotazioni confermate devono poter essere annullate entro 30 minuti
     dall'inizio della proiezione.                               \\\hline
     In una prenotazione devono coincidere il numero di sala e cinema del posto
@@ -208,13 +212,13 @@ identificativo artificiale.
      & Codice transazione
      & Codice di prenotazione
     \\\hline
-    Prenotazione annullata
-     & Una prenotazione che è stata annullata dal cliente.
+    Prenotazione in attesa
+     & Prenotazione in attesa di essere confermata dal servizio di pagamento.
      &
      &
     \\\hline
     Prenotazione confermata
-     & Prenotazione non annullata.
+     & Prenotazione associata ad una transazione del servizio di pagamento.
      &
      &
     \\\hline
@@ -226,6 +230,11 @@ identificativo artificiale.
     Prenotazione scaduta
      & Una prenotazione confermata relativa ad proiezione effettuata non
     validata da una maschera.
+     &
+     &
+    \\\hline
+    Prenotazione annullata
+     & Una prenotazione confermata che è stata annullata dal cliente.
      &
      &
     \\\hline
