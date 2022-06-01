@@ -14,6 +14,7 @@ struct cms {
 
 static inline bool connect(cms_t cms, const char* username, const char* password);
 static int stmt_bind_param(struct statement_data statement_data, struct request_param* request_param);
+static MYSQL_STMT* get_prepared_stmt(cms_t cms, enum cms_operation operation);
 
 extern cms_t cms_init(const char* username, const char* password) {
     cms_t this;
@@ -62,7 +63,7 @@ extern inline const char* cms_get_error_message(cms_t cms) {
     return mysql_error(cms->db_connection);
 }
 
-extern MYSQL_STMT* get_prepared_stmt(cms_t cms, enum statement_operation operation) {
+static MYSQL_STMT* get_prepared_stmt(cms_t cms, enum cms_operation operation) {
     MYSQL_STMT** stmt = &(cms->statements_data[operation].statement);
     if (!*stmt) {
         const char* query = cms->statements_data[operation].query;
@@ -79,11 +80,11 @@ fail:
     return *stmt;
 }
 
-extern int cms_stmt_execute(cms_t cms,
-                            enum statement_operation operation,
-                            struct request_param* request_param,
+extern int cms_operation_execute(cms_t cms,
+                            enum cms_operation operation,
+                            struct cms_request_param* request_param,
                             struct cms_result_response** response,
-                            struct result_bitmap* result_bitmap) {
+                            struct cms_result_bitmap* result_bitmap) {
     MYSQL_STMT* statement;
     MYSQL_RES* result_metadata;
     MYSQL_TIME* timebased_result_params;
@@ -159,7 +160,7 @@ fail:
     return 1;
 }
 
-static int stmt_bind_param(struct statement_data statement_data, struct request_param* request_param) {
+static int stmt_bind_param(struct statement_data statement_data, struct cms_request_param* request_param) {
     unsigned long param_count;
     MYSQL_BIND* binding_params;
     MYSQL_TIME* timebased_params;

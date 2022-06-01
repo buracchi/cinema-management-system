@@ -60,28 +60,28 @@
     \\ \hline
     Prenotazione
      & E
-     & 560 000 (in media la prenotazione del 50\% dei posti disponibili al
+     & 140 000 (in media la prenotazione del 20\% dei posti disponibili al
     giorno in un mese)
     \\ \hline
     Prenotazione in attesa
      & E
-     & 28 000 (in media il 5\% delle prenotazioni)
+     & 7 000 (in media il 5\% delle prenotazioni)
     \\ \hline
     Prenotazione confermata
      & E
-     & 532 000 (in media il 95\% delle prenotazioni)
+     & 133 000 (in media il 95\% delle prenotazioni)
     \\ \hline
     Prenotazione validata
      & E
-     & 425 600 (in media l'80\% delle prenotazioni confermate)
+     & 106 400 (in media l'80\% delle prenotazioni confermate)
     \\ \hline
     Prenotazione scaduta
      & E
-     & 53 200 (in media il 10\% delle prenotazioni confermate)
+     & 13 300 (in media il 10\% delle prenotazioni confermate)
     \\ \hline
     Prenotazione annullata
      & E
-     & 53 200 (in media il 10\% delle prenotazioni confermate)
+     & 13 300 (in media il 10\% delle prenotazioni confermate)
     \\ \hline
     CinemaSala
      & R
@@ -97,15 +97,15 @@
     \\ \hline
     PostoPrenotazione
      & R
-     & 560 000
+     & 140 000
     \\ \hline
     PrenotazioneProiezione
      & R
-     & 560 000
+     & 140 000
     \\ \hline
     ClientePrenotazione
      & R
-     & 560 000
+     & 140 000
     \\ \hline
     FilmProiezione
      & R
@@ -117,7 +117,7 @@
     \\ \hline
     Validazione
      & R
-     & 425 600
+     & 106 400
     \\ \hline
     DipendenteTurno
      & R
@@ -811,14 +811,14 @@ di prenotazione per per essere effettuate non è necessario richiedere ai client
 di identificarsi per interagire con il sistema, ciò implica che i dati
 contenuti nell'entità cliente e nella relazione ClientePrenotazione risultano
 superflui. Rimuovendo le due entità in questione è possibile ottenere un
-risparmio di memoria pari a %100 000 * (4 + 24 + 256) + 560 000 * 4 byte
-31.4 MB circa ed un iterazione con il sistema semplificata per i clienti.
+risparmio di memoria pari a %100 000 * (4 + 24 + 256) + 140 000 * 4 byte
+27.2 MB circa ed un iterazione con il sistema semplificata per i clienti.
 
 Poiché non esistono operazioni riguardanti le prenotazioni validate che
 richiedono la maschera validante, i dati nella relazione Validazione risultano
 superflui, rimuovendo la relazione è possibile ottenere un risparmio di memoria
-pari a % 425 600 * 4 byte
-1.6 MB circa.
+pari a % 106 400 * 4 byte
+416 kB circa.
 
 Le entità Maschera e Proiezionista sono distinte dalla relazione
 ProiezioneProiezionista, le operazioni che le riguardano fanno distinzione tra
@@ -846,8 +846,8 @@ l'Operazione 15 consisterà in un'unica scrittura riguardante
 l'entità Prenotazione confermata ed il suo costo si ridurrà da 18000 a 9000
 accessi al giorno,
 per finire l'attributo Stato comporta uno spreco di memoria pari a
-% 532 000 * 1 byte
-520 kB circa che risulta accettabile se comparato al guadagno in termini di
+% 133 000 * 1 byte
+130 kB circa che risulta accettabile se comparato al guadagno in termini di
 prestazioni.
 
 Le entità figlie dell'entità Prenotazione hanno ora attributi specifici 
@@ -859,8 +859,8 @@ all'entità Prenotazione.
 In questo modo il costo dell'Operazione 12 verrà ridotto di un terzo,
 passando da un costo di 15000 accessi a 10000 accessi al giorno mentre
 lo spreco di memoria sarà pari a
-% 56 000 * (1 + 4) byte + 560 000 * 4 byte
-2.4 MB circa che risulta accettabile se comparato al guadagno in termini di
+% 7 000 * (1 + 4) byte + 133 000 * 4 byte
+554 kB circa che risulta accettabile se comparato al guadagno in termini di
 prestazioni.
 
 L'attributo multivalore Cast viene coinvolto unicamente durante l'Operazione 11,

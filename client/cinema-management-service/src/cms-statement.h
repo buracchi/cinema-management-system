@@ -9,7 +9,7 @@
 
 // The current implementation limits to 32 the maximum number of colums returned in a result set from a prepared statement
 
-#define CMS_RESULT_BASE_BITMAP_INFO(s, m) (struct result_bitmap) { ((size_t)&(((s*)0)->m)), (sizeof(((s*)0)->m)) }
+#define CMS_RESULT_BASE_BITMAP_INFO(s, m) (struct cms_result_bitmap) { ((size_t)&(((s*)0)->m)), (sizeof(((s*)0)->m)) }
 
 #define CMS_RESULT_BITMAP_COUNT_VALS(N1, N2, N3, N4, N5, N6, N7, N8, N9, N10, N11, N12, N13, N14, N15, N16, N17, N18, N19, N20, N21, N22, N23, N24, N25, N26, N27, N28, N29, N30, N31, N32, N, ...) N
 #define CMS_RESULT_BITMAP_COUNT_ARGS(...) CMS_RESULT_BITMAP_COUNT_VALS(__VA_ARGS__, 32, 31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 09, 08, 07, 06, 05, 04, 03, 02, 01)
@@ -51,17 +51,17 @@
 #define CMS_RESULT_BITMAP_MACRONAME(N) CMS_RESULT_BITMAP_CONCAT_MACRONAME(N)
 #define CMS_RESULT_BITMAP_INFO(s, ...) CMS_RESULT_BITMAP_MACRONAME(CMS_RESULT_BITMAP_COUNT_ARGS(__VA_ARGS__))(s, __VA_ARGS__)
 
-struct request_param {
+struct cms_request_param {
 	void* ptr;
 	size_t size;
 };
 
-struct result_bitmap {
+struct cms_result_bitmap {
 	size_t offset;
 	size_t size;
 };
 
-enum statement_operation {
+enum cms_operation {
 	ADD_CINEMA,
 	ADD_EMPLOYEE,
 	ADD_HALL,
@@ -222,6 +222,4 @@ static const struct statement_data {
 	}
 };
 
-extern MYSQL_STMT* get_prepared_stmt(cms_t cms, enum statement_operation operation);
-
-extern int cms_stmt_execute(cms_t, enum statement_operation, struct request_param*, struct cms_result_response**, struct result_bitmap*);
+extern int cms_operation_execute(cms_t, enum cms_operation, struct cms_request_param*, struct cms_result_response**, struct cms_result_bitmap*);

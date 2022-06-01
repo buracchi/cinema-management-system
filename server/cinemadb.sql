@@ -282,13 +282,11 @@ BEGIN
 		SIGNAL SQLSTATE '45018'
 		SET MESSAGE_TEXT = @err_msg;
 	END IF;
-	# TODO: Verificare che la prenotazione esista
-    # TODO: Forse conviene eliminare il doppio risultato
-	SELECT COUNT(DISTINCT `fila`) AS numero_file, COUNT(DISTINCT `numero`) AS posti_per_fila
-	FROM `Posti`
-    WHERE `cinema` = _cinema_id AND `sala` = _sala_id
-    GROUP BY `cinema`, `sala`;
-    
+	IF ((_cinema_id, _sala_id, _data, _ora) NOT IN (SELECT `cinema`, `sala`, `data`, `ora` FROM `Proiezioni`)) THEN
+		SET @err_msg = MESSAGGIO_ERRORE(45017);
+		SIGNAL SQLSTATE '45017'
+		SET MESSAGE_TEXT = @err_msg;
+	END IF;
 	SELECT `fila`, `numero`
 	FROM `Posti`
 	WHERE `Posti`.`cinema` = _cinema_id AND `Posti`.`sala` = _sala_id
@@ -846,12 +844,12 @@ BEGIN
 		SIGNAL SQLSTATE '45014'
 		SET MESSAGE_TEXT = @err_msg;
 	END IF;
-	SELECT `cinema`, `sala`,
+	SELECT `sala`,
 		COUNT(DISTINCT fila) AS numero_file,
         COUNT(DISTINCT numero) AS posti_per_fila
     FROM `Posti`
     WHERE `cinema` = _cinema
-    GROUP BY `cinema`, `sala`;
+    GROUP BY `sala`;
 END$$
 
 DELIMITER ;
@@ -1443,6 +1441,7 @@ GRANT EXECUTE ON procedure `cinemadb`.`mostra_palinsesto` TO 'cliente'@'localhos
 GRANT EXECUTE ON procedure `cinemadb`.`mostra_posti_disponibili` TO 'cliente'@'localhost';
 GRANT EXECUTE ON procedure `cinemadb`.`effettua_prenotazione` TO 'cliente'@'localhost';
 GRANT EXECUTE ON procedure `cinemadb`.`annulla_prenotazione` TO 'cliente'@'localhost';
+GRANT EXECUTE ON procedure `cinemadb`.`mostra_sale` TO 'cliente'@'localhost';
 GRANT EXECUTE ON procedure `cinemadb`.`valida_prenotazione` TO 'maschera'@'localhost';
 
 SET SQL_MODE=@OLD_SQL_MODE;
@@ -1540,7 +1539,9 @@ CREATE EVENT `cinemadb`.`scadenza_prenotazioni_in_attesa`
 ON SCHEDULE EVERY 1 MINUTE
 STARTS TIMESTAMP(CURDATE())
 DO
-	DELETE FROM `Prenotazioni` WHERE `timestamp` < DATE_SUB(NOW(), INTERVAL 10 MINUTE);
+	DELETE FROM `Prenotazioni`
+			WHERE `stato`='Attesa'
+				AND `timestamp` < DATE_SUB(NOW(), INTERVAL 10 MINUTE);
 
 DROP EVENT IF EXISTS `cinemadb`.`scadenza_prenotazioni`;
 CREATE EVENT `cinemadb`.`scadenza_prenotazioni`
