@@ -10,10 +10,10 @@ add_library(cinema-management-service STATIC
     "src/domain/seat.c"
     "src/domain/shift.c"
     "src/cms.c"
+    "src/cms-statement.h"
     "src/booking.c"
     "src/utilities/dbutil.c"
-    "src/utilities/dbutil.h"
-    "src/prepared-statement.h")
+    "src/utilities/dbutil.h")
 target_include_directories(cinema-management-service PUBLIC
                            "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
                            "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")

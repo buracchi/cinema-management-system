@@ -4,8 +4,6 @@
 #include <buracchi/common/utilities/try.h>
 #include <cms.h>
 
-#include "make-booking.h"
-#include "cancel-booking.h"
 #include "utilities/io.h"
 
 #define RUN_FROM_IDE

@@ -31,22 +31,13 @@ struct cms_get_cinema_screenings_response{
 	} result[]; };
 extern bool cms_get_cinema_screenings(cms_t cms, struct cms_get_cinema_screenings_request request, struct cms_get_cinema_screenings_response** response);
 
-struct cms_get_available_seats_request {
-	int32_t cinema_id;
-	int32_t hall_id;
-	const char date[DATE_LEN];
-	const char start_time[TIME_LEN]; };
-struct cms_get_available_seats_response {
-	struct cms_result_response; 
-	struct cms_hall_info {
-		int32_t num_rows;
-		int32_t num_cols;
-	} hall_info_result;
-	struct cms_seat {
-		char row;
-		uint8_t number;
-	} seat_result[];
-};
+struct cms_get_cinema_halls_request { int32_t cinema_id; };
+struct cms_get_cinema_halls_response { struct cms_result_response; struct cms_hall_info { int32_t id; int32_t num_rows; int32_t num_cols; } result[]; };
+extern bool cms_get_cinema_halls(cms_t cms, struct cms_get_cinema_halls_request request, struct cms_get_cinema_halls_response** response);
+
+struct cms_get_available_seats_request {int32_t cinema_id; int32_t hall_id; const char date[DATE_LEN]; const char start_time[TIME_LEN]; };
+struct cms_get_available_seats_response {struct cms_result_response;
+struct cms_seat { char row; uint8_t number; } result[]; };
 extern bool cms_get_available_seats(cms_t cms, struct cms_get_available_seats_request request, struct cms_get_available_seats_response** response);
 
 struct cms_book_seat_request {
