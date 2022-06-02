@@ -10,7 +10,7 @@ add_library(cinema-management-service STATIC
     "src/domain/seat.c"
     "src/domain/shift.c"
     "src/cms.c"
-    "src/cms-statement.h"
+    "src/cms-operation.h"
     "src/booking.c"
     "src/utilities/dbutil.c"
     "src/utilities/dbutil.h")

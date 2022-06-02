@@ -53,7 +53,7 @@ fail:
 static int choose_cinema(cms_t cms, struct booking_data* booking_data) {
 	struct cms_get_all_cinema_response* response;
 	ft_table_t* table;
-	if (!cms_get_all_cinema(cms, &response)) {
+	if (cms_get_all_cinema(cms, &response)) {
 		printf("%s", response->error_message);
 	}
 	clear_screen();

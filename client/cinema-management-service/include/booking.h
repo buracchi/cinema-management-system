@@ -32,12 +32,12 @@ struct cms_get_cinema_screenings_response{
 extern bool cms_get_cinema_screenings(cms_t cms, struct cms_get_cinema_screenings_request request, struct cms_get_cinema_screenings_response** response);
 
 struct cms_get_cinema_halls_request { int32_t cinema_id; };
-struct cms_get_cinema_halls_response { struct cms_result_response; struct cms_hall_info { int32_t id; int32_t num_rows; int32_t num_cols; } result[]; };
+struct cms_get_cinema_halls_response { struct cms_result_response; struct cms_hall_info { int32_t id; uint64_t num_rows; uint64_t num_cols; } result[]; };
 extern bool cms_get_cinema_halls(cms_t cms, struct cms_get_cinema_halls_request request, struct cms_get_cinema_halls_response** response);
 
 struct cms_get_available_seats_request {int32_t cinema_id; int32_t hall_id; const char date[DATE_LEN]; const char start_time[TIME_LEN]; };
 struct cms_get_available_seats_response {struct cms_result_response;
-struct cms_seat { char row; uint8_t number; } result[]; };
+struct cms_seat { char row; uint32_t number; } result[]; };
 extern bool cms_get_available_seats(cms_t cms, struct cms_get_available_seats_request request, struct cms_get_available_seats_response** response);
 
 struct cms_book_seat_request {
@@ -55,9 +55,9 @@ struct cms_book_seat_response { struct cms_result_response; struct cms_book_seat
 extern bool cms_book_seat(cms_t cms, struct cms_book_seat_request request, struct cms_book_seat_response** response);
 
 struct cms_cancel_booking_request { int32_t booking_code; };
-struct cms_cancel_booking_response { struct cms_response; };
+struct cms_cancel_booking_response { struct cms_result_response; };
 extern bool cms_cancel_booking(cms_t cms, struct cms_cancel_booking_request request, struct cms_cancel_booking_response** response);
 
 struct cms_validate_booking_request { int32_t booking_code; };
-struct cms_validate_booking_response { struct cms_response; };
+struct cms_validate_booking_response { struct cms_result_response; };
 extern bool cms_validate_booking(cms_t cms, struct cms_validate_booking_request request, struct cms_validate_booking_response** response);
