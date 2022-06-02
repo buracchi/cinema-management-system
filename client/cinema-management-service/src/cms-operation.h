@@ -87,4 +87,4 @@ enum cms_operation {
 	OPERATION_NUMBER
 };
 
-extern int cms_operation_execute(cms_t, enum cms_operation, struct cms_request_param*, struct cms_result_response**, struct cms_result_bitmap*);
+extern int cms_operation_execute(cms_t, enum cms_operation, struct cms_request_param*, struct cms_response**, struct cms_result_bitmap*);

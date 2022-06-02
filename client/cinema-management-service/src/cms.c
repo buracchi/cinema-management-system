@@ -1,6 +1,7 @@
 #include "cms.h"
 
 #include <assert.h>
+#include <limits.h>
 #include <mysql.h>
 #include <buracchi/common/utilities/utilities.h>
 #include <buracchi/common/utilities/try.h>
@@ -149,8 +150,8 @@ struct cms {
 
 static inline bool connect(cms_t cms, const char* username, const char* password);
 static MYSQL_STMT* get_prepared_stmt(cms_t cms, enum cms_operation operation);
-static int send_mysql_stmt_request(struct operation_data statement_data, struct request_param* request_param);
-static int recv_mysql_stmt_result(struct operation_data statement_data, struct cms_result_response** response, struct cms_result_bitmap* result_bitmap);
+static int send_mysql_stmt_request(struct operation_data statement_data, struct cms_request_param* request_param);
+static int recv_mysql_stmt_result(struct operation_data statement_data, struct cms_response** response, struct cms_result_bitmap* result_bitmap);
 
 extern cms_t cms_init(const char* username, const char* password) {
 	cms_t this;
@@ -177,8 +178,8 @@ extern bool cms_destroy(cms_t cms) {
 	return true;
 }
 
-extern inline void cms_destroy_response(struct cms_result_response* response) {
-	free(response->error_message);
+extern inline void cms_destroy_response(struct cms_response* response) {
+	free((void*)response->error_message);
 	free(response);
 }
 
@@ -202,7 +203,7 @@ extern inline const char* cms_get_error_message(cms_t cms) {
 extern int cms_operation_execute(cms_t cms,
 								 enum cms_operation operation,
 								 struct cms_request_param* request_param,
-								 struct cms_result_response** response,
+								 struct cms_response** response,
 								 struct cms_result_bitmap* result_bitmap) {
 	MYSQL_STMT* statement;
 	try(*response = calloc(1, sizeof **response), NULL, fail);
@@ -213,10 +214,10 @@ extern int cms_operation_execute(cms_t cms,
 	(*response)->error_message = NULL;
 	return 0;
 fail3:
-	asprintf(&((*response)->error_message), "%s", mysql_stmt_error(statement));
+	asprintf((char**)&((*response)->error_message), "%s", mysql_stmt_error(statement));
 	return 1;
 fail2:
-	asprintf(&((*response)->error_message), "%s", cms_get_error_message(cms));
+	asprintf((char**)&((*response)->error_message), "%s", cms_get_error_message(cms));
 fail:
 	return 1;
 }
@@ -260,7 +261,11 @@ static int send_mysql_stmt_request(struct operation_data operation_data, struct 
 			}
 			else {
 				(bparams)[i].buffer = request_param[i].ptr;
-				(bparams)[i].buffer_length = request_param[i].size;
+				assert(request_param[i].size <= ULONG_MAX && "MYSQL C API sucks and doesn't support the length of the type choosen");
+				if (request_param[i].size > ULONG_MAX) {
+					goto fail3;
+				}
+				(bparams)[i].buffer_length = (unsigned long)request_param[i].size;
 			}
 		}
 		try((mysql_stmt_bind_param(operation_data.statement, bparams) == 0), false, fail3);
@@ -277,7 +282,7 @@ fail:
 	return 1;
 }
 
-static int recv_mysql_stmt_result(struct operation_data operation_data, struct cms_result_response** response, struct cms_result_bitmap* result_bitmap) {
+static int recv_mysql_stmt_result(struct operation_data operation_data, struct cms_response** response, struct cms_result_bitmap* result_bitmap) {
 	unsigned int rparam_count;
 	MYSQL_TIME* trparams;
 	MYSQL_BIND* rparams;
@@ -308,7 +313,11 @@ static int recv_mysql_stmt_result(struct operation_data operation_data, struct c
 		}
 		else {
 			rparams[i].buffer = rset_current_row + result_bitmap[i].offset;
-			rparams[i].buffer_length = result_bitmap[i].size;
+			assert(result_bitmap[i].size <= ULONG_MAX && "MYSQL C API sucks and doesn't support the length of the type choosen");
+			if (result_bitmap[i].size > ULONG_MAX) {
+				goto fail4;
+			}
+			rparams[i].buffer_length = (unsigned long)result_bitmap[i].size;
 		}
 	}
 	try(mysql_stmt_bind_result(operation_data.statement, rparams) == 0, false, fail4);
@@ -334,10 +343,10 @@ different from the one required by the server and this crappy API will corrupt y
 		try(mysql_stmt_fetch(operation_data.statement) == 0, false, fail4);
 		for (unsigned int j = 0; j < rparam_count; j++) {
 			if (rparams[j].buffer_type == MYSQL_TYPE_DATE) {
-				mysql_date_to_string(&(trparams[j]), rset_current_row + result_bitmap[j].offset);
+				mysql_date_to_string(&(trparams[j]), (char*)(rset_current_row + result_bitmap[j].offset));
 			}
 			if (rparams[j].buffer_type == MYSQL_TYPE_TIME) {
-				mysql_time_to_string(&(trparams[j]), rset_current_row + result_bitmap[j].offset);
+				mysql_time_to_string(&(trparams[j]), (char*)(rset_current_row + result_bitmap[j].offset));
 			}
 		}
 		memcpy(result + (result_length * i), rset_current_row, result_length);

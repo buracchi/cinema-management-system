@@ -8,7 +8,7 @@
 
 typedef struct cms* cms_t;
 
-struct cms_result_response {
+struct cms_response {
 	const char* error_message;
 	uint64_t num_elements;
 };
