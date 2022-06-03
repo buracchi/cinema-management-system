@@ -15,7 +15,7 @@ static const struct operation_data {
 	MYSQL_STMT* statement;
 	const char* const query;
 	const FIELD_TYPE* const params_type;
-} statements_read_only_data[OPERATION_NUMBER] = {
+} statements_read_only_data[OPERATIONS_NUMBER] = {
 	[CANCEL_BOOKING] = {
 		.statement = NULL,
 		.query = "call annulla_prenotazione(?)",
@@ -145,7 +145,7 @@ static const struct operation_data {
 
 struct cms {
 	MYSQL* db_connection;
-	struct operation_data operation_data[OPERATION_NUMBER];
+	struct operation_data operation_data[OPERATIONS_NUMBER];
 };
 
 static inline bool connect(cms_t cms, const char* username, const char* password);
@@ -167,7 +167,7 @@ fail:
 }
 
 extern bool cms_destroy(cms_t cms) {
-	for (int i = 0; i < OPERATION_NUMBER; i++) {
+	for (int i = 0; i < OPERATIONS_NUMBER; i++) {
 		MYSQL_STMT* statement = cms->operation_data[i].statement;
 		if (statement) {
 			mysql_stmt_close(statement);
@@ -329,7 +329,7 @@ static int recv_mysql_stmt_result(struct operation_data operation_data, struct c
 			&& operation_data.statement->bind[i].buffer_type != MYSQL_TYPE_NEWDECIMAL) {
 			assert(required_length == buffer_length
 				&& "The type representation choosen for a result field has a byte lenght \
-different from the one required by the server and this crappy API will corrupt your memory instead of fail");
+different from the one required by the server, this crappy API knows it but it will corrupt the memory instead of fail");
 		}
 	}
 	try(mysql_stmt_store_result(operation_data.statement) == 0, false, fail4);

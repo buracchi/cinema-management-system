@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stddef.h>
+
 #include "cms.h"
 
 // The current implementation limits to 32 the maximum number of fields returned from an operation
@@ -46,7 +48,7 @@
 #define CMS_RESULT_BITMAP_MACRONAME(N) CMS_RESULT_BITMAP_CONCAT_MACRONAME(N)
 #define CMS_RESULT_BITMAP_INFO(s, ...) CMS_RESULT_BITMAP_MACRONAME(CMS_RESULT_BITMAP_COUNT_ARGS(__VA_ARGS__))(s, __VA_ARGS__)
 
-#define CMS_REQUEST_PARAM_INFO(ptr) (struct cms_request_param) { &ptr, sizeof(ptr) }
+#define CMS_REQUEST_PARAM_INFO(ptr) (struct cms_request_param) { (void*)&ptr, sizeof(ptr) }
 
 struct cms_request_param {
 	void* ptr;
@@ -84,7 +86,7 @@ enum cms_operation {
 	REPORT_RESERVATIONS_STATUS,
 	REPORT_SCREENINGS_WITHOUT_PROJECTIONIST,
 	VALIDATE_BOOKING,
-	OPERATION_NUMBER
+	OPERATIONS_NUMBER
 };
 
 extern int cms_operation_execute(cms_t, enum cms_operation, struct cms_request_param*, struct cms_response**, struct cms_result_bitmap*);

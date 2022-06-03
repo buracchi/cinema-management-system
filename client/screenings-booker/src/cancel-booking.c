@@ -19,7 +19,7 @@ extern int cancel_booking(cms_t cms) {
 	struct cms_cancel_booking_request request = { 0 };
 	struct cms_cancel_booking_response* response;
 	char selected_booking_code[INT32DSTR_LEN];
-	clear_screen();
+	io_clear_screen();
 	puts(title);
 	get_input("Enter booking code: ", selected_booking_code, false);
 	request.booking_code = atoi(selected_booking_code);
@@ -27,6 +27,6 @@ extern int cancel_booking(cms_t cms) {
 		printf("%s", response->error_message);
 	}
 	printf("\nBooking canceled, refund has been made.\n");
-	cms_destroy_response(response);
+	cms_destroy_response((struct cms_response*)response);
 	return 0;
 }

@@ -161,17 +161,29 @@ extern char multi_choice(char *question, const char choices[], int num) {
 }
 
 
-//extern inline void clear_screen(void) {
+//extern inline void io_clear_screen(void) {
 //	// To whom it may interest: this "magic" is a sequence of escape codes from VT100 terminals:
 //	// https://www.csie.ntu.edu.tw/~r92094/c++/VT100.html
 //	printf("\033[2J\033[H");
 //}
 
-#ifdef _WIN32
+#ifdef __unix__
+#include <unistd.h>
+#include <term.h>
+
+extern inline void io_clear_screen(void) {
+	if (!cur_term) {
+		int result;
+		setupterm(NULL, STDOUT_FILENO, &result);
+		if (result <= 0) return;
+	}
+	putp(tigetstr("clear"));
+}
+#else
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
-void clear_screen(void) {
+void io_clear_screen(void) {
 	HANDLE                     hStdOut;
 	CONSOLE_SCREEN_BUFFER_INFO csbi;
 	DWORD                      count;
@@ -205,19 +217,6 @@ void clear_screen(void) {
 
 	/* Move the cursor home */
 	SetConsoleCursorPosition(hStdOut, homeCoords);
-}
-
-#else // !_WIN32
-#include <unistd.h>
-#include <term.h>
-
-void clear_screen(void) {
-	if (!cur_term) {
-		int result;
-		setupterm(NULL, STDOUT_FILENO, &result);
-		if (result <= 0) return;
-	}
-	putp(tigetstr("clear"));
 }
 #endif
 

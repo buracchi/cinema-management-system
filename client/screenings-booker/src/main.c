@@ -21,6 +21,8 @@ static const char* title = "*********************************\n\
 						  \r*       SCREENINGS BOOKER       *\n\
 						  \r*********************************\n";
 
+extern int make_booking(cms_t cms);
+extern int cancel_booking(cms_t cms);
 static int get_action(void);
 
 int main(int argc, char** argv) {
@@ -65,7 +67,7 @@ fail:
 static int get_action(void) {
 	char options[3] = { '1', '2', '3' };
 	char op;
-	clear_screen();
+	io_clear_screen();
 	puts(title);
 	puts("Choose an action\n");
 	puts("1) Make booking");

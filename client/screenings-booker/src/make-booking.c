@@ -56,7 +56,7 @@ static int choose_cinema(cms_t cms, struct booking_data* booking_data) {
 	if (cms_get_all_cinema(cms, &response)) {
 		printf("%s", response->error_message);
 	}
-	clear_screen();
+	io_clear_screen();
 	puts(title);
 	table = ft_create_table();
 	ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
@@ -75,7 +75,7 @@ static int choose_cinema(cms_t cms, struct booking_data* booking_data) {
 	get_input("Select a cinema: ", selected_cinema, false);
 	booking_data->cinema_id = atoi(selected_cinema);
 	strcpy(booking_data->cinema_address, response->result[booking_data->cinema_id - 1].address);
-	cms_destroy_response(response);
+	cms_destroy_response((struct cms_response*)response);
 	return 0;
 }
 
@@ -87,7 +87,7 @@ static int choose_screening(cms_t cms, struct booking_data* booking_data) {
 		fprintf(stderr, "%s", response->error_message);
 		exit(1);
 	}
-	clear_screen();
+	io_clear_screen();
 	puts(title);
 	printf("Selected cinema: %s\n\n", booking_data->cinema_address);
 	table = ft_create_table();
@@ -116,7 +116,7 @@ static int choose_screening(cms_t cms, struct booking_data* booking_data) {
 	strcpy(booking_data->time, response->result[i].time);
 	strcpy(booking_data->film_name, response->result[i].film_name);
 	strcpy(booking_data->price, response->result[i].price);
-	cms_destroy_response(response);
+	cms_destroy_response((struct cms_response*)response);
 	return 0;
 }
 
@@ -132,7 +132,6 @@ static int choose_seat(cms_t cms, struct booking_data* booking_data) {
 	strcpy(request.date, booking_data->date);
 	strcpy(request.start_time, booking_data->time);
 	struct cms_get_available_seats_response* response;
-	ft_table_t* table;
 	char selected_row[2];
 	char selected_number[INT32DSTR_LEN];
 	bool selected_seat_available = false;
@@ -143,9 +142,9 @@ static int choose_seat(cms_t cms, struct booking_data* booking_data) {
 		if (!cms_get_available_seats(cms, request, &response)) {
 			printf("%s", response->error_message);
 		}
-		int32_t num_rows = halls_response->result[booking_data->hall].num_rows;
-		int32_t num_cols = halls_response->result[booking_data->hall].num_cols;
-		clear_screen();
+		uint64_t num_rows = halls_response->result[booking_data->hall].num_rows;
+		uint64_t num_cols = halls_response->result[booking_data->hall].num_cols;
+		io_clear_screen();
 		puts(title);
 		printf("Selected date: %s\n", booking_data->date);
 		printf("Selected time: %s\n", booking_data->time);
@@ -183,8 +182,8 @@ static int choose_seat(cms_t cms, struct booking_data* booking_data) {
 	} while (!selected_seat_available);
 	booking_data->seat_row = selected_row[0];
 	booking_data->seat_number = atoi(selected_number);
-	cms_destroy_response(response);
-	cms_destroy_response(halls_response);
+	cms_destroy_response((struct cms_response*)response);
+	cms_destroy_response((struct cms_response*)halls_response);
 	return 0;
 }
 
@@ -202,7 +201,7 @@ static int make_payment(cms_t cms, struct booking_data* booking_data) {
 	};
 	strcpy(request.date, booking_data->date);
 	strcpy(request.start_time, booking_data->time);
-	clear_screen();
+	io_clear_screen();
 	puts(title);
 	printf("Selected date: %s\n", booking_data->date);
 	printf("Selected time: %s\n", booking_data->time);
@@ -224,7 +223,7 @@ static int make_payment(cms_t cms, struct booking_data* booking_data) {
 		printf("%s", response->error_message);
 	}
 	booking_data->booking_code = response->result[0].booking_code;
-	cms_destroy_response(response);
+	cms_destroy_response((struct cms_response*)response);
 	return 0;
 }
 
@@ -239,6 +238,7 @@ static int print_cinema_number_header(int cols) {
 		printf("---");
 	}
 	printf("+\n");
+	return 0;
 }
 
 static int print_screen(int cols) {
@@ -256,4 +256,5 @@ static int print_screen(int cols) {
 		printf("###");
 	}
 	printf("#|\n");
+	return 0;
 }

@@ -2,13 +2,6 @@
 find_package(unofficial-libmariadb CONFIG REQUIRED)
 
 add_library(cinema-management-service STATIC
-    "src/domain/cinema.c"
-    "src/domain/employee.c"
-    "src/domain/film.c"
-    "src/domain/hall.c"
-    "src/domain/screening.c"
-    "src/domain/seat.c"
-    "src/domain/shift.c"
     "src/cms.c"
     "src/cms-operation.h"
     "src/booking.c"
