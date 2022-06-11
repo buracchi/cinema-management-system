@@ -1,3 +1,0 @@
-#pragma once
-
-enum weekday {MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY};

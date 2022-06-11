@@ -1,4 +1,4 @@
-#include "cms.h"
+#include "cms/cms.h"
 
 #include <assert.h>
 #include <limits.h>
@@ -10,6 +10,7 @@
 #include "utilities/dbutil.h"
 
 #define FIELD_TYPE enum enum_field_types
+#define MYSQL_USER_DEFINED_ERROR 1644
 
 static const struct operation_data {
 	MYSQL_STMT* statement;
@@ -148,18 +149,32 @@ struct cms {
 	struct operation_data operation_data[OPERATIONS_NUMBER];
 };
 
-static inline bool connect(cms_t cms, const char* username, const char* password);
 static MYSQL_STMT* get_prepared_stmt(cms_t cms, enum cms_operation operation);
 static int send_mysql_stmt_request(struct operation_data statement_data, struct cms_request_param* request_param);
 static int recv_mysql_stmt_result(struct operation_data statement_data, struct cms_response** response, struct cms_result_bitmap* result_bitmap);
 
-extern cms_t cms_init(const char* username, const char* password) {
+extern cms_t cms_init(struct cms_credentials* credentials) {
 	cms_t this;
+	unsigned int timeout = 30;
+	bool reconnect = true;
 	try(this = malloc(sizeof * this), NULL, fail);
 	try(this->db_connection = mysql_init(NULL), NULL, fail2);
-	connect(this, username, password);
+	mysql_options(this->db_connection, MYSQL_OPT_CONNECT_TIMEOUT, &timeout);
+	mysql_options(this->db_connection, MYSQL_OPT_RECONNECT, &reconnect);
+	try(mysql_real_connect(
+			this->db_connection, 
+			credentials->host, 
+			credentials->username, 
+			credentials->password, 
+			credentials->db, 
+			credentials->port, 
+			NULL, 
+			CLIENT_MULTI_STATEMENTS | CLIENT_MULTI_RESULTS | CLIENT_COMPRESS | CLIENT_INTERACTIVE | CLIENT_REMEMBER_OPTIONS),
+		NULL, fail3);
 	memcpy(this->operation_data, statements_read_only_data, sizeof(statements_read_only_data));
 	return this;
+fail3:
+	fprintf(stderr, "Error: %s\n", mysql_error(this->db_connection));
 fail2:
 	free(this);
 fail:
@@ -183,19 +198,6 @@ extern inline void cms_destroy_response(struct cms_response* response) {
 	free(response);
 }
 
-static inline bool connect(cms_t cms, const char* username, const char* password) {
-	unsigned int timeout = 30;
-	bool reconnect = true;
-	char* host = getenv("HOST");
-	char* db = getenv("DB");
-	unsigned int port = atoi(getenv("PORT"));
-	mysql_real_connect(cms->db_connection, host, username, password, db, port, NULL,
-		CLIENT_MULTI_STATEMENTS | CLIENT_MULTI_RESULTS | CLIENT_COMPRESS | CLIENT_INTERACTIVE | CLIENT_REMEMBER_OPTIONS);
-	mysql_options(cms->db_connection, MYSQL_OPT_CONNECT_TIMEOUT, &timeout);
-	mysql_options(cms->db_connection, MYSQL_OPT_RECONNECT, &reconnect);
-	return true;
-}
-
 extern inline const char* cms_get_error_message(cms_t cms) {
 	return mysql_error(cms->db_connection);
 }
@@ -209,13 +211,16 @@ extern int cms_operation_execute(cms_t cms,
 	try(*response = calloc(1, sizeof **response), NULL, fail);
 	try(statement = get_prepared_stmt(cms, operation), NULL, fail2);
 	try(send_mysql_stmt_request(cms->operation_data[operation], request_param), 1, fail3);
-	try(recv_mysql_stmt_result(cms->operation_data[operation], response, result_bitmap), 1, fail3);
-	try(mysql_stmt_reset(statement) == 0, false, fail3);
+	try(recv_mysql_stmt_result(cms->operation_data[operation], response, result_bitmap), 1, fail4);
+	try(mysql_stmt_reset(statement) == 0, false, fail4);
 	(*response)->error_message = NULL;
 	return 0;
-fail3:
+fail4:
 	asprintf((char**)&((*response)->error_message), "%s", mysql_stmt_error(statement));
 	return 1;
+fail3:
+	asprintf((char**)&((*response)->error_message), "%s", mysql_stmt_error(statement));
+	return statement->last_errno == MYSQL_USER_DEFINED_ERROR ? 0 : 1;
 fail2:
 	asprintf((char**)&((*response)->error_message), "%s", cms_get_error_message(cms));
 fail:

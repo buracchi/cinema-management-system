@@ -1,6 +1,7 @@
 #include "io.h"
 
 #include <stdlib.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
@@ -126,36 +127,35 @@ extern bool yes_or_no(char *question, char yes, char no, bool default_answer, bo
 
 extern char multi_choice(char *question, const char choices[], int num) {
 	//TODO
-	char* possibilities = malloc(2 * num * sizeof(char));
-	int i, j = 0, extra;
-	for(i = 0; i < num; i++) {
-		possibilities[j++] = choices[i];
-		possibilities[j++] = '/';
+	char* possibilities = calloc(2 * num, sizeof * possibilities);
+	possibilities[0] = choices[0];
+	for(int i = 1; i < num; i++) {
+		possibilities[2 * i - 1] = '/';
+		possibilities[2 * i] = choices[i];
 	}
-	possibilities[j - 1] = '\0'; // Remove last '/'
-
 	while(true) {
+		bool invalid_input = false;
 		printf("%s [%s]: ", question, possibilities);
-
-		extra = 0;
 		char c = (char)getchar();
-		if(c == '\n')
+		if (c == '\n') {
 			continue;
+		}
 		char ch;
 		while(((ch = (char)getchar()) != EOF) && (ch != '\n'))
-			extra++;
+			invalid_input = true;
 		if(c == EOF || ch == EOF) {
 			printf("EOF received, leaving...\n");
 			fflush(stdout);
 			leave();
 		}
-		if(extra > 1) // Need exactly one character on stdin
+		if (invalid_input) {
 			continue;
-
+		}
 		// Check if the choice is valid
-		for(i = 0; i < num; i++) {
-			if(c == choices[i])
+		for(int i = 0; i < num; i++) {
+			if (c == choices[i]) {
 				return c;
+			}
 		}
 	}
 }

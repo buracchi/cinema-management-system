@@ -2,7 +2,7 @@
 
 #include <stddef.h>
 
-#include "cms.h"
+#include "cms/cms.h"
 
 // The current implementation limits to 32 the maximum number of fields returned from an operation
 

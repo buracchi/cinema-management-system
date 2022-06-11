@@ -384,17 +384,35 @@
 \begin{tabularx}{\linewidth}{|X|X|}
     \hline
     \multicolumn{2}{|>{\columncolor{tblhdrcolor}}l|}{
-    \textbf{Tabella \textlangle{}nome\textrangle{}}} \\\hline
+    \textbf{Proiezioni}} \\\hline
     \rowcolor{tblhdrcolor}
-    \multicolumn{1}{|l|}{\textbf{Indice \textlangle{}nome\textrangle{}}}
+    \multicolumn{1}{|l|}{\textbf{order\_idx}}
      & \multicolumn{1}{|l|}{\textbf{Tipo}
         \footnote{IDX = index, UQ = unique, FT = full text, PR = primary.}
         \textbf{:}}
     \\\hline
-    Colonna 1
-     & \textlangle{}nome\textrangle{}
+    data, ora, cinema, sala
+     & IDX
     \\ \hline
 \end{tabularx}
+
+Tramite un'indice mantenente l'ordinamento cronologico delle proiezioni è stato
+possibile ottimizzare le operazioni 7, 11 e 22 consentendo di effettuare
+range join optimization.
+
+L'indice risulta particolarmente vantaggioso in quanto:
+\begin{itemize}
+    \item ottimizza l'operazione 11 avente per frequenza attesa il valore
+    massimo tra quelli stimati.
+    \item l'operazione 8 di inserimento di nuove proiezioni,
+    sebbene aggiunga un numero considerevole di proiezioni ogni settimana,
+    è un operazione che avviene in blocco in un breve periodo di tempo,
+    ammortizzando il costo di aggiornamento degli indici.
+    \item l'operazione 9 di cancellazione di una proiezione ha una frequenza
+    attesa trascurabile.
+    \item l'evento giornaliero di cancellazione delle proiezioni terminate
+    avviene in blocco, ammortizzando il costo di aggiornamento degli indici.
+\end{itemize}
 
 \pagebreak
 

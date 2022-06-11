@@ -5,8 +5,8 @@
 #include <buracchi/common/utilities/utilities.h>
 #include <buracchi/common/utilities/try.h>
 #include <fort.h>
+#include <cms/booking.h>
 
-#include "booking.h"
 #include "utilities/io.h"
 
 #define INT32DSTR_LEN 17
@@ -45,6 +45,7 @@ extern int make_booking(cms_t cms) {
 	printf("\nYou booking code is: %d\n", booking_data.booking_code);
 	printf("The reservation code will be required to access the cinema and take advantage of the reservation or to request a refund.\n");
 	printf("Save it in a safe place and be careful not to lose it.\n");
+	press_anykey();
 	return 0;
 fail:
 	return 1;

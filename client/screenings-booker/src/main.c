@@ -2,7 +2,7 @@
 #include <stdio.h>
 
 #include <buracchi/common/utilities/try.h>
-#include <cms.h>
+#include <cms/cms.h>
 
 #include "utilities/io.h"
 
@@ -27,25 +27,31 @@ static int get_action(void);
 
 int main(int argc, char** argv) {
 #ifdef RUN_FROM_IDE
-	putenv("HOST=localhost");
-	putenv("DB=cinemadb");
-	putenv("PORT=3306");
-	putenv("CUSTOMER_USERNAME=cliente");
-	putenv("CUSTOMER_PASSWORD=pippo");
+	try(putenv("HOST=localhost") == 0, false, fail);
+	try(putenv("DB=cinemadb") == 0, false, fail);
+	try(putenv("PORT=3306") == 0, false, fail);
+	try(putenv("CUSTOMER_USERNAME=cliente") == 0, false, fail);
+	try(putenv("CUSTOMER_PASSWORD=pippo") == 0, false, fail);
 #endif
 	bool end = false;
 	cms_t cms;
-	char* username = getenv("CUSTOMER_USERNAME");
-	char* password = getenv("CUSTOMER_PASSWORD");
-	try(cms = cms_init(username, password), NULL, fail);
+	unsigned int port = atoi(getenv("PORT"));
+	struct cms_credentials credentials = {
+		.username = getenv("CUSTOMER_USERNAME"),
+		.password = getenv("CUSTOMER_PASSWORD"),
+		.host = getenv("HOST"),
+		.db = getenv("DB"),
+		.port = port
+	};
+	try(cms = cms_init(&credentials), NULL, fail);
 	while (!end) {
 		int action = get_action();
 		switch (action) {
 		case MAKE_BOOKING:
-			try(make_booking(cms), 1, fail);
+			try(make_booking(cms), 1, fail2);
 			break;
 		case CANCEL_BOOKING:
-			try(cancel_booking(cms), 1, fail);
+			try(cancel_booking(cms), 1, fail2);
 			break;
 		case QUIT:
 			end = true;
@@ -54,13 +60,15 @@ int main(int argc, char** argv) {
 			fprintf(stderr, "Error: unknown action\n");
 			break;
 		}
-		press_anykey();
 	}
 	cms_destroy(cms);
 	return EXIT_SUCCESS;
-fail:
+fail2:
 	fprintf(stderr, cms_get_error_message(cms));
 	cms_destroy(cms);
+	return EXIT_FAILURE;
+fail:
+	fprintf(stderr, "Impossibile connettersi al server, controllare le credenziali e riprovare in seguito.");
 	return EXIT_FAILURE;
 }
 

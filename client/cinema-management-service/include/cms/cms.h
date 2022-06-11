@@ -8,12 +8,20 @@
 
 typedef struct cms* cms_t;
 
+struct cms_credentials {
+	const char* username;
+	const char* password;
+	const char* host;
+	const char* db;
+	unsigned int port;
+};
+
 struct cms_response {
 	const char* error_message;
 	uint64_t num_elements;
 };
 
-extern cms_t cms_init(const char* username, const char* password);
+extern cms_t cms_init(struct cms_credentials* credentials);
 
 extern bool cms_destroy(cms_t cms);
 
