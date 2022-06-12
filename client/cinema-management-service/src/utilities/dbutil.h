@@ -1,5 +1,7 @@
 #pragma once
+#ifndef __unix__
 #pragma warning(disable:4996)
+#endif
 
 #include <stdint.h>
 #include <stdbool.h>

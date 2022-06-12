@@ -1,5 +1,6 @@
 #pragma once
 
 static const char* title = "*********************************\n\
-						  \r*       SCREENINGS BOOKER       *\n\
+						  \r*      GESTORE PRENOTAZIONI     *\n\
 						  \r*********************************\n";
+

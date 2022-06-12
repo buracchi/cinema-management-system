@@ -75,14 +75,14 @@ void set_binding_param(MYSQL_BIND *param, enum enum_field_types type, void *buff
 
 void date_to_mysql_time(char *str, MYSQL_TIME *time) {
 	memset(time, 0, sizeof(*time));
-	sscanf(str, "%4d-%2d-%2d", &time->year, &time->month, &time->day);
+	sscanf(str, "%4u-%2u-%2u", &time->year, &time->month, &time->day);
 	time->time_type = MYSQL_TIMESTAMP_DATE;
 }
 
 
 void time_to_mysql_time(char *str, MYSQL_TIME *time) {
 	memset(time, 0, sizeof(*time));
-	sscanf(str, "%02d:%02d:%02d", &time->hour, &time->minute, &time->second);
+	sscanf(str, "%02u:%02u:%02u", &time->hour, &time->minute, &time->second);
 	time->time_type = MYSQL_TIMESTAMP_TIME;
 }
 
@@ -92,13 +92,13 @@ void init_mysql_timestamp(MYSQL_TIME *time) {
 }
 
 void mysql_timestamp_to_string(MYSQL_TIME *time, char *str) {
-	snprintf(str, DATETIME_LEN, "%4d-%02d-%02d %02d:%02d", time->year, time->month, time->day, time->hour, time->minute);
+	snprintf(str, DATETIME_LEN, "%4u-%02u-%02u %02u:%02u", time->year, time->month, time->day, time->hour, time->minute);
 }
 
 void mysql_date_to_string(MYSQL_TIME *date, char *str) {
-	snprintf(str, DATE_LEN, "%4d-%02d-%02d", date->year, date->month, date->day);
+	snprintf(str, DATE_LEN, "%4u-%02u-%02u", date->year, date->month, date->day);
 }
 
 void mysql_time_to_string(MYSQL_TIME* time, char* str) {
-	snprintf(str, DATE_LEN, "%02d:%02d:%02d", time->hour, time->minute, time->second);
+	snprintf(str, DATE_LEN, "%02u:%02u:%02u", time->hour, time->minute, time->second);
 }

@@ -10,7 +10,7 @@
 #include <cms/cms.h>
 #include <cms/booking.h>
 
-#define RUN_FROM_IDE
+//#define RUN_FROM_IDE
 
 static int validate(const char* booking_code);
 
@@ -26,7 +26,7 @@ int main(int argc, char** argv) {
 	};
 	try(argparser = cmn_argparser_init(argv[0], "Validatore di prenotazioni."), NULL, fail);
 	try(cmn_argparser_set_arguments(argparser, args, 1), 1, fail);
-	option_map = cmn_argparser_parse(argparser, argc, argv);
+	option_map = cmn_argparser_parse(argparser, argc, (const char**) argv);
 	try(cmn_map_at(option_map, (void*)"codice", (void**)&booking_code), 1, fail);
 	try(cmn_argparser_destroy(argparser), 1, fail);
 	return validate(booking_code);
@@ -57,7 +57,7 @@ static int validate(const char* booking_code) {
 	struct cms_validate_booking_response* response;
 	try(strtoi(booking_code, &(request.booking_code)), 1, fail);
 	try(cms = cms_init(&credentials), NULL, fail);
-	try(cms_validate_booking(cms, request, &response), true, fail2);
+	try(cms_validate_booking(cms, request, &response), 1, fail2);
 	if (response->error_message) {
 		fprintf(stderr, "%s\n", response->error_message);
 		cms_destroy(cms);

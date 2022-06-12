@@ -2,7 +2,7 @@
 
 #include "cms-operation.h"
 
-extern bool cms_get_all_cinema(cms_t cms, struct cms_get_all_cinema_response** response) {
+extern int cms_get_all_cinema(cms_t cms, struct cms_get_all_cinema_response** response) {
 	struct cms_result_bitmap result_bitmap[] = {
 		CMS_RESULT_BITMAP_INFO(struct cms_get_all_cinema_response, result[0]),
 		CMS_RESULT_BITMAP_INFO(struct cms_cinema, id, address, opening_time, closing_time)
@@ -10,7 +10,7 @@ extern bool cms_get_all_cinema(cms_t cms, struct cms_get_all_cinema_response** r
 	return cms_operation_execute(cms, GET_ALL_CINEMA, NULL, (struct cms_response**)response, result_bitmap);
 }
 
-extern bool cms_get_cinema_screenings(cms_t cms, struct cms_get_cinema_screenings_request request, struct cms_get_cinema_screenings_response** response) {
+extern int cms_get_cinema_screenings(cms_t cms, struct cms_get_cinema_screenings_request request, struct cms_get_cinema_screenings_response** response) {
 	struct cms_request_param request_params[] = {
 		CMS_REQUEST_PARAM_INFO(request.cinema_id)
 	};
@@ -21,7 +21,7 @@ extern bool cms_get_cinema_screenings(cms_t cms, struct cms_get_cinema_screening
 	return cms_operation_execute(cms, GET_CINEMA_SCREENINGS, request_params, (struct cms_response**)response, result_bitmap);
 }
 
-extern bool cms_get_cinema_halls(cms_t cms, struct cms_get_cinema_halls_request request, struct cms_get_cinema_halls_response** response) {
+extern int cms_get_cinema_halls(cms_t cms, struct cms_get_cinema_halls_request request, struct cms_get_cinema_halls_response** response) {
 	struct cms_request_param request_params[] = {
 		CMS_REQUEST_PARAM_INFO(request.cinema_id)
 	};
@@ -32,7 +32,7 @@ extern bool cms_get_cinema_halls(cms_t cms, struct cms_get_cinema_halls_request 
 	return cms_operation_execute(cms, GET_HALLS, request_params, (struct cms_response**)response, result_bitmap);
 }
 
-extern bool cms_get_available_seats(cms_t cms, struct cms_get_available_seats_request request, struct cms_get_available_seats_response** response) {
+extern int cms_get_available_seats(cms_t cms, struct cms_get_available_seats_request request, struct cms_get_available_seats_response** response) {
 	struct cms_request_param request_params[] = {
 		CMS_REQUEST_PARAM_INFO(request.cinema_id),
 		CMS_REQUEST_PARAM_INFO(request.hall_id),
@@ -46,7 +46,7 @@ extern bool cms_get_available_seats(cms_t cms, struct cms_get_available_seats_re
 	return cms_operation_execute(cms, GET_AVALILABLE_SEATS, request_params, (struct cms_response**)response, result_bitmap);
 }
 
-extern bool cms_book_seat(cms_t cms, struct cms_book_seat_request request, struct cms_book_seat_response** response) {
+extern int cms_book_seat(cms_t cms, struct cms_book_seat_request request, struct cms_book_seat_response** response) {
 	struct cms_request_param request_params[] = {
 		CMS_REQUEST_PARAM_INFO(request.cinema_id),
 		CMS_REQUEST_PARAM_INFO(request.hall_id),
@@ -66,14 +66,14 @@ extern bool cms_book_seat(cms_t cms, struct cms_book_seat_request request, struc
 	return cms_operation_execute(cms, BOOK_SEAT, request_params, (struct cms_response**)response, result_bitmap);
 }
 
-extern bool cms_cancel_booking(cms_t cms, struct cms_cancel_booking_request request, struct cms_cancel_booking_response** response) {
+extern int cms_cancel_booking(cms_t cms, struct cms_cancel_booking_request request, struct cms_cancel_booking_response** response) {
 	struct cms_request_param request_params[] = {
 		CMS_REQUEST_PARAM_INFO(request.booking_code)
 	};
 	return cms_operation_execute(cms, CANCEL_BOOKING, request_params, (struct cms_response**)response, NULL);
 }
 
-extern bool cms_validate_booking(cms_t cms, struct cms_validate_booking_request request, struct cms_validate_booking_response** response) {
+extern int cms_validate_booking(cms_t cms, struct cms_validate_booking_request request, struct cms_validate_booking_response** response) {
 	struct cms_request_param request_params[] = {
 		CMS_REQUEST_PARAM_INFO(request.booking_code)
 	};

@@ -5,10 +5,9 @@
 #include <cms/cms.h>
 
 #include "utilities/io.h"
+#include "resources.h"
 
 #define RUN_FROM_IDE
-
-#define INT32DSTR_LEN 17
 
 enum actions {
 	MAKE_BOOKING,
@@ -17,15 +16,11 @@ enum actions {
 	END_OF_ACTIONS
 };
 
-static const char* title = "*********************************\n\
-						  \r*       SCREENINGS BOOKER       *\n\
-						  \r*********************************\n";
-
 extern int make_booking(cms_t cms);
 extern int cancel_booking(cms_t cms);
 static int get_action(void);
 
-int main(int argc, char** argv) {
+int main(void) {
 #ifdef RUN_FROM_IDE
 	try(putenv("HOST=localhost") == 0, false, fail);
 	try(putenv("DB=cinemadb") == 0, false, fail);
@@ -57,18 +52,18 @@ int main(int argc, char** argv) {
 			end = true;
 			break;
 		default:
-			fprintf(stderr, "Error: unknown action\n");
+			fprintf(stderr, "Errore: l'azione scelta è invalida\n");
 			break;
 		}
 	}
 	cms_destroy(cms);
 	return EXIT_SUCCESS;
 fail2:
-	fprintf(stderr, cms_get_error_message(cms));
+	fprintf(stderr, "%s\n", cms_get_error_message(cms));
 	cms_destroy(cms);
 	return EXIT_FAILURE;
 fail:
-	fprintf(stderr, "Impossibile connettersi al server, controllare le credenziali e riprovare in seguito.");
+	fprintf(stderr, "Errore: impossibile connettersi al server, controllare le credenziali e riprovare in seguito.");
 	return EXIT_FAILURE;
 }
 
@@ -77,11 +72,11 @@ static int get_action(void) {
 	char op;
 	io_clear_screen();
 	puts(title);
-	puts("Choose an action\n");
-	puts("1) Make booking");
-	puts("2) Cancel booking");
-	puts("3) Quit");
+	puts("Scegliere un'azione\n");
+	puts("1) Effettua prenotazione");
+	puts("2) Cancella prenotazione");
+	puts("3) Uscire");
 	puts("\n");
-	op = multi_choice("Select an option", options, 3);
+	op = multi_choice("Selezionare un opzione", options, 3);
 	return op - '1';
 }

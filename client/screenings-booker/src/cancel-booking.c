@@ -25,18 +25,18 @@ extern int cancel_booking(cms_t cms) {
 		if (exit) {
 			return 0;
 		}
-		try(cms_cancel_booking(cms, request, &response), true, fail);
+		try(cms_cancel_booking(cms, request, &response), 1, fail);
 		if (!response->error_message) {
-			printf("\nBooking canceled, refund has been made.\n");
+			printf("\nPrenotazione annullata, è stato effettuato con successo il rimborso.\n");
 			cms_destroy_response((struct cms_response*)response);
 			press_anykey();
 			exit = true;
 		}
 		else {
-			char options[2] = { 'Y', 'N' };
+			char options[2] = { 'S', 'N' };
 			char choise;
 			printf("%s\n", response->error_message);
-			choise = multi_choice("Do you want to try insert another code?", options, 2);
+			choise = multi_choice("Riprovare con un altro codice?", options, 2);
 			if (choise == 'N') {
 				exit = true;
 			}
@@ -54,7 +54,7 @@ static void get_booking_code_or_exit_choise(int32_t* booking_code, bool* exit) {
 	while (!valid_input) {
 		io_clear_screen();
 		puts(title);
-		get_input("Enter booking code or enter Q tu get back: ", input, false);
+		get_input("Inserire il codice di prenotazione da annullare o Q per tornare indietro: ", input, false);
 		*exit = (input[0] == 'Q' && input[1] == '\0');
 		valid_input = *exit || (strtoint32(booking_code, input, 10) == STRTO_SUCCESS);
 	}

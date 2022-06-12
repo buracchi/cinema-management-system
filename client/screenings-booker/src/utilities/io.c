@@ -53,7 +53,7 @@ extern char* get_input_len(char *question, int len, char *buff, bool hide) {
 	}
 
 	// Empty stdin
-	if(strlen(buff) + 1 == len) {
+	if(strlen(buff) + 1 == (size_t) len) {
 		int ch;
 		while(((ch = getchar()) != EOF) && (ch != '\n'));
 		if(ch == EOF) {
@@ -161,29 +161,18 @@ extern char multi_choice(char *question, const char choices[], int num) {
 }
 
 
-//extern inline void io_clear_screen(void) {
-//	// To whom it may interest: this "magic" is a sequence of escape codes from VT100 terminals:
-//	// https://www.csie.ntu.edu.tw/~r92094/c++/VT100.html
-//	printf("\033[2J\033[H");
-//}
 
 #ifdef __unix__
-#include <unistd.h>
-#include <term.h>
-
 extern inline void io_clear_screen(void) {
-	if (!cur_term) {
-		int result;
-		setupterm(NULL, STDOUT_FILENO, &result);
-		if (result <= 0) return;
-	}
-	putp(tigetstr("clear"));
+	// To whom it may interest: this "magic" is a sequence of escape codes from VT100 terminals:
+	// https://www.csie.ntu.edu.tw/~r92094/c++/VT100.html
+	printf("\033[2J\033[H");
 }
 #else
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
-void io_clear_screen(void) {
+extern void io_clear_screen(void) {
 	HANDLE                     hStdOut;
 	CONSOLE_SCREEN_BUFFER_INFO csbi;
 	DWORD                      count;
