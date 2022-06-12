@@ -26,7 +26,10 @@ jobs:
       with:
         path: '**/vcpkg/'
         key: ${{ runner.os }}-vcpkg-${{ hashFiles('**/vcpkg.json') }}
-
+    
+    - name: Get CMake latest
+      uses: lukka/get-cmake@latest
+      
     - name: Configure CMake
       working-directory: ${{github.workspace}}/client
       run: cmake -B ${{github.workspace}}/client/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} #-DENABLE_TEST_COVERAGE=ON
