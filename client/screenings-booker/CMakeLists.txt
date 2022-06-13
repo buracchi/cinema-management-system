@@ -27,7 +27,3 @@ if (${WIN32})
     target_include_directories(screenings-booker PRIVATE ${TRE_INCLUDE_DIR})
     target_link_libraries(screenings-booker PRIVATE ${TRE_LIBRARY})
 endif()
-
-if (BUILD_TESTS)
-    add_subdirectory("test")
-endif ()

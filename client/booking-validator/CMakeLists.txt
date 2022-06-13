@@ -13,7 +13,3 @@ if (${WIN32})
     target_include_directories(booking-validator PRIVATE ${TRE_INCLUDE_DIR})
     target_link_libraries(booking-validator PRIVATE ${TRE_LIBRARY})
 endif()
-
-if (BUILD_TESTS)
-    add_subdirectory("test")
-endif ()

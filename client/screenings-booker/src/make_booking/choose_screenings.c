@@ -44,7 +44,7 @@ extern int choose_screening(cms_t cms, struct booking_data* booking_data) {
 		}
 		else if (strtoint32(&selected_screening, input, 10) == STRTO_SUCCESS
 			&& selected_screening > 0
-			&& selected_screening <= response->num_elements) {
+			&& (uint64_t)selected_screening <= response->num_elements) {
 			booking_data->hall = response->result[selected_screening - 1].hall_id;
 			strcpy(booking_data->date, response->result[selected_screening - 1].date);
 			strcpy(booking_data->time, response->result[selected_screening - 1].time);

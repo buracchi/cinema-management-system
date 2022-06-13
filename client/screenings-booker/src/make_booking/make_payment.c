@@ -56,8 +56,6 @@ extern int make_payment(cms_t cms, struct booking_data* booking_data) {
 	puts("Salvarlo in un luogo sicuro ed assicurarsi di non perderlo.");
 	press_anykey();
 	return 0;
-fail2:
-	cms_destroy_response((struct cms_response*)response);
 fail:
 	return 1;
 }

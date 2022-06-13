@@ -18,6 +18,6 @@ enum strto_errno strtoint32(int32_t* out, char* str, int base) {
         return STRTO_UNDERFLOW;
     if (*end != '\0')
         return STRTO_INCONVERTIBLE;
-    *out = result;
+    *out = (int32_t)result;
     return STRTO_SUCCESS;
 }

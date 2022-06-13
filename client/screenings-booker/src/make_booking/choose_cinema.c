@@ -18,7 +18,7 @@ static char* get_cinema_table(struct cms_get_all_cinema_response* response);
 
 extern int choose_cinema(cms_t cms, struct booking_data* booking_data) {
 	struct cms_get_all_cinema_response* response;
-	const char* cinema_table;
+	char* cinema_table;
 	char input[INT32DSTR_LEN];
 	int32_t selected_cinema;
 	bool back = false;
@@ -42,7 +42,7 @@ extern int choose_cinema(cms_t cms, struct booking_data* booking_data) {
 		}
 		else if (strtoint32(&selected_cinema, input, 10) == STRTO_SUCCESS
 			&& selected_cinema > 0
-			&& selected_cinema <= response->num_elements) {
+			&& (uint64_t)selected_cinema <= response->num_elements) {
 			booking_data->cinema_id = response->result[selected_cinema - 1].id;
 			strcpy(booking_data->cinema_address, response->result[selected_cinema - 1].address);
 			break;
