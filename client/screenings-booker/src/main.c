@@ -7,6 +7,8 @@
 #include "utilities/io.h"
 #include "resources.h"
 
+#include "make_booking.h"
+
 #define RUN_FROM_IDE
 
 enum actions {
@@ -16,9 +18,7 @@ enum actions {
 	END_OF_ACTIONS
 };
 
-extern int make_booking(cms_t cms);
 extern int cancel_booking(cms_t cms);
-static int get_action(void);
 
 int main(void) {
 #ifdef RUN_FROM_IDE
@@ -30,7 +30,7 @@ int main(void) {
 #endif
 	bool end = false;
 	cms_t cms;
-	unsigned int port = atoi(getenv("PORT"));
+	unsigned int port = atoi(getenv("PORT")); // TODO: sanitize
 	struct cms_credentials credentials = {
 		.username = getenv("CUSTOMER_USERNAME"),
 		.password = getenv("CUSTOMER_PASSWORD"),
@@ -40,10 +40,19 @@ int main(void) {
 	};
 	try(cms = cms_init(&credentials), NULL, fail);
 	while (!end) {
-		int action = get_action();
+		int action;
+		io_clear_screen();
+		puts(title);
+		puts("Scegliere un'azione\n");
+		puts("1) Effettua prenotazione");
+		puts("2) Cancella prenotazione");
+		puts("3) Uscire");
+		puts("\n");
+		action = multi_choice("Selezionare un opzione", ((char[3]){ '1', '2', '3' })) - '1';
 		switch (action) {
 		case MAKE_BOOKING:
-			try(make_booking(cms), 1, fail2);
+			struct booking_data booking_data = { 0 };
+			try(choose_cinema(cms, &booking_data), 1, fail2);
 			break;
 		case CANCEL_BOOKING:
 			try(cancel_booking(cms), 1, fail2);
@@ -52,7 +61,7 @@ int main(void) {
 			end = true;
 			break;
 		default:
-			fprintf(stderr, "Errore: l'azione scelta è invalida\n");
+			fprintf(stderr, "Errore: l'azione scelta e' invalida\n");
 			break;
 		}
 	}
@@ -65,18 +74,4 @@ fail2:
 fail:
 	fprintf(stderr, "Errore: impossibile connettersi al server, controllare le credenziali e riprovare in seguito.");
 	return EXIT_FAILURE;
-}
-
-static int get_action(void) {
-	char options[3] = { '1', '2', '3' };
-	char op;
-	io_clear_screen();
-	puts(title);
-	puts("Scegliere un'azione\n");
-	puts("1) Effettua prenotazione");
-	puts("2) Cancella prenotazione");
-	puts("3) Uscire");
-	puts("\n");
-	op = multi_choice("Selezionare un opzione", options, 3);
-	return op - '1';
 }

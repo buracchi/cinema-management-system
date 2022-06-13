@@ -189,6 +189,7 @@ extern bool cms_destroy(cms_t cms) {
 		}
 	}
 	mysql_close(cms->db_connection);
+	mysql_library_end();
 	free(cms);
 	return true;
 }

@@ -9,7 +9,11 @@ add_executable(screenings-booker
     "src/utilities/dotenv.c"
     "src/utilities/strto.h"
     "src/utilities/strto.c"
-    "src/make-booking.c"
+    "src/make_booking.h"
+    "src/make_booking/choose_cinema.c"
+    "src/make_booking/choose_screenings.c"
+    "src/make_booking/choose_seat.c"
+    "src/make_booking/make_payment.c"
     "src/cancel-booking.c")
 target_link_libraries(screenings-booker PRIVATE cinema-management-service)
 target_link_libraries(screenings-booker PRIVATE buracchi::common::utilities)

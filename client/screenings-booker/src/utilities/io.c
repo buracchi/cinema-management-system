@@ -125,17 +125,14 @@ extern bool yes_or_no(char *question, char yes, char no, bool default_answer, bo
 }
 
 
-extern char multi_choice(char *question, const char choices[], int num) {
-	//TODO
-	char* possibilities = calloc(2 * num, sizeof * possibilities);
-	possibilities[0] = choices[0];
-	for(int i = 1; i < num; i++) {
-		possibilities[2 * i - 1] = '/';
-		possibilities[2 * i] = choices[i];
-	}
+extern char multi_choice_len(char *question, const char choices[], int num) {
 	while(true) {
 		bool invalid_input = false;
-		printf("%s [%s]: ", question, possibilities);
+		printf("%s [%c", question, choices[0]);
+		for (int i = 1; i < num; i++) {
+			printf("/%c", choices[i]);
+		}
+		printf("]: ");
 		char c = (char)getchar();
 		if (c == '\n') {
 			continue;
