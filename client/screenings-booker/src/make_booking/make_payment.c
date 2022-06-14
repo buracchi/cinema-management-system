@@ -6,9 +6,9 @@
 #include <buracchi/common/utilities/utilities.h>
 #include <buracchi/common/utilities/try.h>
 #include <cms/booking.h>
+#include <cliutils/io.h>
 
-#include "../utilities/io.h"
-#include "../resources.h"
+#include "../core.h"
 
 extern int make_payment(cms_t cms, struct booking_data* booking_data) {
 	struct cms_book_seat_request request = {

@@ -1,15 +1,15 @@
 ﻿#include <stdlib.h>
 #include <stdio.h>
+#include <stdbool.h>
 
 #include <buracchi/common/utilities/try.h>
 #include <cms/cms.h>
-
-#include "utilities/io.h"
-#include "resources.h"
+#include <cliutils/io.h>
+#include <cliutils/dotenv.h>
+#include <cliutils/strto.h>
 
 #include "make_booking.h"
-
-#define RUN_FROM_IDE
+#include "core.h"
 
 enum actions {
 	MAKE_BOOKING,
@@ -20,23 +20,16 @@ enum actions {
 extern int cancel_booking(cms_t cms);
 
 int main(void) {
-#ifdef RUN_FROM_IDE
-	try(putenv("HOST=localhost") == 0, false, fail);
-	try(putenv("DB=cinemadb") == 0, false, fail);
-	try(putenv("PORT=3306") == 0, false, fail);
-	try(putenv("CUSTOMER_USERNAME=cliente") == 0, false, fail);
-	try(putenv("CUSTOMER_PASSWORD=pippo") == 0, false, fail);
-#endif
-	bool end = false;
 	cms_t cms;
-	unsigned int port = atoi(getenv("PORT")); // TODO: sanitize
+	bool end = false;
+    try(env_load(".", false), -1, fail);
 	struct cms_credentials credentials = {
 		.username = getenv("CUSTOMER_USERNAME"),
 		.password = getenv("CUSTOMER_PASSWORD"),
 		.host = getenv("HOST"),
-		.db = getenv("DB"),
-		.port = port
+		.db = getenv("DB")
 	};
+    try(strtouint16((uint16_t *) &(credentials.port), getenv("PORT"), 10) == STRTO_SUCCESS, false, fail);
 	try(cms = cms_init(&credentials), NULL, fail);
 	while (!end) {
 		int action;

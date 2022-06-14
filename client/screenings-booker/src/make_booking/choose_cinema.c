@@ -9,10 +9,10 @@
 #include <buracchi/common/utilities/try.h>
 #include <fort.h>
 #include <cms/booking.h>
+#include <cliutils/io.h>
+#include <cliutils/strto.h>
 
-#include "../utilities/io.h"
-#include "../utilities/strto.h"
-#include "../resources.h"
+#include "../core.h"
 
 static char* get_cinema_table(struct cms_get_all_cinema_response* response);
 

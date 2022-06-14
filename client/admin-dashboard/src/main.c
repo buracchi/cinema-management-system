@@ -1,13 +1,14 @@
 ﻿#include <stdlib.h>
 #include <stdio.h>
+#include <stdbool.h>
 
 #include <buracchi/common/utilities/try.h>
 #include <cms/cms.h>
+#include <cliutils/io.h>
+#include <cliutils/dotenv.h>
+#include <cliutils/strto.h>
 
-#include "utilities/io.h"
-#include "resources.h"
-
-#define RUN_FROM_IDE
+#include "core.h"
 
 enum actions {
 	MANAGE_CINEMA,
@@ -19,23 +20,16 @@ enum actions {
 };
 
 int main(void) {
-#ifdef RUN_FROM_IDE
-	try(putenv("HOST=localhost") == 0, false, fail);
-	try(putenv("DB=cinemadb") == 0, false, fail);
-	try(putenv("PORT=3306") == 0, false, fail);
-	try(putenv("ADMIN_USERNAME=amministratore") == 0, false, fail);
-	try(putenv("ADMIN_PASSWORD=pippo") == 0, false, fail);
-#endif
-	bool end = false;
-	cms_t cms;
-	unsigned int port = atoi(getenv("PORT")); // TODO: sanitize
-	struct cms_credentials credentials = {
+    cms_t cms;
+    bool end = false;
+    try(env_load(".", false), -1, fail);
+    struct cms_credentials credentials = {
 		.username = getenv("ADMIN_USERNAME"),
 		.password = getenv("ADMIN_PASSWORD"),
 		.host = getenv("HOST"),
-		.db = getenv("DB"),
-		.port = port
-	};
+		.db = getenv("DB")
+    };
+    try(strtouint16((uint16_t *) &(credentials.port), getenv("PORT"), 10) == STRTO_SUCCESS, false, fail);
 	try(cms = cms_init(&credentials), NULL, fail);
 	while (!end) {
 		int action;

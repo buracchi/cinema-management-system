@@ -29,3 +29,5 @@ enum strto_errno {
  * @return Indicates if the operation succeeded, or why it failed.
  */
 enum strto_errno strtoint32(int32_t* out, char* str, int base);
+
+enum strto_errno strtouint16(uint16_t* out, char* str, int base);

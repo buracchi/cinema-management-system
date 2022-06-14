@@ -4,12 +4,10 @@
 #include <buracchi/common/utilities/utilities.h>
 #include <buracchi/common/utilities/try.h>
 #include <cms/booking.h>
+#include <cliutils/io.h>
+#include <cliutils/strto.h>
 
-#include "resources.h"
-#include "utilities/io.h"
-#include "utilities/strto.h"
-
-#define INT32DSTR_LEN 12
+#include "core.h"
 
 extern int cancel_booking(cms_t cms) {
 	struct cms_cancel_booking_request request = { 0 };

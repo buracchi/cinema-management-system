@@ -10,14 +10,20 @@
 #include <cms/cms.h>
 #include <cms/booking.h>
 
-//#define RUN_FROM_IDE
+#include <cliutils/dotenv.h>
+#include <cliutils/strto.h>
+
+#define RUN_FROM_IDE
 
 static int validate(const char* booking_code);
 
-int main(int argc, char** argv) {
 #ifdef RUN_FROM_IDE
-	return validate(NULL);
+int main(void) {
+	const char *booking_code = "1";
+	return validate(booking_code);
+}
 #else
+int main(int argc, char** argv) {
 	char* booking_code;
 	cmn_map_t option_map;
 	cmn_argparser_t argparser;
@@ -32,30 +38,22 @@ int main(int argc, char** argv) {
 	return validate(booking_code);
 fail:
 	return EXIT_FAILURE;
-#endif
 }
+#endif
 
 static int validate(const char* booking_code) {
-#ifdef RUN_FROM_IDE
-	try(putenv("HOST=localhost") == 0, false, fail);
-	try(putenv("DB=cinemadb") == 0, false, fail);
-	try(putenv("PORT=3306") == 0, false, fail);
-	try(putenv("USHER_USERNAME=maschera") == 0, false, fail);
-	try(putenv("USHER_PASSWORD=pippo") == 0, false, fail);
-	booking_code = "4";
-#endif
 	cms_t cms;
-	unsigned int port = atoi(getenv("PORT")); // TODO: sanitize
+	try(env_load(".", false), -1, fail);
 	struct cms_credentials credentials = {
-		.host = getenv("HOST"),
-		.db = getenv("DB"),
-		.port = port,
-		.username = getenv("USHER_USERNAME"),
-		.password = getenv("USHER_PASSWORD")
+			.username = getenv("USHER_USERNAME"),
+			.password = getenv("USHER_PASSWORD"),
+			.host = getenv("HOST"),
+			.db = getenv("DB")
 	};
 	struct cms_validate_booking_request request;
 	struct cms_validate_booking_response* response;
-	try(strtoi(booking_code, &(request.booking_code)), 1, fail);
+	try(strtouint16((uint16_t *) &(credentials.port), getenv("PORT"), 10) == STRTO_SUCCESS, false, fail);
+	try(strtoi(booking_code, &(request.booking_code)), 1, fail); // TODO: replace with strtoint32
 	try(cms = cms_init(&credentials), NULL, fail);
 	try(cms_validate_booking(cms, request, &response), 1, fail2);
 	if (response->error_message) {

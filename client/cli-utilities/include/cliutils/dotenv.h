@@ -1,8 +1,6 @@
 #ifndef DOTENV_DOTENV_H
 #define DOTENV_DOTENV_H
 
-#pragma warning(disable:4996)
-
 #include <stdbool.h>
 
 #ifdef __cplusplus

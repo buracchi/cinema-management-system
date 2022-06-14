@@ -9,10 +9,10 @@
 
 #include <buracchi/common/utilities/try.h>
 #include <cms/booking.h>
+#include <cliutils/io.h>
+#include <cliutils/strto.h>
 
-#include "../utilities/io.h"
-#include "../utilities/strto.h"
-#include "../resources.h"
+#include "../core.h"
 
 #ifdef _MSC_VER 
 #define strncasecmp _strnicmp
