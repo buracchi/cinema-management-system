@@ -8,7 +8,8 @@
 #include <cliutils/dotenv.h>
 #include <cliutils/strto.h>
 
-#include "make_booking.h"
+#include "make_booking/make_booking.h"
+#include "cancel_booking/cancel_booking.h"
 #include "core.h"
 
 enum actions {
@@ -16,8 +17,6 @@ enum actions {
 	CANCEL_BOOKING,
 	QUIT
 };
-
-extern int cancel_booking(cms_t cms);
 
 int main(void) {
 	cms_t cms;

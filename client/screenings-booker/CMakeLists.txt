@@ -2,13 +2,14 @@
 find_package(libfort CONFIG REQUIRED)
 
 add_executable(screenings-booker
-    "src/main.c"
-    "src/make_booking.h"
-    "src/make_booking/choose_cinema.c"
-    "src/make_booking/choose_screenings.c"
-    "src/make_booking/choose_seat.c"
-    "src/make_booking/make_payment.c"
-    "src/cancel-booking.c")
+               "src/main.c"
+               "src/make_booking/make_booking.h"
+               "src/make_booking/choose_cinema.c"
+               "src/make_booking/choose_screenings.c"
+               "src/make_booking/choose_seat.c"
+               "src/make_booking/make_payment.c"
+               "src/cancel_booking/cancel_booking.h"
+               "src/cancel_booking/cancel_booking.c")
 target_link_libraries(screenings-booker PRIVATE cinema-management-service)
 target_link_libraries(screenings-booker PRIVATE cli-utilities)
 target_link_libraries(screenings-booker PRIVATE buracchi::common::utilities)

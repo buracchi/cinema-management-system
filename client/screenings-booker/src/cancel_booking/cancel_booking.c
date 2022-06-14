@@ -1,3 +1,5 @@
+#include "cancel_booking.h"
+
 #include <stdio.h>
 #include <stdbool.h>
 
@@ -7,7 +9,7 @@
 #include <cliutils/io.h>
 #include <cliutils/strto.h>
 
-#include "core.h"
+#include "../core.h"
 
 extern int cancel_booking(cms_t cms) {
 	struct cms_cancel_booking_request request = { 0 };

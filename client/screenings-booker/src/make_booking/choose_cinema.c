@@ -1,4 +1,4 @@
-#include "../make_booking.h"
+#include "make_booking.h"
 
 #include <stdlib.h>
 #include <stdio.h>
