@@ -14,8 +14,7 @@
 enum actions {
 	MAKE_BOOKING,
 	CANCEL_BOOKING,
-	QUIT,
-	END_OF_ACTIONS
+	QUIT
 };
 
 extern int cancel_booking(cms_t cms);

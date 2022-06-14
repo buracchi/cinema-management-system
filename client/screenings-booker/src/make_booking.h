@@ -11,7 +11,7 @@ struct booking_data {
 	char film_name[45];
 	char price[18];
 	char seat_row;
-	int32_t seat_number;
+	uint32_t seat_number;
 	int32_t booking_code;
 };
 

@@ -45,7 +45,7 @@ static int validate(const char* booking_code) {
 	booking_code = "4";
 #endif
 	cms_t cms;
-	unsigned int port = atoi(getenv("PORT"));
+	unsigned int port = atoi(getenv("PORT")); // TODO: sanitize
 	struct cms_credentials credentials = {
 		.host = getenv("HOST"),
 		.db = getenv("DB"),

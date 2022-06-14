@@ -7,11 +7,6 @@
 extern jmp_buf leave_buff;
 extern bool io_initialized;
 
-#define initialize_io(initialized)		\
-	io_initialized = true;				\
-	int __ret = setjmp(leave_buff);		\
-	initialized = (__ret == 0);			\
-
 #define get_input(question, buff, hide) get_input_len(question, sizeof(buff), buff, hide)
 #define multi_choice(question, choices) multi_choice_len(question, choices, sizeof(choices))
 

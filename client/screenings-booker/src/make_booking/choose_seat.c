@@ -7,7 +7,6 @@
 #include <string.h>
 #include <ctype.h>
 
-#include <buracchi/common/utilities/utilities.h>
 #include <buracchi/common/utilities/try.h>
 #include <cms/booking.h>
 
@@ -17,7 +16,6 @@
 
 #ifdef _MSC_VER 
 #define strncasecmp _strnicmp
-#define strcasecmp _stricmp
 #endif
 
 static int get_hall_info(cms_t cms, struct booking_data* booking_data, uint64_t* num_rows, uint64_t* num_cols);
@@ -56,7 +54,7 @@ extern int choose_seat(cms_t cms, struct booking_data* booking_data) {
 		printf("Data: %s\n", booking_data->date);
 		printf("Orario: %s\n", booking_data->time);
 		printf("Cinema: %s\n", booking_data->cinema_address);
-		printf("Sala: %hhu\n", booking_data->hall);
+		printf("Sala: %d\n", booking_data->hall);
 		printf("Film: %s\n", booking_data->film_name);
 		printf("Prezzo: %s\n", booking_data->price);
 		try(print_cinema_map(response, num_rows, num_cols) < 0, true, fail2);

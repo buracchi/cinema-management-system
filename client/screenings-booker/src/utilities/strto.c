@@ -2,7 +2,6 @@
 
 #include <ctype.h>
 #include <errno.h>
-#include <limits.h>
 #include <stdlib.h>
 
 enum strto_errno strtoint32(int32_t* out, char* str, int base) {

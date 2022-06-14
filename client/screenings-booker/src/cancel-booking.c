@@ -1,11 +1,8 @@
-#include <stdlib.h>
 #include <stdio.h>
-#include <stdint.h>
 #include <stdbool.h>
 
 #include <buracchi/common/utilities/utilities.h>
 #include <buracchi/common/utilities/try.h>
-#include <fort.h>
 #include <cms/booking.h>
 
 #include "resources.h"
@@ -25,7 +22,7 @@ extern int cancel_booking(cms_t cms) {
 			get_input("Inserire il codice di prenotazione da annullare o Q per tornare indietro: ", input, false);
 			if ((input[0] == 'Q' || input[0] == 'q') && input[1] == '\0') {
 				return 0;
-			};
+			}
 			if (strtoint32(&(request.booking_code), input, 10) == STRTO_SUCCESS) {
 				break;
 			}

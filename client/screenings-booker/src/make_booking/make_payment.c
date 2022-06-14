@@ -1,17 +1,13 @@
 #include "../make_booking.h"
 
-#include <stdlib.h>
 #include <stdio.h>
-#include <stdint.h>
 #include <stdbool.h>
 
 #include <buracchi/common/utilities/utilities.h>
 #include <buracchi/common/utilities/try.h>
-#include <fort.h>
 #include <cms/booking.h>
 
 #include "../utilities/io.h"
-#include "../utilities/strto.h"
 #include "../resources.h"
 
 extern int make_payment(cms_t cms, struct booking_data* booking_data) {
@@ -19,7 +15,7 @@ extern int make_payment(cms_t cms, struct booking_data* booking_data) {
 		.cinema_id = booking_data->cinema_id,
 		.hall_id = booking_data->hall,
 		.seat_row = booking_data->seat_row,
-		.seat_number = booking_data->seat_number
+		.seat_number = (int32_t)booking_data->seat_number
 	};
 	strcpy((char*)request.date, booking_data->date);
 	strcpy((char*)request.start_time, booking_data->time);
@@ -30,15 +26,15 @@ extern int make_payment(cms_t cms, struct booking_data* booking_data) {
 	printf("Data: %s\n", booking_data->date);
 	printf("Orario: %s\n", booking_data->time);
 	printf("Cinema: %s\n", booking_data->cinema_address);
-	printf("Sala: %hhu\n", booking_data->hall);
+	printf("Sala: %d\n", booking_data->hall);
 	printf("Film: %s\n", booking_data->film_name);
-	printf("Posto: %c%hhu\n", booking_data->seat_row, booking_data->seat_number);
+	printf("Posto: %c%u\n", booking_data->seat_row, booking_data->seat_number);
 	printf("Prezzo: %s\n\n", booking_data->price);
 	if (multi_choice("Procedere al pagamento?", ((char[2]){ 'S', 'N' })) == 'N') {
 		return choose_seat(cms, booking_data);
 	}
 	puts("");
-	get_input("Intestatario carta: ", request.name_on_card, false);
+    get_input("Intestatario carta: ", request.name_on_card, false);
 	get_input("Numero carta: ", request.card_number, false);
 	get_input("Data di scadenza [YYYY-MM]: ", request.expiry_date, false);
 	get_input("Codice di sicurezza (CVV): ", request.security_code, true);

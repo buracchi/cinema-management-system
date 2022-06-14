@@ -5,7 +5,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
-#include <stdbool.h>
 #include <setjmp.h>
 
 #ifdef __unix__

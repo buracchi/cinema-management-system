@@ -7,8 +7,6 @@
 #include <mysql.h>
 #include <stdarg.h>
 
-#include <buracchi/common/utilities/try.h>
-
 #define DATE_LEN 11
 #define TIME_LEN 9
 #define DATETIME_LEN (DATE_LEN + TIME_LEN)

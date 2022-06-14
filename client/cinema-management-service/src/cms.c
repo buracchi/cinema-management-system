@@ -102,7 +102,7 @@ static const struct operation_data {
 		.query = "call mostra_palinsesto(?)",
 		.params_type = (FIELD_TYPE[1]) { FIELD_TYPE_LONG }
 	},
-	[GET_AVALILABLE_SEATS] = {
+	[GET_AVAILABLE_SEATS] = {
 		.statement = NULL,
 		.query = "call mostra_posti_disponibili(?, ?, ?, ?)",
 		.params_type = (FIELD_TYPE[4]) { FIELD_TYPE_LONG, FIELD_TYPE_LONG, FIELD_TYPE_DATE, FIELD_TYPE_TIME }
@@ -150,8 +150,8 @@ struct cms {
 };
 
 static MYSQL_STMT* get_prepared_stmt(cms_t cms, enum cms_operation operation);
-static int send_mysql_stmt_request(struct operation_data statement_data, struct cms_request_param* request_param);
-static int recv_mysql_stmt_result(struct operation_data statement_data, struct cms_response** response, struct cms_result_bitmap* result_bitmap);
+static int send_mysql_stmt_request(struct operation_data operation_data, struct cms_request_param* request_param);
+static int recv_mysql_stmt_result(struct operation_data operation_data, struct cms_response** response, struct cms_result_bitmap* result_bitmap);
 
 extern cms_t cms_init(struct cms_credentials* credentials) {
 	cms_t this;

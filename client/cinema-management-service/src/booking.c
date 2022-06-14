@@ -43,7 +43,7 @@ extern int cms_get_available_seats(cms_t cms, struct cms_get_available_seats_req
 		CMS_RESULT_BITMAP_INFO(struct cms_get_available_seats_response, result[0]),
 		CMS_RESULT_BITMAP_INFO(struct cms_seat, row, number)
 	};
-	return cms_operation_execute(cms, GET_AVALILABLE_SEATS, request_params, (struct cms_response**)response, result_bitmap);
+	return cms_operation_execute(cms, GET_AVAILABLE_SEATS, request_params, (struct cms_response**)response, result_bitmap);
 }
 
 extern int cms_book_seat(cms_t cms, struct cms_book_seat_request request, struct cms_book_seat_response** response) {
