@@ -9,7 +9,7 @@
 static char* get_screenings_table(struct cms_get_screenings_without_projectionist_response* response);
 
 extern int show_screenings_without_projectionist(cms_t cms) {
-	struct cms_get_screenings_without_projectionist_response *response;
+	struct cms_get_screenings_without_projectionist_response* response;
 	io_clear_screen();
 	puts(title);
 	try(cms_get_screenings_without_projectionist(cms, &response), 1, fail);

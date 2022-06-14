@@ -9,7 +9,7 @@
 static char* get_booking_table(struct cms_get_reservations_status_response* response);
 
 extern int show_monthly_booking_state(cms_t cms) {
-	struct cms_get_reservations_status_response *response;
+	struct cms_get_reservations_status_response* response;
 	io_clear_screen();
 	puts(title);
 	try(cms_get_reservations_status(cms, &response), 1, fail);

@@ -11,7 +11,7 @@ extern int select_cinema(cms_t cms, struct cms_cinema* cinema);
 static char* get_cinema_table(struct cms_get_all_cinema_response* response);
 
 extern int show_cinema(cms_t cms) {
-	struct cms_get_all_cinema_response *response;
+	struct cms_get_all_cinema_response* response;
 	io_clear_screen();
 	try(cms_get_all_cinema(cms, &response), 1, fail);
 	if (response->error_message) {
@@ -84,15 +84,15 @@ extern int select_cinema(cms_t cms, struct cms_cinema* cinema) {
 			break;
 		}
 		else if (strtoint32(&selected_cinema, input, 10) == STRTO_SUCCESS
-		         && selected_cinema > 0
-		         && (uint64_t)selected_cinema <= response->num_elements) {
-			memcpy(cinema, &(response->result[selected_cinema - 1]), sizeof *cinema);
+			&& selected_cinema > 0
+			&& (uint64_t)selected_cinema <= response->num_elements) {
+			memcpy(cinema, &(response->result[selected_cinema - 1]), sizeof * cinema);
 			break;
 		}
 		cms_destroy_response((struct cms_response*)response);
 	}
 	cms_destroy_response((struct cms_response*)response);
-	return back? 2 : 0;
+	return back ? 2 : 0;
 fail2:
 	cms_destroy_response((struct cms_response*)response);
 fail:

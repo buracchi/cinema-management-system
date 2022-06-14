@@ -10,16 +10,16 @@ extern int select_cinema(cms_t cms, struct cms_cinema* cinema);
 
 extern int insert_hall(cms_t cms) {
 	struct cms_add_hall_request request = { 0 };
-	struct cms_add_hall_response *response;
+	struct cms_add_hall_response* response;
 	struct cms_cinema cinema;
 	char hall_number[INT32DSTR_LEN];
 	char rows[INT32DSTR_LEN];
 	char rows_seats[INT32DSTR_LEN];
 	switch (select_cinema(cms, &cinema)) {
-		case 1:
-			goto fail;
-		case 2:
-			return 0;
+	case 1:
+		goto fail;
+	case 2:
+		return 0;
 	};
 	io_clear_screen();
 	puts(title);

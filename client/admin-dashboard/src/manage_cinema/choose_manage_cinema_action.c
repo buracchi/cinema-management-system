@@ -42,30 +42,30 @@ extern int choose_manage_cinema_action(cms_t cms) {
 		puts("\n");
 		action = multi_choice("Selezionare un opzione", ((char[7]){ '1', '2', '3', '4', '5', '6', '7' })) - '1';
 		switch (action) {
-			case SHOW_CINEMA:
-				try(show_cinema(cms), 1, fail);
-				break;
-			case ADD_CINEMA:
-				try(insert_cinema(cms), 1, fail);
-				break;
-			case REMOVE_CINEMA:
-				try(delete_cinema(cms), 1, fail);
-				break;
-			case SHOW_HALLS:
-				try(show_halls(cms), 1, fail);
-				break;
-			case ADD_HALL:
-				try(insert_hall(cms), 1, fail);
-				break;
-			case REMOVE_HALL:
-				try(delete_hall(cms), 1, fail);
-				break;
-			case BACK_TO_MENU:
-				end = true;
-				break;
-			default:
-				fprintf(stderr, "Errore: l'azione scelta e' invalida\n");
-				break;
+		case SHOW_CINEMA:
+			try(show_cinema(cms), 1, fail);
+			break;
+		case ADD_CINEMA:
+			try(insert_cinema(cms), 1, fail);
+			break;
+		case REMOVE_CINEMA:
+			try(delete_cinema(cms), 1, fail);
+			break;
+		case SHOW_HALLS:
+			try(show_halls(cms), 1, fail);
+			break;
+		case ADD_HALL:
+			try(insert_hall(cms), 1, fail);
+			break;
+		case REMOVE_HALL:
+			try(delete_hall(cms), 1, fail);
+			break;
+		case BACK_TO_MENU:
+			end = true;
+			break;
+		default:
+			fprintf(stderr, "Errore: l'azione scelta e' invalida\n");
+			break;
 		}
 	}
 	return 0;

@@ -25,16 +25,16 @@ enum actions {
 };
 
 int main(void) {
-    cms_t cms;
-    bool end = false;
-    try(env_load(".", false), -1, fail);
-    struct cms_credentials credentials = {
+	cms_t cms;
+	bool end = false;
+	try(env_load(".", false), -1, fail);
+	struct cms_credentials credentials = {
 		.username = getenv("ADMIN_USERNAME"),
 		.password = getenv("ADMIN_PASSWORD"),
 		.host = getenv("HOST"),
 		.db = getenv("DB")
-    };
-    try(strtouint16((uint16_t *) &(credentials.port), getenv("PORT"), 10) == STRTO_SUCCESS, false, fail);
+	};
+	try(strtouint16((uint16_t*)&(credentials.port), getenv("PORT"), 10) == STRTO_SUCCESS, false, fail);
 	try(cms = cms_init(&credentials), NULL, fail);
 	while (!end) {
 		int action;
@@ -50,24 +50,24 @@ int main(void) {
 		puts("\n");
 		action = multi_choice("Selezionare un opzione", ((char[6]){ '1', '2', '3', '4', '5', '6' })) - '1';
 		switch (action) {
-        case MANAGE_CINEMA:
-	        try(choose_manage_cinema_action(cms), 1, fail2);
-            break;
-        case MANAGE_SCREENINGS:
-	        try(choose_manage_screenings_action(cms), 1, fail2);
-            break;
-        case MANAGE_SHIFTS:
-	        try(choose_manage_shifts_action(cms), 1, fail2);
-            break;
-        case MANAGE_EMPLOYEES:
-	        try(choose_manage_employees_action(cms), 1, fail2);
-            break;
-        case GENERATE_REPORT:
-	        try(choose_generate_report_action(cms), 1, fail2);
-            break;
-        case QUIT:
-            end = true;
-            break;
+		case MANAGE_CINEMA:
+			try(choose_manage_cinema_action(cms), 1, fail2);
+			break;
+		case MANAGE_SCREENINGS:
+			try(choose_manage_screenings_action(cms), 1, fail2);
+			break;
+		case MANAGE_SHIFTS:
+			try(choose_manage_shifts_action(cms), 1, fail2);
+			break;
+		case MANAGE_EMPLOYEES:
+			try(choose_manage_employees_action(cms), 1, fail2);
+			break;
+		case GENERATE_REPORT:
+			try(choose_generate_report_action(cms), 1, fail2);
+			break;
+		case QUIT:
+			end = true;
+			break;
 		default:
 			fprintf(stderr, "Errore: l'azione scelta e' invalida\n");
 			break;

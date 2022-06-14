@@ -9,7 +9,7 @@
 static char* get_cinema_table(struct cms_get_cinema_without_ushers_response* response);
 
 extern int show_cinema_without_enough_ushers(cms_t cms) {
-	struct cms_get_cinema_without_ushers_response *response;
+	struct cms_get_cinema_without_ushers_response* response;
 	io_clear_screen();
 	puts(title);
 	try(cms_get_cinema_without_ushers(cms, &response), 1, fail);

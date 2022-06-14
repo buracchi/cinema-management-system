@@ -29,18 +29,18 @@ extern int choose_manage_employees_action(cms_t cms) {
 		puts("\n");
 		action = multi_choice("Selezionare un opzione", ((char[4]){ '1', '2', '3', '4'})) - '1';
 		switch (action) {
-			case SHOW_EMPLOYEES:
-				break;
-			case ADD_EMPLOYEE:
-				break;
-			case REMOVE_EMPLOYEE:
-				break;
-			case BACK_TO_MENU:
-				end = true;
-				break;
-			default:
-				fprintf(stderr, "Errore: l'azione scelta e' invalida\n");
-				break;
+		case SHOW_EMPLOYEES:
+			break;
+		case ADD_EMPLOYEE:
+			break;
+		case REMOVE_EMPLOYEE:
+			break;
+		case BACK_TO_MENU:
+			end = true;
+			break;
+		default:
+			fprintf(stderr, "Errore: l'azione scelta e' invalida\n");
+			break;
 		}
 	}
 	return 0;

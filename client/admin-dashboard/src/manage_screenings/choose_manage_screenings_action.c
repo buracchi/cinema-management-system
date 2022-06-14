@@ -31,20 +31,20 @@ extern int choose_manage_screenings_action(cms_t cms) {
 		puts("\n");
 		action = multi_choice("Selezionare un opzione", ((char[5]){ '1', '2', '3', '4', '5' })) - '1';
 		switch (action) {
-			case SHOW_SCREENINGS:
-				break;
-			case ADD_SCREENINGS:
-				break;
-			case REMOVE_SCREENINGS:
-				break;
-			case ASSIGN_PROJECTIONIST:
-				break;
-			case BACK_TO_MENU:
-				end = true;
-				break;
-			default:
-				fprintf(stderr, "Errore: l'azione scelta e' invalida\n");
-				break;
+		case SHOW_SCREENINGS:
+			break;
+		case ADD_SCREENINGS:
+			break;
+		case REMOVE_SCREENINGS:
+			break;
+		case ASSIGN_PROJECTIONIST:
+			break;
+		case BACK_TO_MENU:
+			end = true;
+			break;
+		default:
+			fprintf(stderr, "Errore: l'azione scelta e' invalida\n");
+			break;
 		}
 	}
 	return 0;

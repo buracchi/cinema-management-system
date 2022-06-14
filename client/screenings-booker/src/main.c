@@ -21,14 +21,14 @@ enum actions {
 int main(void) {
 	cms_t cms;
 	bool end = false;
-    try(env_load(".", false), -1, fail);
+	try(env_load(".", false), -1, fail);
 	struct cms_credentials credentials = {
 		.username = getenv("CUSTOMER_USERNAME"),
 		.password = getenv("CUSTOMER_PASSWORD"),
 		.host = getenv("HOST"),
 		.db = getenv("DB")
 	};
-    try(strtouint16((uint16_t *) &(credentials.port), getenv("PORT"), 10) == STRTO_SUCCESS, false, fail);
+	try(strtouint16((uint16_t*)&(credentials.port), getenv("PORT"), 10) == STRTO_SUCCESS, false, fail);
 	try(cms = cms_init(&credentials), NULL, fail);
 	while (!end) {
 		int action;

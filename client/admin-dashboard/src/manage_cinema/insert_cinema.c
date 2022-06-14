@@ -7,7 +7,7 @@
 
 extern int insert_cinema(cms_t cms) {
 	struct cms_add_cinema_request request = { 0 };
-	struct cms_add_cinema_response *response;
+	struct cms_add_cinema_response* response;
 	io_clear_screen();
 	puts(title);
 	get_input_len("Indirizzo: ", sizeof(request.address), (char*)request.address, false);

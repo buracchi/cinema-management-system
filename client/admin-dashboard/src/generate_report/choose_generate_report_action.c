@@ -33,21 +33,21 @@ extern int choose_generate_report_action(cms_t cms) {
 		puts("\n");
 		action = multi_choice("Selezionare un opzione", ((char[4]){ '1', '2', '3', '4'})) - '1';
 		switch (action) {
-			case SHOW_SHIFTS_WITHOUT_PROJECTIONIST:
-				try(show_screenings_without_projectionist(cms), 1, fail);
-				break;
-			case SHOW_CINEMA_WITHOUT_ENOUGH_USHERS:
-				try(show_cinema_without_enough_ushers(cms), 1, fail);
-				break;
-			case SHOW_MONTHLY_BOOKING_STATE:
-				try(show_monthly_booking_state(cms), 1, fail);
-				break;
-			case BACK_TO_MENU:
-				end = true;
-				break;
-			default:
-				fprintf(stderr, "Errore: l'azione scelta e' invalida\n");
-				break;
+		case SHOW_SHIFTS_WITHOUT_PROJECTIONIST:
+			try(show_screenings_without_projectionist(cms), 1, fail);
+			break;
+		case SHOW_CINEMA_WITHOUT_ENOUGH_USHERS:
+			try(show_cinema_without_enough_ushers(cms), 1, fail);
+			break;
+		case SHOW_MONTHLY_BOOKING_STATE:
+			try(show_monthly_booking_state(cms), 1, fail);
+			break;
+		case BACK_TO_MENU:
+			end = true;
+			break;
+		default:
+			fprintf(stderr, "Errore: l'azione scelta e' invalida\n");
+			break;
 		}
 	}
 	return 0;
