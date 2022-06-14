@@ -26,14 +26,31 @@ extern int cms_delete_cinema(cms_t cms, struct cms_delete_cinema_request request
 	return cms_operation_execute(cms, DELETE_CINEMA, request_params, (struct cms_response**)response, NULL);
 }
 
-/*
-struct cms_get_halls_request { int32_t cinema_id; };
-struct cms_get_halls_response { hall_t* halls; };
-extern bool cms_get_halls(cms_t cms, struct get_halls_request request, struct get_halls_response* response);
+extern int cms_get_cinema_halls(cms_t cms, struct cms_get_cinema_halls_request request, struct cms_get_cinema_halls_response** response) {
+	struct cms_request_param request_params[] = {
+			CMS_REQUEST_PARAM_INFO(request.cinema_id)
+	};
+	struct cms_result_bitmap result_bitmap[] = {
+			CMS_RESULT_BITMAP_INFO(struct cms_get_cinema_halls_response, result[0]),
+			CMS_RESULT_BITMAP_INFO(struct cms_hall_info, id, num_rows, num_cols)
+	};
+	return cms_operation_execute(cms, GET_HALLS, request_params, (struct cms_response**)response, result_bitmap);
+}
 
-struct cms_add_hall_request { int32_t cinema_id; uint8_t hall_number; uint8_t rows; uint8_t rows_seats; };
-extern bool cms_add_hall(cms_t cms, struct add_hall_request request);
+extern int cms_add_hall(cms_t cms, struct cms_add_hall_request request, struct cms_add_hall_response** response) {
+	struct cms_request_param request_params[] = {
+			CMS_REQUEST_PARAM_INFO(request.cinema_id),
+			CMS_REQUEST_PARAM_INFO(request.hall_number),
+			CMS_REQUEST_PARAM_INFO(request.rows),
+			CMS_REQUEST_PARAM_INFO(request.rows_seats)
+	};
+	return cms_operation_execute(cms, ADD_HALL, request_params, (struct cms_response**)response, NULL);
+}
 
-struct cms_delete_hall_request { int32_t cinema_id; uint8_t hall_number; };
-extern bool cms_delete_hall(cms_t cms, struct delete_hall_request request);
-*/
+extern int cms_delete_hall(cms_t cms, struct cms_delete_hall_request request, struct cms_delete_hall_response** response) {
+	struct cms_request_param request_params[] = {
+			CMS_REQUEST_PARAM_INFO(request.cinema_id),
+			CMS_REQUEST_PARAM_INFO(request.hall_number)
+	};
+	return cms_operation_execute(cms, DELETE_HALL, request_params, (struct cms_response**)response, NULL);
+}

@@ -23,15 +23,14 @@ struct cms_delete_cinema_request { int32_t id; };
 struct cms_delete_cinema_response {struct cms_response; };
 extern int cms_delete_cinema(cms_t cms, struct cms_delete_cinema_request request, struct cms_delete_cinema_response** response);
 
-/*
+struct cms_get_cinema_halls_request { int32_t cinema_id; };
+struct cms_get_cinema_halls_response { struct cms_response; struct cms_hall_info { int32_t id; uint64_t num_rows; uint64_t num_cols; } result[]; };
+extern int cms_get_cinema_halls(cms_t cms, struct cms_get_cinema_halls_request request, struct cms_get_cinema_halls_response** response);
 
-struct cms_get_halls_request { int32_t cinema_id; };
-struct cms_get_halls_response { hall_t* halls; };
-extern bool cms_get_halls(cms_t cms, struct get_halls_request request, struct get_halls_response* response);
+struct cms_add_hall_request { int32_t cinema_id; int32_t hall_number; int32_t rows; int32_t rows_seats; };
+struct cms_add_hall_response {struct cms_response; };
+extern int cms_add_hall(cms_t cms, struct cms_add_hall_request request, struct cms_add_hall_response** response);
 
-struct cms_add_hall_request { int32_t cinema_id; uint8_t hall_number; uint8_t rows; uint8_t rows_seats; };
-extern bool cms_add_hall(cms_t cms, struct add_hall_request request);
-
-struct cms_delete_hall_request { int32_t cinema_id; uint8_t hall_number; };
-extern bool cms_delete_hall(cms_t cms, struct delete_hall_request request);
-*/
+struct cms_delete_hall_request { int32_t cinema_id; int32_t hall_number; };
+struct cms_delete_hall_response {struct cms_response; };
+extern int cms_delete_hall(cms_t cms, struct cms_delete_hall_request request, struct cms_delete_hall_response** response);

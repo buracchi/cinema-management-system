@@ -21,6 +21,9 @@ enum actions {
 extern int show_cinema(cms_t cms);
 extern int insert_cinema(cms_t cms);
 extern int delete_cinema(cms_t cms);
+extern int show_halls(cms_t cms);
+extern int insert_hall(cms_t cms);
+extern int delete_hall(cms_t cms);
 
 extern int choose_manage_cinema_action(cms_t cms) {
 	bool end = false;
@@ -49,10 +52,13 @@ extern int choose_manage_cinema_action(cms_t cms) {
 				try(delete_cinema(cms), 1, fail);
 				break;
 			case SHOW_HALLS:
+				try(show_halls(cms), 1, fail);
 				break;
 			case ADD_HALL:
+				try(insert_hall(cms), 1, fail);
 				break;
 			case REMOVE_HALL:
+				try(delete_hall(cms), 1, fail);
 				break;
 			case BACK_TO_MENU:
 				end = true;

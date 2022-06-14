@@ -13,17 +13,6 @@ extern int cms_get_cinema_screenings(cms_t cms, struct cms_get_cinema_screenings
 	return cms_operation_execute(cms, GET_CINEMA_SCREENINGS, request_params, (struct cms_response**)response, result_bitmap);
 }
 
-extern int cms_get_cinema_halls(cms_t cms, struct cms_get_cinema_halls_request request, struct cms_get_cinema_halls_response** response) {
-	struct cms_request_param request_params[] = {
-		CMS_REQUEST_PARAM_INFO(request.cinema_id)
-	};
-	struct cms_result_bitmap result_bitmap[] = {
-		CMS_RESULT_BITMAP_INFO(struct cms_get_cinema_halls_response, result[0]),
-		CMS_RESULT_BITMAP_INFO(struct cms_hall_info, id, num_rows, num_cols)
-	};
-	return cms_operation_execute(cms, GET_HALLS, request_params, (struct cms_response**)response, result_bitmap);
-}
-
 extern int cms_get_available_seats(cms_t cms, struct cms_get_available_seats_request request, struct cms_get_available_seats_response** response) {
 	struct cms_request_param request_params[] = {
 		CMS_REQUEST_PARAM_INFO(request.cinema_id),

@@ -2,10 +2,12 @@
 #include <cms/cms.h>
 #include <cms/cinema_management.h>
 #include <cliutils/io.h>
+#include <cliutils/strto.h>
 #include <fort.h>
 
 #include "../core.h"
 
+extern int select_cinema(cms_t cms, struct cms_cinema* cinema);
 static char* get_cinema_table(struct cms_get_all_cinema_response* response);
 
 extern int show_cinema(cms_t cms) {
@@ -31,7 +33,7 @@ fail:
 	return 1;
 }
 
-static char* get_cinema_table(struct cms_get_all_cinema_response* response) {
+extern char* get_cinema_table(struct cms_get_all_cinema_response* response) {
 	char* result;
 	ft_table_t* table;
 	const char* str_table;
@@ -55,4 +57,44 @@ fail2:
 	ft_destroy_table(table);
 fail:
 	return NULL;
+}
+
+extern int select_cinema(cms_t cms, struct cms_cinema* cinema) {
+	struct cms_get_all_cinema_response* response;
+	char* cinema_table;
+	char input[INT32DSTR_LEN];
+	int32_t selected_cinema;
+	bool back = false;
+	while (true) {
+		io_clear_screen();
+		puts(title);
+		try(cms_get_all_cinema(cms, &response), 1, fail);
+		if (response->error_message) {
+			printf("%s", response->error_message);
+			cms_destroy_response((struct cms_response*)response);
+			press_anykey();
+			return 2;
+		}
+		try(cinema_table = get_cinema_table(response), NULL, fail2);
+		puts(cinema_table);
+		free(cinema_table);
+		get_input("Inserire il numero del cinema scelto o Q per tornare indietro: ", input, false);
+		if ((input[0] == 'Q' || input[0] == 'q') && input[1] == '\0') {
+			back = true;
+			break;
+		}
+		else if (strtoint32(&selected_cinema, input, 10) == STRTO_SUCCESS
+		         && selected_cinema > 0
+		         && (uint64_t)selected_cinema <= response->num_elements) {
+			memcpy(cinema, &(response->result[selected_cinema - 1]), sizeof *cinema);
+			break;
+		}
+		cms_destroy_response((struct cms_response*)response);
+	}
+	cms_destroy_response((struct cms_response*)response);
+	return back? 2 : 0;
+fail2:
+	cms_destroy_response((struct cms_response*)response);
+fail:
+	return 1;
 }
