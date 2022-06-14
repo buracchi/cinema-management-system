@@ -5,6 +5,7 @@ add_library(cinema-management-service STATIC
     "src/cms.c"
     "src/cms-operation.h"
     "src/booking.c"
+    "src/cinema_management.c"
     "src/report.c"
     "src/utilities/dbutil.c"
     "src/utilities/dbutil.h")

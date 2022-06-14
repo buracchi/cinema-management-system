@@ -11,6 +11,7 @@ static char* get_booking_table(struct cms_get_reservations_status_response* resp
 extern int show_monthly_booking_state(cms_t cms) {
 	struct cms_get_reservations_status_response *response;
 	io_clear_screen();
+	puts(title);
 	try(cms_get_reservations_status(cms, &response), 1, fail);
 	if (response->error_message) {
 		printf("%s", response->error_message);
@@ -18,7 +19,6 @@ extern int show_monthly_booking_state(cms_t cms) {
 	else {
 		char* booking_table;
 		try(booking_table = get_booking_table(response), NULL, fail2);
-		puts(title);
 		puts(booking_table);
 		free(booking_table);
 	}

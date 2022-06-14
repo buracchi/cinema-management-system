@@ -11,6 +11,7 @@ static char* get_cinema_table(struct cms_get_cinema_without_ushers_response* res
 extern int show_cinema_without_enough_ushers(cms_t cms) {
 	struct cms_get_cinema_without_ushers_response *response;
 	io_clear_screen();
+	puts(title);
 	try(cms_get_cinema_without_ushers(cms, &response), 1, fail);
 	if (response->error_message) {
 		printf("%s", response->error_message);
@@ -18,7 +19,6 @@ extern int show_cinema_without_enough_ushers(cms_t cms) {
 	else {
 		char* cinema_table;
 		try(cinema_table = get_cinema_table(response), NULL, fail2);
-		puts(title);
 		puts(cinema_table);
 		free(cinema_table);
 	}

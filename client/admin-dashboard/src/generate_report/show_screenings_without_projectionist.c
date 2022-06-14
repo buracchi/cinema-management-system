@@ -11,6 +11,7 @@ static char* get_screenings_table(struct cms_get_screenings_without_projectionis
 extern int show_screenings_without_projectionist(cms_t cms) {
 	struct cms_get_screenings_without_projectionist_response *response;
 	io_clear_screen();
+	puts(title);
 	try(cms_get_screenings_without_projectionist(cms, &response), 1, fail);
 	if (response->error_message) {
 		printf("%s", response->error_message);
@@ -18,7 +19,6 @@ extern int show_screenings_without_projectionist(cms_t cms) {
 	else {
 		char* screenings_table;
 		try(screenings_table = get_screenings_table(response), NULL, fail2);
-		puts(title);
 		puts(screenings_table);
 		free(screenings_table);
 	}

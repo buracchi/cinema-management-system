@@ -3,8 +3,12 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#define DATE_LEN 11
-#define TIME_LEN 9
+#define CMS_DECIMAL_LEN 18
+#define CMS_DATE_LEN 11	// "YYYY-MM-DD" format
+#define CMS_TIME_LEN 9	// "hh:mm:ss" format
+#define CMS_DAY_LEN 16
+#define CMS_CINEMA_ADDRESS_LEN 128
+#define CMS_FILM_NAME_LEN 45
 
 typedef struct cms* cms_t;
 
@@ -23,7 +27,7 @@ struct cms_response {
 
 extern cms_t cms_init(struct cms_credentials* credentials);
 
-extern bool cms_destroy(cms_t cms);
+extern void cms_destroy(cms_t cms);
 
 extern const char* cms_get_error_message(cms_t cms);
 

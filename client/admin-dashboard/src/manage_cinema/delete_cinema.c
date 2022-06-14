@@ -1,22 +1,42 @@
-#include "make_booking.h"
-
-#include <stdlib.h>
-#include <stdio.h>
-#include <stdint.h>
-#include <stdbool.h>
-
-#include <buracchi/common/utilities/utilities.h>
 #include <buracchi/common/utilities/try.h>
-#include <fort.h>
-#include <cms/booking.h>
+#include <cms/cms.h>
+#include <cms/cinema_management.h>
 #include <cliutils/io.h>
 #include <cliutils/strto.h>
+#include <fort.h>
 
 #include "../core.h"
 
 static char* get_cinema_table(struct cms_get_all_cinema_response* response);
+static int select_cinema(cms_t cms, int32_t* cinema_id);
 
-extern int choose_cinema(cms_t cms, struct booking_data* booking_data) {
+extern int delete_cinema(cms_t cms) {
+	struct cms_delete_cinema_request request = { 0 };
+	struct cms_delete_cinema_response* response;
+	switch (select_cinema(cms, &(request.id))) {
+		case 1:
+			goto fail;
+		case 2:
+			return 0;
+	};
+	if (multi_choice("Il cinema selezionato verra' rimosso, procedere?", ((char[2]){ 'S', 'N' })) == 'N') {
+		return 0;
+	}
+	try(cms_delete_cinema(cms, request, &response), 1, fail);
+	if (response->error_message) {
+		printf("%s", response->error_message);
+	}
+	else {
+		puts("\nCinema rimosso con successo");
+	}
+	cms_destroy_response((struct cms_response*)response);
+	press_anykey();
+	return 0;
+fail:
+	return 1;
+}
+
+static int select_cinema(cms_t cms, int32_t* cinema_id) {
 	struct cms_get_all_cinema_response* response;
 	char* cinema_table;
 	char input[INT32DSTR_LEN];
@@ -30,7 +50,7 @@ extern int choose_cinema(cms_t cms, struct booking_data* booking_data) {
 			printf("%s", response->error_message);
 			cms_destroy_response((struct cms_response*)response);
 			press_anykey();
-			return 0;
+			return 2;
 		}
 		try(cinema_table = get_cinema_table(response), NULL, fail2);
 		puts(cinema_table);
@@ -43,14 +63,13 @@ extern int choose_cinema(cms_t cms, struct booking_data* booking_data) {
 		else if (strtoint32(&selected_cinema, input, 10) == STRTO_SUCCESS
 			&& selected_cinema > 0
 			&& (uint64_t)selected_cinema <= response->num_elements) {
-			booking_data->cinema_id = response->result[selected_cinema - 1].id;
-			strcpy(booking_data->cinema_address, response->result[selected_cinema - 1].address);
+			*cinema_id = response->result[selected_cinema - 1].id;
 			break;
 		}
 		cms_destroy_response((struct cms_response*)response);
 	}
 	cms_destroy_response((struct cms_response*)response);
-	return back ? 0 : choose_screening(cms, booking_data);
+	return back? 2 : 0;
 fail2:
 	cms_destroy_response((struct cms_response*)response);
 fail:

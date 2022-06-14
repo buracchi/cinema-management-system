@@ -7,9 +7,9 @@
 #include <mysql.h>
 #include <stdarg.h>
 
-#define DATE_LEN 11
-#define TIME_LEN 9
-#define DATETIME_LEN (DATE_LEN + TIME_LEN)
+#define MYSQL_DATE_LEN 11
+#define MYSQL_TIME_LEN 9
+#define MYSQL_DATETIME_LEN (MYSQL_DATE_LEN + MYSQL_TIME_LEN)
 
 void print_stmt_error (MYSQL_STMT *stmt, char *message) {
 	fprintf (stderr, "%s\n", message);
@@ -90,13 +90,13 @@ void init_mysql_timestamp(MYSQL_TIME *time) {
 }
 
 void mysql_timestamp_to_string(MYSQL_TIME *time, char *str) {
-	snprintf(str, DATETIME_LEN, "%4u-%02u-%02u %02u:%02u", time->year, time->month, time->day, time->hour, time->minute);
+	snprintf(str, MYSQL_DATETIME_LEN, "%4u-%02u-%02u %02u:%02u", time->year, time->month, time->day, time->hour, time->minute);
 }
 
 void mysql_date_to_string(MYSQL_TIME *date, char *str) {
-	snprintf(str, DATE_LEN, "%4u-%02u-%02u", date->year, date->month, date->day);
+	snprintf(str, MYSQL_DATE_LEN, "%4u-%02u-%02u", date->year, date->month, date->day);
 }
 
 void mysql_time_to_string(MYSQL_TIME* time, char* str) {
-	snprintf(str, DATE_LEN, "%02u:%02u:%02u", time->hour, time->minute, time->second);
+	snprintf(str, MYSQL_DATE_LEN, "%02u:%02u:%02u", time->hour, time->minute, time->second);
 }

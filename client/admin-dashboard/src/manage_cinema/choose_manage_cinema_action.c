@@ -18,6 +18,10 @@ enum actions {
 	BACK_TO_MENU
 };
 
+extern int show_cinema(cms_t cms);
+extern int insert_cinema(cms_t cms);
+extern int delete_cinema(cms_t cms);
+
 extern int choose_manage_cinema_action(cms_t cms) {
 	bool end = false;
 	while (!end) {
@@ -36,10 +40,13 @@ extern int choose_manage_cinema_action(cms_t cms) {
 		action = multi_choice("Selezionare un opzione", ((char[7]){ '1', '2', '3', '4', '5', '6', '7' })) - '1';
 		switch (action) {
 			case SHOW_CINEMA:
+				try(show_cinema(cms), 1, fail);
 				break;
 			case ADD_CINEMA:
+				try(insert_cinema(cms), 1, fail);
 				break;
 			case REMOVE_CINEMA:
+				try(delete_cinema(cms), 1, fail);
 				break;
 			case SHOW_HALLS:
 				break;

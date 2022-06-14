@@ -6,8 +6,8 @@ struct booking_data {
 	int32_t cinema_id;
 	char cinema_address[128];
 	int32_t hall;
-	char date[DATE_LEN];
-	char time[TIME_LEN];
+	char date[CMS_DATE_LEN];
+	char time[CMS_TIME_LEN];
 	char film_name[45];
 	char price[18];
 	char seat_row;

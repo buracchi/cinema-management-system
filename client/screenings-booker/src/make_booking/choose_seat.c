@@ -37,6 +37,7 @@ extern int choose_seat(cms_t cms, struct booking_data* booking_data) {
 		uint64_t num_rows;
 		uint64_t num_cols;
 		io_clear_screen();
+		puts(title);
 		switch (get_hall_info(cms, booking_data, &num_rows, &num_cols)) {
 		case 1:
 			goto fail;
@@ -50,7 +51,6 @@ extern int choose_seat(cms_t cms, struct booking_data* booking_data) {
 			press_anykey();
 			return 0;
 		}
-		puts(title);
 		printf("Data: %s\n", booking_data->date);
 		printf("Orario: %s\n", booking_data->time);
 		printf("Cinema: %s\n", booking_data->cinema_address);

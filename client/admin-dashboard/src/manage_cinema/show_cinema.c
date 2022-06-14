@@ -1,56 +1,30 @@
-#include "make_booking.h"
-
-#include <stdlib.h>
-#include <stdio.h>
-#include <stdint.h>
-#include <stdbool.h>
-
-#include <buracchi/common/utilities/utilities.h>
 #include <buracchi/common/utilities/try.h>
-#include <fort.h>
-#include <cms/booking.h>
+#include <cms/cms.h>
+#include <cms/cinema_management.h>
 #include <cliutils/io.h>
-#include <cliutils/strto.h>
+#include <fort.h>
 
 #include "../core.h"
 
 static char* get_cinema_table(struct cms_get_all_cinema_response* response);
 
-extern int choose_cinema(cms_t cms, struct booking_data* booking_data) {
-	struct cms_get_all_cinema_response* response;
-	char* cinema_table;
-	char input[INT32DSTR_LEN];
-	int32_t selected_cinema;
-	bool back = false;
-	while (true) {
-		io_clear_screen();
-		puts(title);
-		try(cms_get_all_cinema(cms, &response), 1, fail);
-		if (response->error_message) {
-			printf("%s", response->error_message);
-			cms_destroy_response((struct cms_response*)response);
-			press_anykey();
-			return 0;
-		}
+extern int show_cinema(cms_t cms) {
+	struct cms_get_all_cinema_response *response;
+	io_clear_screen();
+	try(cms_get_all_cinema(cms, &response), 1, fail);
+	if (response->error_message) {
+		printf("%s", response->error_message);
+	}
+	else {
+		char* cinema_table;
 		try(cinema_table = get_cinema_table(response), NULL, fail2);
+		puts(title);
 		puts(cinema_table);
 		free(cinema_table);
-		get_input("Inserire il numero del cinema scelto o Q per tornare indietro: ", input, false);
-		if ((input[0] == 'Q' || input[0] == 'q') && input[1] == '\0') {
-			back = true;
-			break;
-		}
-		else if (strtoint32(&selected_cinema, input, 10) == STRTO_SUCCESS
-			&& selected_cinema > 0
-			&& (uint64_t)selected_cinema <= response->num_elements) {
-			booking_data->cinema_id = response->result[selected_cinema - 1].id;
-			strcpy(booking_data->cinema_address, response->result[selected_cinema - 1].address);
-			break;
-		}
-		cms_destroy_response((struct cms_response*)response);
 	}
 	cms_destroy_response((struct cms_response*)response);
-	return back ? 0 : choose_screening(cms, booking_data);
+	press_anykey();
+	return 0;
 fail2:
 	cms_destroy_response((struct cms_response*)response);
 fail:

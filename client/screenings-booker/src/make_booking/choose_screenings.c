@@ -25,6 +25,7 @@ extern int choose_screening(cms_t cms, struct booking_data* booking_data) {
 	bool back = false;
 	while (true) {
 		io_clear_screen();
+		puts(title);
 		try(cms_get_cinema_screenings(cms, request, &response), 1, fail);
 		if (response->error_message) {
 			printf("%s", response->error_message);
@@ -33,7 +34,6 @@ extern int choose_screening(cms_t cms, struct booking_data* booking_data) {
 			return 0;
 		}
 		try(screenings_table = get_screenings_table(response), NULL, fail2);
-		puts(title);
 		printf("Cinema selezionato: %s\n\n", booking_data->cinema_address);
 		puts(screenings_table);
 		free(screenings_table);

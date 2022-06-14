@@ -181,7 +181,7 @@ fail:
 	return NULL;
 }
 
-extern bool cms_destroy(cms_t cms) {
+extern void cms_destroy(cms_t cms) {
 	for (int i = 0; i < OPERATIONS_NUMBER; i++) {
 		MYSQL_STMT* statement = cms->operation_data[i].statement;
 		if (statement) {
@@ -191,7 +191,6 @@ extern bool cms_destroy(cms_t cms) {
 	mysql_close(cms->db_connection);
 	mysql_library_end();
 	free(cms);
-	return true;
 }
 
 extern inline void cms_destroy_response(struct cms_response* response) {
