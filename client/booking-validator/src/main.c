@@ -19,8 +19,7 @@ static int validate(const char* booking_code);
 
 #ifdef RUN_FROM_IDE
 int main(void) {
-	const char *booking_code = "1";
-	return validate(booking_code);
+	return validate("1");
 }
 #else
 int main(int argc, char** argv) {
