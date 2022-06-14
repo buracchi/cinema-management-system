@@ -35,8 +35,8 @@ int main(void) {
 		io_clear_screen();
 		puts(title);
 		puts("Scegliere un'azione\n");
-		puts("1) Effettua prenotazione");
-		puts("2) Cancella prenotazione");
+		puts("1) Effettuare prenotazione");
+		puts("2) Cancellare prenotazione");
 		puts("3) Uscire");
 		puts("\n");
 		action = multi_choice("Selezionare un opzione", ((char[3]){ '1', '2', '3' })) - '1';

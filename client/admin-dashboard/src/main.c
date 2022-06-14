@@ -8,6 +8,11 @@
 #include <cliutils/dotenv.h>
 #include <cliutils/strto.h>
 
+#include "generate_report/generate_report.h"
+#include "manage_cinema/manage_cinema.h"
+#include "manage_employees/manage_employees.h"
+#include "manage_screenings/manage_screenings.h"
+#include "manage_shifts/manage_shifts.h"
 #include "core.h"
 
 enum actions {
@@ -46,14 +51,19 @@ int main(void) {
 		action = multi_choice("Selezionare un opzione", ((char[6]){ '1', '2', '3', '4', '5', '6' })) - '1';
 		switch (action) {
         case MANAGE_CINEMA:
+	        try(choose_manage_cinema_action(cms), 1, fail2);
             break;
         case MANAGE_SCREENINGS:
+	        try(choose_manage_screenings_action(cms), 1, fail2);
             break;
         case MANAGE_SHIFTS:
+	        try(choose_manage_shifts_action(cms), 1, fail2);
             break;
         case MANAGE_EMPLOYEES:
+	        try(choose_manage_employees_action(cms), 1, fail2);
             break;
         case GENERATE_REPORT:
+	        try(choose_generate_report_action(cms), 1, fail2);
             break;
         case QUIT:
             end = true;

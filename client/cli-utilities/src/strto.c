@@ -4,7 +4,7 @@
 #include <errno.h>
 #include <stdlib.h>
 
-enum strto_errno strtoint32(int32_t* out, char* str, int base) {
+enum strto_errno strtoint32(int32_t* out, const char* str, int base) {
     char* end;
     if (str[0] == '\0' || isspace(str[0])) {
         return STRTO_INCONVERTIBLE;
@@ -24,7 +24,7 @@ enum strto_errno strtoint32(int32_t* out, char* str, int base) {
     return STRTO_SUCCESS;
 }
 
-enum strto_errno strtouint16(uint16_t* out, char* str, int base) {
+enum strto_errno strtouint16(uint16_t* out, const char* str, int base) {
     char* end;
     if (str[0] == '\0' || isspace(str[0])) {
         return STRTO_INCONVERTIBLE;
