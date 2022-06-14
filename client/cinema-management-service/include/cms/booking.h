@@ -4,10 +4,10 @@
 #pragma warning(disable:4820)
 #endif
 
+#include <cms/cms.h>
+
 #include <stdint.h>
 #include <stdbool.h>
-
-#include "cms.h"
 
 struct cms_get_all_cinema_response {
 	struct cms_response;

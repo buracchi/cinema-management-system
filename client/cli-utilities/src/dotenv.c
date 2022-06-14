@@ -157,9 +157,10 @@ static void parse(FILE *file, bool overwrite) {
 }
 
 static FILE *open_default(const char *base_path) {
-	// TODO: asprintf
 	char* path = malloc(strlen(base_path) + strlen(".env") + 1);
-	sprintf(path, "%s/.env", base_path);
+	if (path) {
+		sprintf(path, "%s/.env", base_path);
+	}
 	return fopen(path, "rb");
 }
 

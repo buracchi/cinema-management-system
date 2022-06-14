@@ -15,6 +15,10 @@ enum actions {
 	BACK_TO_MENU
 };
 
+extern int show_cinema_without_enough_ushers(cms_t cms);
+extern int show_screenings_without_projectionist(cms_t cms);
+extern int show_monthly_booking_state(cms_t cms);
+
 extern int choose_generate_report_action(cms_t cms) {
 	bool end = false;
 	while (!end) {
@@ -30,10 +34,13 @@ extern int choose_generate_report_action(cms_t cms) {
 		action = multi_choice("Selezionare un opzione", ((char[4]){ '1', '2', '3', '4'})) - '1';
 		switch (action) {
 			case SHOW_SHIFTS_WITHOUT_PROJECTIONIST:
+				try(show_screenings_without_projectionist(cms), 1, fail);
 				break;
 			case SHOW_CINEMA_WITHOUT_ENOUGH_USHERS:
+				try(show_cinema_without_enough_ushers(cms), 1, fail);
 				break;
 			case SHOW_MONTHLY_BOOKING_STATE:
+				try(show_monthly_booking_state(cms), 1, fail);
 				break;
 			case BACK_TO_MENU:
 				end = true;

@@ -87,7 +87,7 @@ static const struct operation_data {
 		.query = "call mostra_cinema()",
 		.params_type = NULL
 	},
-	[REPORT_CINEMA_WITHOUT_USHERS] = {
+	[GET_CINEMA_WITHOUT_ENOUGH_USHERS] = {
 		.statement = NULL,
 		.query = "call mostra_cinema_senza_maschere()",
 		.params_type = NULL
@@ -112,7 +112,7 @@ static const struct operation_data {
 		.query = "call mostra_proiezioni()",
 		.params_type = NULL
 	},
-	[REPORT_SCREENINGS_WITHOUT_PROJECTIONIST] = {
+	[GET_SCREENINGS_WITHOUT_PROJECTIONIST] = {
 		.statement = NULL,
 		.query = "call mostra_proiezioni_senza_proiezionista()",
 		.params_type = NULL
@@ -127,7 +127,7 @@ static const struct operation_data {
 		.query = "call mostra_sale(?)",
 		.params_type = (FIELD_TYPE[1]) { FIELD_TYPE_LONG }
 	},
-	[REPORT_RESERVATIONS_STATUS] = {
+	[GET_MONTHLY_RESERVATIONS_STATUS] = {
 		.statement = NULL,
 		.query = "call mostra_stato_prenotazioni()",
 		.params_type = NULL
