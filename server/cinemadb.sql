@@ -157,6 +157,7 @@ CREATE TABLE IF NOT EXISTS `cinemadb`.`Proiezioni` (
   PRIMARY KEY (`cinema`, `sala`, `data`, `ora`),
   INDEX `fk_Proiezioni_Film1_idx` (`film` ASC) VISIBLE,
   INDEX `fk_Proiezioni_Dipendenti1_idx` (`proiezionista` ASC) VISIBLE,
+  INDEX `order_idx` USING BTREE (`data`, `ora`, `cinema`, `sala`) VISIBLE,
   CONSTRAINT `fk_Proiezioni_Sale1`
     FOREIGN KEY (`cinema` , `sala`)
     REFERENCES `cinemadb`.`Sale` (`cinema` , `numero`)
@@ -253,8 +254,8 @@ BEGIN
 		`nome`, `durata`, `casa_cinematografica`, `cast`
     FROM `Proiezioni` JOIN `Film` ON `film` = `id`
     WHERE `cinema` = _cinema_id
-		AND `data` > CURDATE()
-		OR (`data` = CURDATE() AND `ora` > TIME(NOW()))
+		AND (`data` > CURDATE()
+			OR (`data` = CURDATE() AND `ora` > TIME(NOW())))
 	ORDER BY `data`, `ora`, `cinema`, `sala`;
 END$$
 
@@ -320,7 +321,12 @@ CREATE PROCEDURE `effettua_prenotazione` (
 	IN _CVV2 NUMERIC(3))
 BEGIN
 	DECLARE codice_prenotazione INT;
-    DECLARE tid INT;
+    DECLARE tid VARCHAR(256);
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        RESIGNAL;
+    END;
     INSERT INTO `Prenotazioni` (`stato`, `cinema`, `sala`, `data`, `ora`, `fila`, `numero`, `timestamp`)
 		VALUES ('Attesa', _cinema_id, _sala_id, _data, _ora, _fila, _numero, NOW());
 	SET codice_prenotazione = (SELECT `codice`
@@ -332,11 +338,17 @@ BEGIN
                                 AND `ora` = _ora
                                 AND `fila` = _fila
                                 AND `numero` = _numero);
-	# Mock servizio di pagamento---------------------------------------------
-    SET tid = (SELECT IFNULL(MAX(CAST(`transazione` AS UNSIGNED INTEGER)) + 1, 1) FROM `Prenotazioni`);
-	# -----------------------------------------------------------------------
-    UPDATE `Prenotazioni` SET `stato` = 'Confermata', `transazione` = tid
-	WHERE `codice` = codice_prenotazione;
+    SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
+	START TRANSACTION;
+		SET tid = EFFETTUA_PAGAMENTO(codice_prenotazione, _intestatario, _numero_carta, _scadenza, _CVV2);
+		IF (tid IS NULL) THEN
+			SET @err_msg = MESSAGGIO_ERRORE(45022);
+			SIGNAL SQLSTATE '45022'
+			SET MESSAGE_TEXT = @err_msg;
+		END IF;
+		UPDATE `Prenotazioni` SET `stato` = 'Confermata', `transazione` = tid
+		WHERE `codice` = codice_prenotazione;
+    COMMIT;
 	SELECT codice_prenotazione;
 END$$
 
@@ -350,15 +362,28 @@ DELIMITER $$
 USE `cinemadb`$$
 CREATE PROCEDURE `annulla_prenotazione` (IN _codice INT)
 BEGIN
-	IF (_codice NOT IN (SELECT `codice` FROM `Prenotazioni`)) THEN
-		SET @err_msg = MESSAGGIO_ERRORE(45013);
-		SIGNAL SQLSTATE '45013'
-		SET MESSAGE_TEXT = @err_msg;
-	END IF;
-    UPDATE `Prenotazioni` SET `stato`='Annullata'
-    WHERE `codice` = _codice;
-	# Mock servizio di pagamento---------------------------------------------
-	# -----------------------------------------------------------------------
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        RESIGNAL;
+    END;
+    SET TRANSACTION ISOLATION LEVEL READ COMMITTED;
+	START TRANSACTION;
+		IF (_codice NOT IN (SELECT `codice` FROM `Prenotazioni`)) THEN
+			SET @err_msg = MESSAGGIO_ERRORE(45013);
+			SIGNAL SQLSTATE '45013'
+			SET MESSAGE_TEXT = @err_msg;
+		END IF;
+		UPDATE `Prenotazioni` SET `stato`='Annullata'
+		WHERE `codice` = _codice;
+		IF (EFFETTUA_RIMBORSO((SELECT `transazione`
+								FROM `Prenotazioni`
+								WHERE `codice` = _codice)) != 0) THEN
+			SET @err_msg = MESSAGGIO_ERRORE(45022);
+			SIGNAL SQLSTATE '45022'
+			SET MESSAGE_TEXT = @err_msg;
+		END IF;
+	COMMIT;
 END$$
 
 DELIMITER ;
@@ -371,13 +396,21 @@ DELIMITER $$
 USE `cinemadb`$$
 CREATE PROCEDURE `valida_prenotazione` (IN _codice INT)
 BEGIN
-	IF (_codice NOT IN (SELECT `codice` FROM `Prenotazioni`)) THEN
-		SET @err_msg = MESSAGGIO_ERRORE(45013);
-		SIGNAL SQLSTATE '45013'
-		SET MESSAGE_TEXT = @err_msg;
-	END IF;
-    UPDATE `Prenotazioni` SET `stato` = 'Validata'
-    WHERE `codice` = _codice;
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        RESIGNAL;
+    END;
+    SET TRANSACTION ISOLATION LEVEL READ COMMITTED;
+	START TRANSACTION;
+		IF (_codice NOT IN (SELECT `codice` FROM `Prenotazioni`)) THEN
+			SET @err_msg = MESSAGGIO_ERRORE(45013);
+			SIGNAL SQLSTATE '45013'
+			SET MESSAGE_TEXT = @err_msg;
+		END IF;
+		UPDATE `Prenotazioni` SET `stato` = 'Validata'
+		WHERE `codice` = _codice;
+	COMMIT;
 END$$
 
 DELIMITER ;
@@ -390,8 +423,8 @@ DELIMITER $$
 USE `cinemadb`$$
 CREATE PROCEDURE `mostra_proiezioni_senza_proiezionista` ()
 BEGIN
-	SELECT *
-    FROM `Proiezioni`
+	SELECT `cinema`, `sala`, `data`, `ora`, `prezzo`, `nome` AS film
+    FROM `Proiezioni` JOIN `Film` ON `Proiezioni`.`film` = `Film`.`id`
     WHERE `proiezionista` IS NULL
 		AND `data` > CURDATE()
         OR (`data` = CURDATE() AND `ora` > TIME(NOW()));
@@ -408,29 +441,31 @@ USE `cinemadb`$$
 CREATE PROCEDURE `mostra_cinema_senza_maschere` ()
 BEGIN
 	WITH
-		calendario_cinema AS (SELECT `id` AS cinema, `nome` AS giorno,
+		calendario_cinema AS (SELECT `id` AS cinema, `indirizzo`, `nome` AS giorno,
 									 `apertura`, `chiusura`
 							  FROM `Cinema` CROSS JOIN `Giorni`),
-		eventi AS (SELECT `cinema`, `giorno`, `apertura` AS `ora`, 0 AS `variazione`
+		eventi AS (SELECT `cinema`, `indirizzo`, `giorno`, `apertura` AS `ora`, 0 AS `variazione`
 				   FROM calendario_cinema
 				   UNION ALL
-				   SELECT `cinema`, `giorno`, `inizio`, 1
+				   SELECT `cinema`, `indirizzo`, `giorno`, `inizio`, 1
 				   FROM `Turni` JOIN `Dipendenti` ON `dipendente` = `matricola`
+								JOIN `Cinema` ON `cinema` = `id`
 				   WHERE `ruolo` = 'Maschera'
 				   UNION ALL
-				   SELECT `cinema`, `giorno`,
+				   SELECT `cinema`, `indirizzo`, `giorno`,
 						  SEC_TO_TIME(TIME_TO_SEC(`inizio`) + TIME_TO_SEC(`durata`)), -1
 				   FROM `Turni` JOIN `Dipendenti` ON `dipendente` = `matricola`
+								JOIN `Cinema` ON `cinema` = `id`
 				   WHERE `ruolo` = 'Maschera'
 				   UNION ALL
-				   SELECT `cinema`, `giorno`, `chiusura`, 0 FROM calendario_cinema),
-		invervalli_eventi AS (SELECT `cinema`, `giorno`, `ora` AS `dalle_ore`,
+				   SELECT `cinema`, `indirizzo`, `giorno`, `chiusura`, 0 FROM calendario_cinema),
+		invervalli_eventi AS (SELECT `cinema`, `indirizzo`, `giorno`, `ora` AS `dalle_ore`,
 									 LEAD(`ora`) OVER (PARTITION BY `cinema`, `giorno`
 													 ORDER BY `ora`) AS `alle_ore`,
 									 SUM(`variazione`) OVER (PARTITION BY `cinema`, `giorno`
 													 ORDER BY `ora`) AS numero_maschere
 							  FROM eventi),
-		gruppi_variazioni AS (SELECT `cinema`, `giorno`, `dalle_ore`, `alle_ore`,
+		gruppi_variazioni AS (SELECT `cinema`, `indirizzo`, `giorno`, `dalle_ore`, `alle_ore`,
 									 `numero_maschere`,
 									 CASE WHEN `numero_maschere` != lag(`numero_maschere`)
 											   OVER (PARTITION BY `cinema`, `giorno`
@@ -439,16 +474,16 @@ BEGIN
 										  ELSE 0
 									 END AS variazione
 							  FROM invervalli_eventi),
-		gruppi_orari AS (SELECT `cinema`, `giorno`, `dalle_ore`, `alle_ore`, `numero_maschere`,
+		gruppi_orari AS (SELECT `cinema`, `indirizzo`, `giorno`, `dalle_ore`, `alle_ore`, `numero_maschere`,
 								sum(`variazione`) OVER (PARTITION BY `cinema`, `giorno`
 													  ORDER BY `dalle_ore`, `alle_ore`)
 													  AS `gruppo`
 						 FROM gruppi_variazioni)
-	SELECT `cinema`, `giorno`, MIN(`dalle_ore`) AS `dalle_ore`,
+	SELECT `cinema`, `indirizzo`, `giorno`, MIN(`dalle_ore`) AS `dalle_ore`,
 		   MAX(`alle_ore`) AS `alle_ore`, `numero_maschere`
 	FROM gruppi_orari
 	WHERE `dalle_ore` != `alle_ore`
-	GROUP BY `cinema`, `giorno`, `numero_maschere`, `gruppo`
+	GROUP BY `cinema`, `indirizzo`, `giorno`, `numero_maschere`, `gruppo`
 	HAVING `numero_maschere` < 2
 	ORDER BY `cinema`, NUMERO_GIORNO(`giorno`), MIN(`dalle_ore`);
 END$$
@@ -463,17 +498,21 @@ DELIMITER $$
 USE `cinemadb`$$
 CREATE PROCEDURE `mostra_stato_prenotazioni` ()
 BEGIN
-	SELECT `Sale`.`cinema`, `Sale`.`numero` AS sala,
+	SELECT `Sale`.`cinema`, `indirizzo`, `Sale`.`numero` AS sala,
 		IFNULL(SUM(`stato` = 'Confermata'
 			OR `stato` = 'Validata'
             OR `stato` = 'Scaduta'), 0) AS confermate,
 		IFNULL(SUM(`stato` = 'Annullata'), 0) AS annullate,
 		IFNULL(SUM(`stato` = 'Validata'), 0) AS validate,
 		IFNULL(SUM(`stato` = 'Scaduta'), 0) AS scadute
-	FROM `Prenotazioni` RIGHT OUTER JOIN `Sale`
-		ON `Prenotazioni`.`cinema` = `Sale`.`cinema`
-			AND `sala` = `Sale`.`numero`
-    GROUP BY `Sale`.`cinema`, `Sale`.`numero`;
+	FROM `Prenotazioni`
+		RIGHT OUTER JOIN `Sale`
+			ON `Prenotazioni`.`cinema` = `Sale`.`cinema`
+				AND `sala` = `Sale`.`numero`
+		JOIN `Cinema`
+			ON `Sale`.`cinema` = `Cinema`.`id`
+    GROUP BY `Sale`.`cinema`, `indirizzo`, `Sale`.`numero`
+    ORDER BY `Sale`.`cinema`, `Sale`.`numero`;
 END$$
 
 DELIMITER ;
@@ -740,6 +779,7 @@ BEGIN
 				WHEN _codice = 45019 THEN "Il turno selezionato è invalido o inesistente."
 				WHEN _codice = 45020 THEN "Impossibile confermare una prenotazione non in attesa."
 				WHEN _codice = 45021 THEN "Una prenotazione in attesa può essere solamente confermata."
+				WHEN _codice = 45022 THEN "Impossibile completare l'operazione, riprovare in un secondo momento."
 				ELSE NULL
 			END);
 END$$
@@ -902,6 +942,53 @@ BEGIN
 	END IF;
 	DELETE FROM `Sale`
     WHERE `cinema` = _cinema AND `numero` = _numero;
+END$$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- function EFFETTUA_PAGAMENTO
+-- -----------------------------------------------------
+
+DELIMITER $$
+USE `cinemadb`$$
+# Mock della UDF di pagamento
+# Ritorna un valore DECIMAL in quanto non è possibile
+# STRING non è supportato per funzioni normali.
+# Ritorna il codice della transazione associata al
+# pagamento della prenotazione associata al codice
+# in input o NULL in caso di esito negativo.
+CREATE FUNCTION `EFFETTUA_PAGAMENTO` (
+	_codice_prenotazione INT,
+	_intestatario VARCHAR(128),
+	_numero_carta NUMERIC(16,0),
+	_scadenza DATE,
+	_CVV2 NUMERIC(3))
+RETURNS DECIMAL
+NOT DETERMINISTIC
+READS SQL DATA
+BEGIN
+    RETURN (SELECT IFNULL(MAX(CAST(`transazione` AS UNSIGNED INTEGER)) + 1, 1)
+		FROM `Prenotazioni`);
+END$$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- function EFFETTUA_RIMBORSO
+-- -----------------------------------------------------
+
+DELIMITER $$
+USE `cinemadb`$$
+# Mock della UDF di rimborso
+# Richiede di annullare la transazione associata al codice in input
+# Ritorna 0 se il codice della transazione è associato
+# ad una transazione annullata
+CREATE FUNCTION `EFFETTUA_RIMBORSO` (_tid VARCHAR(256))
+RETURNS INTEGER
+DETERMINISTIC
+BEGIN
+    RETURN 0;
 END$$
 
 DELIMITER ;
@@ -1374,23 +1461,6 @@ BEGIN
 END$$
 
 USE `cinemadb`$$
-CREATE TRIGGER `cinemadb`.`Prenotazioni_BEFORE_UPDATE_Check_Ora_Proiezione`
-BEFORE UPDATE ON `Prenotazioni`
-FOR EACH ROW
-BEGIN
-	DECLARE inizio_proiezione TIMESTAMP;
-    SET inizio_proiezione = (SELECT TIMESTAMP(`data`, `ora`)
-								FROM `Prenotazioni`
-                                WHERE `codice` = NEW.`codice`);
-    IF (NEW.`stato` = 'Annullata'
-			AND NOW() > DATE_SUB(inizio_proiezione, INTERVAL 30 MINUTE)) THEN
-		SET @err_msg = MESSAGGIO_ERRORE(45012);
-		SIGNAL SQLSTATE '45012'
-		SET MESSAGE_TEXT = @err_msg;
-    END IF;
-END$$
-
-USE `cinemadb`$$
 CREATE TRIGGER `cinemadb`.`Prenotazioni_BEFORE_UPDATE_Check_Duplicati`
 BEFORE UPDATE ON `Prenotazioni`
 FOR EACH ROW
@@ -1410,6 +1480,23 @@ BEGIN
     IF (esiste_duplicato) THEN
 		SET @err_msg = MESSAGGIO_ERRORE(45015);
 		SIGNAL SQLSTATE '45015'
+		SET MESSAGE_TEXT = @err_msg;
+    END IF;
+END$$
+
+USE `cinemadb`$$
+CREATE TRIGGER `cinemadb`.`Prenotazioni_BEFORE_UPDATE_Check_Ora_Proiezione`
+BEFORE UPDATE ON `Prenotazioni`
+FOR EACH ROW
+BEGIN
+	DECLARE inizio_proiezione TIMESTAMP;
+    SET inizio_proiezione = (SELECT TIMESTAMP(`data`, `ora`)
+								FROM `Prenotazioni`
+                                WHERE `codice` = NEW.`codice`);
+    IF (NEW.`stato` = 'Annullata'
+			AND NOW() > DATE_SUB(inizio_proiezione, INTERVAL 30 MINUTE)) THEN
+		SET @err_msg = MESSAGGIO_ERRORE(45012);
+		SIGNAL SQLSTATE '45012'
 		SET MESSAGE_TEXT = @err_msg;
     END IF;
 END$$
