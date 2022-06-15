@@ -6,9 +6,12 @@
 #define CMS_DECIMAL_LEN 18
 #define CMS_DATE_LEN 11	// "YYYY-MM-DD" format
 #define CMS_TIME_LEN 9	// "hh:mm:ss" format
-#define CMS_DAY_LEN 16
+#define CMS_DAY_LEN 15
 #define CMS_CINEMA_ADDRESS_LEN 128
 #define CMS_FILM_NAME_LEN 45
+#define CMS_EMPLOYEE_NAME_LEN 45
+#define CMS_EMPLOYEE_SURNAME_LEN 45
+#define CMS_EMPLOYEE_ROLE_LEN 15
 
 typedef struct cms* cms_t;
 

@@ -15,6 +15,10 @@ enum actions {
 	BACK_TO_MENU
 };
 
+extern int show_employees(cms_t cms);
+extern int insert_employee(cms_t cms);
+extern int delete_employee(cms_t cms);
+
 extern int choose_manage_employees_action(cms_t cms) {
 	bool end = false;
 	while (!end) {
@@ -30,10 +34,13 @@ extern int choose_manage_employees_action(cms_t cms) {
 		action = multi_choice("Selezionare un opzione", ((char[4]){ '1', '2', '3', '4'})) - '1';
 		switch (action) {
 		case SHOW_EMPLOYEES:
+			try(show_employees(cms), 1, fail);
 			break;
 		case ADD_EMPLOYEE:
+			try(insert_employee(cms), 1, fail);
 			break;
 		case REMOVE_EMPLOYEE:
+			try(delete_employee(cms), 1, fail);
 			break;
 		case BACK_TO_MENU:
 			end = true;
