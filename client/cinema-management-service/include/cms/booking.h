@@ -1,8 +1,4 @@
 #pragma once
-#ifndef __unix__
-#pragma warning(disable:4200)
-#pragma warning(disable:4820)
-#endif
 
 #include <cms/cms.h>
 

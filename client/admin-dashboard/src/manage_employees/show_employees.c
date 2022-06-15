@@ -33,32 +33,6 @@ fail:
 	return 1;
 }
 
-extern char* get_employees_table(struct cms_get_employees_response* response) {
-	char* result;
-	ft_table_t* table;
-	const char* str_table;
-	try(table = ft_create_table(), NULL, fail);
-	try(ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER) < 0, true, fail2);
-	try(ft_write_ln(table, "MATRICOLA", "NOME", "COGNOME", "RUOLO") < 0, true, fail2);
-	for (uint64_t i = 0; i < response->num_elements; i++) {
-		char id[INT32DSTR_LEN] = { 0 };
-		char* address = response->result[i].name;
-		char* opening = response->result[i].surname;
-		char* closing = response->result[i].role;
-		try(snprintf(id, INT32DSTR_LEN, "%d", response->result[i].id) < 0, true, fail2);
-		try(ft_write_ln(table, id, address, opening, closing) < 0, true, fail2);
-	}
-	try(str_table = ft_to_string((const ft_table_t*)table), NULL, fail2);
-	try(result = malloc(strlen(str_table) + 1), NULL, fail2);
-	strcpy(result, str_table);
-	ft_destroy_table(table);
-	return result;
-fail2:
-	ft_destroy_table(table);
-fail:
-	return NULL;
-}
-
 extern int select_employee(cms_t cms, struct cms_employees* employee) {
 	struct cms_get_employees_response* response;
 	char* employees_table;
@@ -104,4 +78,30 @@ fail2:
 	cms_destroy_response((struct cms_response*)response);
 fail:
 	return 1;
+}
+
+static char* get_employees_table(struct cms_get_employees_response* response) {
+	char* result;
+	ft_table_t* table;
+	const char* str_table;
+	try(table = ft_create_table(), NULL, fail);
+	try(ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER) < 0, true, fail2);
+	try(ft_write_ln(table, "MATRICOLA", "NOME", "COGNOME", "RUOLO") < 0, true, fail2);
+	for (uint64_t i = 0; i < response->num_elements; i++) {
+		char id[INT32DSTR_LEN] = { 0 };
+		char* address = response->result[i].name;
+		char* opening = response->result[i].surname;
+		char* closing = response->result[i].role;
+		try(snprintf(id, INT32DSTR_LEN, "%d", response->result[i].id) < 0, true, fail2);
+		try(ft_write_ln(table, id, address, opening, closing) < 0, true, fail2);
+	}
+	try(str_table = ft_to_string((const ft_table_t*)table), NULL, fail2);
+	try(result = malloc(strlen(str_table) + 1), NULL, fail2);
+	strcpy(result, str_table);
+	ft_destroy_table(table);
+	return result;
+fail2:
+	ft_destroy_table(table);
+fail:
+	return NULL;
 }

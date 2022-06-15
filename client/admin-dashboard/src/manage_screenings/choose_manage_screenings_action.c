@@ -16,6 +16,9 @@ enum actions {
 	BACK_TO_MENU
 };
 
+extern int show_screenings(cms_t cms);
+extern int delete_screening(cms_t cms);
+
 extern int choose_manage_screenings_action(cms_t cms) {
 	bool end = false;
 	while (!end) {
@@ -32,10 +35,12 @@ extern int choose_manage_screenings_action(cms_t cms) {
 		action = multi_choice("Selezionare un opzione", ((char[5]){ '1', '2', '3', '4', '5' })) - '1';
 		switch (action) {
 		case SHOW_SCREENINGS:
+			try(show_screenings(cms), 1, fail);
 			break;
 		case ADD_SCREENINGS:
 			break;
 		case REMOVE_SCREENINGS:
+			try(delete_screening(cms), 1, fail);
 			break;
 		case ASSIGN_PROJECTIONIST:
 			break;

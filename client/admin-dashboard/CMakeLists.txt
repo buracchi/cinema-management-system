@@ -23,6 +23,8 @@ add_executable(admin-dashboard
     "src/manage_employees/delete_employee.c"
     "src/manage_screenings/manage_screenings.h"
     "src/manage_screenings/choose_manage_screenings_action.c"
+    "src/manage_screenings/show_screenings.c"
+    "src/manage_screenings/delete_screening.c"
     "src/manage_shifts/manage_shifts.h"
     "src/manage_shifts/choose_manage_shifts_action.c")
 target_link_libraries(admin-dashboard PRIVATE cinema-management-service)

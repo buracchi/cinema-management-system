@@ -266,7 +266,7 @@ static int send_mysql_stmt_request(struct operation_data operation_data, struct 
 			}
 			else {
 				(bparams)[i].buffer = request_param[i].ptr;
-				assert(request_param[i].size <= ULONG_MAX && "MYSQL C API sucks and doesn't support the length of the type choosen");
+				assert(request_param[i].size <= ULONG_MAX && "MYSQL C API sucks and doesn't support the length of the type chosen");
 				if (request_param[i].size > ULONG_MAX) {
 					goto fail3;
 				}
@@ -295,7 +295,7 @@ static int recv_mysql_stmt_result(struct operation_data operation_data, struct c
 	size_t result_offest;
 	size_t result_length;
 	unsigned long long rset_num_rows;
-	uint8_t* rset_current_row;
+	uint8_t* rset_current_row_buffer;
 	rparam_count = operation_data.statement->field_count;
 	if (!rparam_count) {
 		(*response)->num_elements = mysql_stmt_affected_rows(operation_data.statement);
@@ -309,7 +309,7 @@ static int recv_mysql_stmt_result(struct operation_data operation_data, struct c
 	result_bitmap++;
 	try(rparams = calloc(rparam_count, sizeof * rparams), NULL, fail);
 	try(trparams = calloc(rparam_count, sizeof * trparams), NULL, fail2);
-	try(rset_current_row = calloc(1, result_length), NULL, fail3);
+	try(rset_current_row_buffer = calloc(1, result_length), NULL, fail3);
 	for (unsigned int i = 0; i < rparam_count; i++) {
 		rparams[i].buffer_type = operation_data.statement->fields[i].type;
 		if (rparams[i].buffer_type == MYSQL_TYPE_DATE || rparams[i].buffer_type == MYSQL_TYPE_TIME) {
@@ -317,8 +317,8 @@ static int recv_mysql_stmt_result(struct operation_data operation_data, struct c
 			rparams[i].buffer_length = sizeof(*trparams);
 		}
 		else {
-			rparams[i].buffer = rset_current_row + result_bitmap[i].offset;
-			assert(result_bitmap[i].size <= ULONG_MAX && "MYSQL C API sucks and doesn't support the length of the type choosen");
+			rparams[i].buffer = rset_current_row_buffer + result_bitmap[i].offset;
+			assert(result_bitmap[i].size <= ULONG_MAX && "MYSQL C API sucks and doesn't support the length of the type chosen");
 			if (result_bitmap[i].size > ULONG_MAX) {
 				goto fail4;
 			}
@@ -333,7 +333,7 @@ static int recv_mysql_stmt_result(struct operation_data operation_data, struct c
 			&& operation_data.statement->bind[i].buffer_type != MYSQL_TYPE_STRING
 			&& operation_data.statement->bind[i].buffer_type != MYSQL_TYPE_NEWDECIMAL) {
 			assert(required_length == buffer_length
-				&& "The type representation choosen for a result field has a byte lenght \
+				&& "The type representation chosen for a result field has a byte length \
 different from the one required by the server, this crappy API knows it but it will corrupt the memory instead of fail");
 		}
 	}
@@ -348,13 +348,14 @@ different from the one required by the server, this crappy API knows it but it w
 		try(mysql_stmt_fetch(operation_data.statement) == 0, false, fail4);
 		for (unsigned int j = 0; j < rparam_count; j++) {
 			if (rparams[j].buffer_type == MYSQL_TYPE_DATE) {
-				mysql_date_to_string(&(trparams[j]), (char*)(rset_current_row + result_bitmap[j].offset));
+				mysql_date_to_string(&(trparams[j]), (char*)(rset_current_row_buffer + result_bitmap[j].offset));
 			}
 			if (rparams[j].buffer_type == MYSQL_TYPE_TIME) {
-				mysql_time_to_string(&(trparams[j]), (char*)(rset_current_row + result_bitmap[j].offset));
+				mysql_time_to_string(&(trparams[j]), (char*)(rset_current_row_buffer + result_bitmap[j].offset));
 			}
 		}
-		memcpy(result + (result_length * i), rset_current_row, result_length);
+		memcpy(result + (result_length * i), rset_current_row_buffer, result_length);
+		memset(rset_current_row_buffer, 0, result_length);
 	}
 	int ret = 0;
 	while (ret != -1) {
@@ -363,10 +364,10 @@ different from the one required by the server, this crappy API knows it but it w
 	try(mysql_stmt_free_result(operation_data.statement) == 0, false, fail4);
 	free(rparams);
 	free(trparams);
-	free(rset_current_row);
+	free(rset_current_row_buffer);
 	return 0;
 fail4:
-	free(rset_current_row);
+	free(rset_current_row_buffer);
 fail3:
 	free(trparams);
 fail2:
