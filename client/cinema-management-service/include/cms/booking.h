@@ -26,8 +26,8 @@ struct cms_get_cinema_screenings_response{
 		char price[CMS_DECIMAL_LEN];
 		char film_name[CMS_FILM_NAME_LEN];
 		char running_time[CMS_TIME_LEN];
-		char film_studio[256];
-		char cast[1024];
+		char film_studio[CMS_FILM_STUDIO_LEN];
+		char cast[CMS_FILM_CAST_LEN];
 	} result[]; };
 extern int cms_get_cinema_screenings(cms_t cms, struct cms_get_cinema_screenings_request request, struct cms_get_cinema_screenings_response** response);
 

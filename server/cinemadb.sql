@@ -327,6 +327,8 @@ BEGIN
         ROLLBACK;
         RESIGNAL;
     END;
+    SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
+	START TRANSACTION;
     INSERT INTO `Prenotazioni` (`stato`, `cinema`, `sala`, `data`, `ora`, `fila`, `numero`, `timestamp`)
 		VALUES ('Attesa', _cinema_id, _sala_id, _data, _ora, _fila, _numero, NOW());
 	SET codice_prenotazione = (SELECT `codice`
@@ -338,14 +340,7 @@ BEGIN
                                 AND `ora` = _ora
                                 AND `fila` = _fila
                                 AND `numero` = _numero);
-    SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
-	START TRANSACTION;
 		SET tid = EFFETTUA_PAGAMENTO(codice_prenotazione, _intestatario, _numero_carta, _scadenza, _CVV2);
-		IF (tid IS NULL) THEN
-			SET @err_msg = MESSAGGIO_ERRORE(45022);
-			SIGNAL SQLSTATE '45022'
-			SET MESSAGE_TEXT = @err_msg;
-		END IF;
 		UPDATE `Prenotazioni` SET `stato` = 'Confermata', `transazione` = tid
 		WHERE `codice` = codice_prenotazione;
     COMMIT;
@@ -609,9 +604,12 @@ DELIMITER $$
 USE `cinemadb`$$
 CREATE PROCEDURE `mostra_proiezioni` ()
 BEGIN
-	SELECT `data`, `cinema`, `sala`, `film`, `nome`,
-		`prezzo`, `ora`, `durata`, `proiezionista`
+	SELECT `data`, `cinema`, `indirizzo`, `sala`,
+		`film`, `Film`.`nome`, `prezzo`, `ora`, `durata`,
+        `proiezionista`, `Dipendenti`.`nome`, `cognome`
     FROM `Proiezioni` JOIN `Film` ON `film` = `id`
+		JOIN `Cinema` ON `cinema` = `Cinema`.`id`
+        LEFT JOIN `Dipendenti` ON `matricola` = `proiezionista`
     WHERE `data` > CURDATE()
 		OR (`data` = CURDATE() AND `ora` > TIME(NOW()))
 	ORDER BY `data`, `ora`, `cinema`, `sala`;
@@ -968,6 +966,12 @@ RETURNS DECIMAL
 NOT DETERMINISTIC
 READS SQL DATA
 BEGIN
+	# Se dopo 10 minuti non ho fatto niente SIGNAL errore
+	IF (FLOOR(RAND() * 10)) THEN
+		SET @err_msg = MESSAGGIO_ERRORE(45022);
+		SIGNAL SQLSTATE '45022'
+		SET MESSAGE_TEXT = @err_msg;
+	END IF;
     RETURN (SELECT IFNULL(MAX(CAST(`transazione` AS UNSIGNED INTEGER)) + 1, 1)
 		FROM `Prenotazioni`);
 END$$
@@ -989,6 +993,20 @@ RETURNS INTEGER
 DETERMINISTIC
 BEGIN
     RETURN 0;
+END$$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- procedure mostra_film
+-- -----------------------------------------------------
+
+DELIMITER $$
+USE `cinemadb`$$
+CREATE PROCEDURE `mostra_film` ()
+BEGIN
+	SELECT *
+    FROM `FILM`;
 END$$
 
 DELIMITER ;
@@ -1523,6 +1541,7 @@ GRANT EXECUTE ON procedure `cinemadb`.`elimina_cinema` TO 'amministratore'@'loca
 GRANT EXECUTE ON procedure `cinemadb`.`mostra_sale` TO 'amministratore'@'localhost';
 GRANT EXECUTE ON procedure `cinemadb`.`inserisci_sala` TO 'amministratore'@'localhost';
 GRANT EXECUTE ON procedure `cinemadb`.`elimina_sala` TO 'amministratore'@'localhost';
+GRANT EXECUTE ON procedure `cinemadb`.`mostra_film` TO 'amministratore'@'localhost';
 GRANT EXECUTE ON procedure `cinemadb`.`mostra_cinema` TO 'cliente'@'localhost';
 GRANT EXECUTE ON procedure `cinemadb`.`mostra_palinsesto` TO 'cliente'@'localhost';
 GRANT EXECUTE ON procedure `cinemadb`.`mostra_posti_disponibili` TO 'cliente'@'localhost';

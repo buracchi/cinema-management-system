@@ -7,7 +7,7 @@
 
 #include "../core.h"
 
-extern int select_screening(cms_t cms, struct cms_screenings* screening);
+extern int select_screening(cms_t cms, struct cms_screening* screening);
 static char* get_screenings_table(struct cms_get_screenings_response* response);
 
 extern int show_screenings(cms_t cms) {
@@ -33,7 +33,7 @@ fail:
 	return 1;
 }
 
-extern int select_screening(cms_t cms, struct cms_screenings* screening) {
+extern int select_screening(cms_t cms, struct cms_screening* screening) {
 	struct cms_get_screenings_response* response;
 	char* screening_table;
 	char input[INT32DSTR_LEN];

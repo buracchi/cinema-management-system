@@ -17,6 +17,7 @@ enum actions {
 };
 
 extern int show_screenings(cms_t cms);
+extern int insert_screening(cms_t cms);
 extern int delete_screening(cms_t cms);
 
 extern int choose_manage_screenings_action(cms_t cms) {
@@ -38,6 +39,7 @@ extern int choose_manage_screenings_action(cms_t cms) {
 			try(show_screenings(cms), 1, fail);
 			break;
 		case ADD_SCREENINGS:
+			try(insert_screening(cms), 1, fail);
 			break;
 		case REMOVE_SCREENINGS:
 			try(delete_screening(cms), 1, fail);

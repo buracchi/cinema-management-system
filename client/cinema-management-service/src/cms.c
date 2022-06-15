@@ -97,6 +97,11 @@ static const struct operation_data {
 		.query = "call mostra_dipendenti()",
 		.params_type = NULL
 	},
+	[GET_MOVIES] = {
+		.statement = NULL,
+		.query = "call mostra_film()",
+		.params_type = NULL
+	},
 	[GET_CINEMA_SCREENINGS] = {
 		.statement = NULL,
 		.query = "call mostra_palinsesto(?)",
@@ -238,6 +243,7 @@ static MYSQL_STMT* get_prepared_stmt(cms_t cms, enum cms_operation operation) {
 	}
 	return *stmt;
 fail2:
+	// error message is lost!
 	mysql_stmt_close(*stmt);
 	*stmt = NULL;
 fail:

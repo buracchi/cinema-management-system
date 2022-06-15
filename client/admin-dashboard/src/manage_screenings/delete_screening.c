@@ -5,12 +5,12 @@
 
 #include "../core.h"
 
-extern int select_screening(cms_t cms, struct cms_screenings* screening);
+extern int select_screening(cms_t cms, struct cms_screening* screening);
 
 extern int delete_screening(cms_t cms) {
 	struct cms_delete_screening_request request = { 0 };
 	struct cms_delete_screening_response* response;
-	struct cms_screenings screening;
+	struct cms_screening screening;
 	switch (select_screening(cms, &screening)) {
 	case 1:
 		goto fail;
