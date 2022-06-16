@@ -7,10 +7,10 @@
 #include <string.h>
 #include <ctype.h>
 
+#include <buracchi/common/utilities/strto.h>
 #include <buracchi/common/utilities/try.h>
 #include <cms/booking.h>
 #include <cliutils/io.h>
-#include <cliutils/strto.h>
 
 #include "../core.h"
 
@@ -64,7 +64,7 @@ extern int choose_seat(cms_t cms, struct booking_data* booking_data) {
 			break;
 		}
 		else if (isalpha(input[0])
-			&& strtoint32(&selected_number, input + 1, 10) == STRTO_SUCCESS
+			&& cmn_strto_int32(&selected_number, input + 1, 10) == 0
 			&& selected_number > 0
 			&& (uint64_t)selected_number <= num_cols) {
 			char selected_row = input[0];

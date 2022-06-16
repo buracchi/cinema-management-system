@@ -6,11 +6,11 @@
 #include <stdbool.h>
 
 #include <buracchi/common/utilities/utilities.h>
+#include <buracchi/common/utilities/strto.h>
 #include <buracchi/common/utilities/try.h>
 #include <fort.h>
 #include <cms/booking.h>
 #include <cliutils/io.h>
-#include <cliutils/strto.h>
 
 #include "../core.h"
 
@@ -42,7 +42,7 @@ extern int choose_screening(cms_t cms, struct booking_data* booking_data) {
 			back = true;
 			break;
 		}
-		else if (strtoint32(&selected_screening, input, 10) == STRTO_SUCCESS
+		else if (cmn_strto_int32(&selected_screening, input, 10) == 0
 			&& selected_screening > 0
 			&& (uint64_t)selected_screening <= response->num_elements) {
 			booking_data->hall = response->result[selected_screening - 1].hall_id;

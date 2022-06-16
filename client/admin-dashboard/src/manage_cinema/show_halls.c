@@ -1,8 +1,8 @@
+#include <buracchi/common/utilities/strto.h>
 #include <buracchi/common/utilities/try.h>
 #include <cms/cms.h>
 #include <cms/cinema_management.h>
 #include <cliutils/io.h>
-#include <cliutils/strto.h>
 #include <fort.h>
 
 #include "../core.h"
@@ -69,7 +69,7 @@ extern int select_hall(cms_t cms, int32_t cinema_id, int32_t* hall_number) {
 			back = true;
 			break;
 		}
-		else if (strtoint32(&selected_hall, input, 10) == STRTO_SUCCESS) {
+		else if (cmn_strto_int32(&selected_hall, input, 10) == 0) {
 			for (uint64_t i = 0; i < response->num_elements; i++) {
 				if (selected_hall == response->result[i].id) {
 					*hall_number = selected_hall;

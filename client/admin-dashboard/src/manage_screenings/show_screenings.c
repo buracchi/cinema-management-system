@@ -1,8 +1,8 @@
+#include <buracchi/common/utilities/strto.h>
 #include <buracchi/common/utilities/try.h>
 #include <cms/cms.h>
 #include <cms/screenings_scheduling.h>
 #include <cliutils/io.h>
-#include <cliutils/strto.h>
 #include <fort.h>
 
 #include "../core.h"
@@ -57,7 +57,7 @@ extern int select_screening(cms_t cms, struct cms_screening* screening) {
 			back = true;
 			break;
 		}
-		else if (strtoint32(&selected_screening, input, 10) == STRTO_SUCCESS
+		else if (cmn_strto_int32(&selected_screening, input, 10) == 0
 		         && selected_screening > 0
 		         && (uint64_t)selected_screening <= response->num_elements) {
 			memcpy(screening, &(response->result[selected_screening - 1]), sizeof * screening);

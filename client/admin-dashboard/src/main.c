@@ -2,11 +2,11 @@
 #include <stdio.h>
 #include <stdbool.h>
 
+#include <buracchi/common/utilities/strto.h>
 #include <buracchi/common/utilities/try.h>
 #include <cms/cms.h>
 #include <cliutils/io.h>
 #include <cliutils/dotenv.h>
-#include <cliutils/strto.h>
 
 #include "generate_report/generate_report.h"
 #include "manage_cinema/manage_cinema.h"
@@ -34,7 +34,7 @@ int main(void) {
 		.host = getenv("HOST"),
 		.db = getenv("DB")
 	};
-	try(strtouint16((uint16_t*)&(credentials.port), getenv("PORT"), 10) == STRTO_SUCCESS, false, fail);
+	try(cmn_strto_uint16((uint16_t*)&(credentials.port), getenv("PORT"), 10), 1, fail);
 	try(cms = cms_init(&credentials), NULL, fail);
 	while (!end) {
 		int action;

@@ -1,8 +1,8 @@
+#include <buracchi/common/utilities/strto.h>
 #include <buracchi/common/utilities/try.h>
 #include <cms/cms.h>
 #include <cms/shift_scheduling.h>
 #include <cliutils/io.h>
-#include <cliutils/strto.h>
 #include <fort.h>
 
 #include "../core.h"
@@ -57,7 +57,7 @@ extern int select_shift(cms_t cms, struct cms_shift* shift) {
 			back = true;
 			break;
 		}
-		else if (strtoint32(&selected_shift, input, 10) == STRTO_SUCCESS
+		else if (cmn_strto_int32(&selected_shift, input, 10) == 0
 		         && selected_shift > 0
 		         && (uint64_t)selected_shift <= response->num_elements) {
 			memcpy(shift, &(response->result[selected_shift - 1]), sizeof * shift);

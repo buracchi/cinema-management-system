@@ -1,8 +1,8 @@
+#include <buracchi/common/utilities/strto.h>
 #include <buracchi/common/utilities/try.h>
 #include <cms/cms.h>
 #include <cms/screenings_scheduling.h>
 #include <cliutils/io.h>
-#include <cliutils/strto.h>
 #include <fort.h>
 
 #include "../core.h"
@@ -33,7 +33,7 @@ extern int select_projectionist(cms_t cms, struct cms_get_available_projectionis
 			back = true;
 			break;
 		}
-		else if (strtoint32(&selected_movie, input, 10) == STRTO_SUCCESS
+		else if (cmn_strto_int32(&selected_movie, input, 10) == 0
 		         && selected_movie > 0
 		         && (uint64_t)selected_movie <= response->num_elements) {
 			memcpy(projectionist, &(response->result[selected_movie - 1]), sizeof * projectionist);

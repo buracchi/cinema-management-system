@@ -1,8 +1,8 @@
+#include <buracchi/common/utilities/strto.h>
 #include <buracchi/common/utilities/try.h>
 #include <cms/cms.h>
 #include <cms/employee_management.h>
 #include <cliutils/io.h>
-#include <cliutils/strto.h>
 #include <fort.h>
 
 #include "../core.h"
@@ -58,7 +58,7 @@ extern int select_employee(cms_t cms, struct cms_employee* employee) {
 			back = true;
 			break;
 		}
-		else if (strtoint32(&selected_employee, input, 10) == STRTO_SUCCESS) {
+		else if (cmn_strto_int32(&selected_employee, input, 10) == 0) {
 			for (uint64_t i = 0; i < response->num_elements; i++) {
 				if (selected_employee == response->result[i].id) {
 					memcpy(employee, &(response->result[i]), sizeof * employee);

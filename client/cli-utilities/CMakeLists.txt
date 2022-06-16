@@ -1,6 +1,6 @@
 ﻿find_package(buracchi-common CONFIG REQUIRED)
 
-add_library(cli-utilities STATIC "src/dotenv.c" "src/io.c" "src/strto.c")
+add_library(cli-utilities STATIC "src/dotenv.c" "src/io.c")
 target_include_directories(cli-utilities PUBLIC
                            "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
                            "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")

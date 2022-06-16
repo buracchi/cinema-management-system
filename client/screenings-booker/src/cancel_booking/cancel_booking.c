@@ -4,10 +4,10 @@
 #include <stdbool.h>
 
 #include <buracchi/common/utilities/utilities.h>
+#include <buracchi/common/utilities/strto.h>
 #include <buracchi/common/utilities/try.h>
 #include <cms/booking.h>
 #include <cliutils/io.h>
-#include <cliutils/strto.h>
 
 #include "../core.h"
 
@@ -23,7 +23,7 @@ extern int cancel_booking(cms_t cms) {
 			if ((input[0] == 'Q' || input[0] == 'q') && input[1] == '\0') {
 				return 0;
 			}
-			if (strtoint32(&(request.booking_code), input, 10) == STRTO_SUCCESS) {
+			if (cmn_strto_int32(&(request.booking_code), input, 10) == 0) {
 				break;
 			}
 		}

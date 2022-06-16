@@ -5,13 +5,13 @@
 
 #include <buracchi/common/argparser/argparser.h>
 #include <buracchi/common/utilities/utilities.h>
+#include <buracchi/common/utilities/strto.h>
 #include <buracchi/common/utilities/try.h>
 
 #include <cms/cms.h>
 #include <cms/booking.h>
 
 #include <cliutils/dotenv.h>
-#include <cliutils/strto.h>
 
 #define RUN_FROM_IDE
 
@@ -51,8 +51,8 @@ static int validate_booking(const char* booking_code) {
 	};
 	struct cms_validate_booking_request request;
 	struct cms_validate_booking_response* response;
-	try(strtouint16((uint16_t *) &(credentials.port), getenv("PORT"), 10) == STRTO_SUCCESS, false, fail);
-	try(strtoint32(&(request.booking_code), booking_code, 10) == STRTO_SUCCESS, false, fail);
+	try(cmn_strto_uint16((uint16_t *) &(credentials.port), getenv("PORT"), 10), 1, fail);
+	try(cmn_strto_int32(&(request.booking_code), booking_code, 10), 1, fail);
 	try(cms = cms_init(&credentials), NULL, fail);
 	try(cms_validate_booking(cms, request, &response), 1, fail2);
 	if (response->error_message) {

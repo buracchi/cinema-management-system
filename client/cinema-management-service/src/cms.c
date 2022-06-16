@@ -298,7 +298,7 @@ static int recv_mysql_stmt_result(struct operation_data operation_data, struct c
 	MYSQL_TIME* trparams;
 	MYSQL_BIND* rparams;
 	uint8_t* result;
-	size_t result_offest;
+	size_t result_offset;
 	size_t result_length;
 	unsigned long long rset_num_rows;
 	uint8_t* rset_current_row_buffer;
@@ -310,7 +310,7 @@ static int recv_mysql_stmt_result(struct operation_data operation_data, struct c
 	if (!result_bitmap) {
 		goto fail;
 	}
-	result_offest = result_bitmap[0].offset;
+	result_offset = result_bitmap[0].offset;
 	result_length = result_bitmap[0].size;
 	result_bitmap++;
 	try(rparams = calloc(rparam_count, sizeof * rparams), NULL, fail);
@@ -349,7 +349,7 @@ different from the one required by the server, this crappy API knows it but it w
 	try(realloc_response_ptr = realloc(*response, sizeof * *response + result_length * rset_num_rows), NULL, fail4);
 	*response = realloc_response_ptr;
 	(*response)->num_elements = rset_num_rows;
-	result = (uint8_t*)*response + result_offest;
+	result = (uint8_t*)*response + result_offset;
 	for (unsigned long long i = 0; i < rset_num_rows; i++) {
 		try(mysql_stmt_fetch(operation_data.statement) == 0, false, fail4);
 		for (unsigned int j = 0; j < rparam_count; j++) {

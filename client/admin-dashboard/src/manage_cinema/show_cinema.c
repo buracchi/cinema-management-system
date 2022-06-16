@@ -1,8 +1,8 @@
+#include <buracchi/common/utilities/strto.h>
 #include <buracchi/common/utilities/try.h>
 #include <cms/cms.h>
 #include <cms/cinema_management.h>
 #include <cliutils/io.h>
-#include <cliutils/strto.h>
 #include <fort.h>
 
 #include "../core.h"
@@ -57,7 +57,7 @@ extern int select_cinema(cms_t cms, struct cms_cinema* cinema) {
 			back = true;
 			break;
 		}
-		else if (strtoint32(&selected_cinema, input, 10) == STRTO_SUCCESS
+		else if (cmn_strto_int32(&selected_cinema, input, 10) == 0
 			&& selected_cinema > 0
 			&& (uint64_t)selected_cinema <= response->num_elements) {
 			memcpy(cinema, &(response->result[selected_cinema - 1]), sizeof * cinema);
