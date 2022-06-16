@@ -13,7 +13,7 @@
 
 extern int cancel_booking(cms_t cms) {
 	struct cms_cancel_booking_request request = { 0 };
-	struct cms_cancel_booking_response* response;
+	struct cms_cancel_booking_response* response = NULL;
 	char input[INT32DSTR_LEN] = { 0 };
 	while (true) {
 		while (true) {
@@ -42,5 +42,11 @@ extern int cancel_booking(cms_t cms) {
 		return 0;
 	}
 fail:
+	if (response) {
+		if (response->error_message) {
+			fprintf(stderr, "%s\n", response->error_message);
+		}
+		cms_destroy_response((struct cms_response*)response);
+	}
 	return 1;
 }

@@ -28,7 +28,7 @@ extern int choose_seat(cms_t cms, struct booking_data* booking_data) {
 	};
 	strcpy((char*)request.date, booking_data->date);
 	strcpy((char*)request.start_time, booking_data->time);
-	struct cms_get_available_seats_response* response;
+	struct cms_get_available_seats_response* response = NULL;
 	char input[INT32DSTR_LEN + 1];
 	int32_t selected_number;
 	bool selected_seat_available = false;
@@ -57,7 +57,7 @@ extern int choose_seat(cms_t cms, struct booking_data* booking_data) {
 		printf("Sala: %d\n", booking_data->hall);
 		printf("Film: %s\n", booking_data->film_name);
 		printf("Prezzo: %s\n", booking_data->price);
-		try(print_cinema_map(response, num_rows, num_cols) < 0, true, fail2);
+		try(print_cinema_map(response, num_rows, num_cols) < 0, true, fail);
 		get_input("Inserire lettera e numero (i.e. A1) per scegliere un posto o Q per tornare indietro: ", input, false);
 		if (input[0] == 'Q' && input[1] == '\0') {
 			back = true;
@@ -85,15 +85,19 @@ extern int choose_seat(cms_t cms, struct booking_data* booking_data) {
 	}
 	cms_destroy_response((struct cms_response*)response);
 	return back ? choose_screening(cms, booking_data) : make_payment(cms, booking_data);
-fail2:
-	cms_destroy_response((struct cms_response*)response);
 fail:
+	if (response) {
+		if (response->error_message) {
+			fprintf(stderr, "%s\n", response->error_message);
+		}
+		cms_destroy_response((struct cms_response*)response);
+	}
 	return 1;
 }
 
 static int get_hall_info(cms_t cms, struct booking_data* booking_data, uint64_t* num_rows, uint64_t* num_cols) {
 	struct cms_get_cinema_halls_request request = { .cinema_id = booking_data->cinema_id };
-	struct cms_get_cinema_halls_response* response;
+	struct cms_get_cinema_halls_response* response = NULL;
 	try(cms_get_cinema_halls(cms, &request, &response), 1, fail);
 	if (response->error_message) {
 		printf("%s", response->error_message);
@@ -111,6 +115,12 @@ static int get_hall_info(cms_t cms, struct booking_data* booking_data, uint64_t*
 	cms_destroy_response((struct cms_response*)response);
 	return 0;
 fail:
+	if (response) {
+		if (response->error_message) {
+			fprintf(stderr, "%s\n", response->error_message);
+		}
+		cms_destroy_response((struct cms_response*)response);
+	}
 	return 1;
 }
 

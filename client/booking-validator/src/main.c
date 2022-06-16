@@ -33,7 +33,7 @@ int main(int argc, char** argv) {
 	};
 	try(argparser = cmn_argparser_init(argv[0], "Validatore di prenotazioni."), NULL, fail);
 	try(cmn_argparser_set_arguments(argparser, args, 1), 1, fail);
-	option_map = cmn_argparser_parse(argparser, argc, (const char**) argv);
+	option_map = cmn_argparser_parse(argparser, argc, (const char**)argv);
 	try(cmn_map_at(option_map, (void*)"codice", (void**)&input), 1, fail);
 	try(cmn_argparser_destroy(argparser), 1, fail);
 	try(cmn_strto_int32(&booking_code, input, 10), 1, fail2);
@@ -56,24 +56,27 @@ static int validate_booking(int32_t booking_code) {
 			.db = getenv("DB")
 	};
 	cms_t cms;
-	try(cmn_strto_uint16((uint16_t *) &(credentials.port), getenv("PORT"), 10), 1, fail);
+	try(cmn_strto_uint16((uint16_t*)&(credentials.port), getenv("PORT"), 10), 1, fail);
 	try(cms = cms_init(&credentials), NULL, fail);
 	try(cms_validate_booking(cms, &request, &response), 1, fail2);
 	if (response->error_message) {
 		fprintf(stderr, "%s\n", response->error_message);
+		cms_destroy_response((struct cms_response*)response);
 		cms_destroy(cms);
 		return EXIT_FAILURE;
 	}
 	printf("Prenotazione validata con successo.");
-	cms_destroy_response((struct cms_response*)&response);
+	cms_destroy_response((struct cms_response*)response);
 	cms_destroy(cms);
 	return EXIT_SUCCESS;
 fail2:
-	if (response->error_message) {
-		fprintf(stderr, "%s\n", response->error_message);
+	if (response) {
+		if (response->error_message) {
+			fprintf(stderr, "%s\n", response->error_message);
+		}
+		cms_destroy_response((struct cms_response*)response);
 	}
 	fprintf(stderr, "%s\n", cms_get_error_message(cms));
-	cms_destroy_response((struct cms_response*)&response);
 	cms_destroy(cms);
 fail:
 	fprintf(stderr, "Impossibile connettersi al server, controllare le credenziali e riprovare in seguito.");

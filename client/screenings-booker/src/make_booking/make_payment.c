@@ -19,7 +19,7 @@ extern int make_payment(cms_t cms, struct booking_data* booking_data) {
 	};
 	strcpy((char*)request.date, booking_data->date);
 	strcpy((char*)request.start_time, booking_data->time);
-	struct cms_book_seat_response* response;
+	struct cms_book_seat_response* response = NULL;
 	io_clear_screen();
 	puts(title);
 	printf("Dettagli ordine\n\n");
@@ -36,8 +36,12 @@ extern int make_payment(cms_t cms, struct booking_data* booking_data) {
 	puts("");
     get_input_len("Intestatario carta: ", sizeof(request.name_on_card), (char*)request.name_on_card, false);
 	get_input_len("Numero carta: ", sizeof(request.card_number), (char*)request.card_number, false);
-	get_input_len("Data di scadenza [YYYY-MM]: ", sizeof(request.expiry_date), (char*)request.expiry_date, false);
+	get_input_len("Data di scadenza [YYYY-MM]: ", 8, (char*)request.expiry_date, false);
 	get_input_len("Codice di sicurezza (CVV): ", sizeof(request.security_code), (char*)request.security_code, true);
+	((char*)request.expiry_date)[7] = '-';
+	((char*)request.expiry_date)[8] = '0';
+	((char*)request.expiry_date)[9] = '1';
+	((char*)request.expiry_date)[10] = '\0';
 	try(cms_book_seat(cms, &request, &response), 1, fail);
 	if (response->error_message) {
 		printf("%s", response->error_message);
@@ -53,5 +57,11 @@ extern int make_payment(cms_t cms, struct booking_data* booking_data) {
 	press_anykey();
 	return 0;
 fail:
+	if (response) {
+		if (response->error_message) {
+			fprintf(stderr, "%s\n", response->error_message);
+		}
+		cms_destroy_response((struct cms_response*)response);
+	}
 	return 1;
 }

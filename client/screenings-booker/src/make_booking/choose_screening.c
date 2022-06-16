@@ -18,7 +18,7 @@ static char* get_screenings_table(struct cms_get_cinema_screenings_response* res
 
 extern int choose_screening(cms_t cms, struct booking_data* booking_data) {
 	struct cms_get_cinema_screenings_request request = { .cinema_id = booking_data->cinema_id };
-	struct cms_get_cinema_screenings_response* response;
+	struct cms_get_cinema_screenings_response* response = NULL;
 	char* screenings_table;
 	char input[INT32DSTR_LEN];
 	int32_t selected_screening;
@@ -33,7 +33,7 @@ extern int choose_screening(cms_t cms, struct booking_data* booking_data) {
 			press_anykey();
 			return 0;
 		}
-		try(screenings_table = get_screenings_table(response), NULL, fail2);
+		try(screenings_table = get_screenings_table(response), NULL, fail);
 		printf("Cinema selezionato: %s\n\n", booking_data->cinema_address);
 		puts(screenings_table);
 		free(screenings_table);
@@ -56,9 +56,13 @@ extern int choose_screening(cms_t cms, struct booking_data* booking_data) {
 	}
 	cms_destroy_response((struct cms_response*)response);
 	return back ? choose_cinema(cms, booking_data) : choose_seat(cms, booking_data);
-fail2:
-	cms_destroy_response((struct cms_response*)response);
 fail:
+	if (response) {
+		if (response->error_message) {
+			fprintf(stderr, "%s\n", response->error_message);
+		}
+		cms_destroy_response((struct cms_response*)response);
+	}
 	return 1;
 }
 

@@ -31,7 +31,7 @@ int main(void) {
 	try(cmn_strto_uint16((uint16_t*)&(credentials.port), getenv("PORT"), 10), 1, fail);
 	try(cms = cms_init(&credentials), NULL, fail);
 	while (!end) {
-		int action;
+		char action;
 		io_clear_screen();
 		puts(title);
 		puts("Scegliere un'azione\n");
