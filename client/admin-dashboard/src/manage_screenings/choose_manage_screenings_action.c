@@ -19,6 +19,7 @@ enum actions {
 extern int show_screenings(cms_t cms);
 extern int insert_screening(cms_t cms);
 extern int delete_screening(cms_t cms);
+extern int assign_projectionist(cms_t cms);
 
 extern int choose_manage_screenings_action(cms_t cms) {
 	bool end = false;
@@ -45,6 +46,7 @@ extern int choose_manage_screenings_action(cms_t cms) {
 			try(delete_screening(cms), 1, fail);
 			break;
 		case ASSIGN_PROJECTIONIST:
+			try(assign_projectionist(cms), 1, fail);
 			break;
 		case BACK_TO_MENU:
 			end = true;
