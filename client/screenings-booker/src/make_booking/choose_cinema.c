@@ -36,7 +36,7 @@ extern int choose_cinema(cms_t cms, struct booking_data* booking_data) {
 		puts(cinema_table);
 		free(cinema_table);
 		get_input("Inserire il numero del cinema scelto o Q per tornare indietro: ", input, false);
-		if ((input[0] == 'Q' || input[0] == 'q') && input[1] == '\0') {
+		if (input[0] == 'Q' && input[1] == '\0') {
 			back = true;
 			break;
 		}

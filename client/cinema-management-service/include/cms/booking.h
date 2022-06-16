@@ -23,7 +23,7 @@ struct cms_get_cinema_screenings_response {
 	struct cms_response;
 	struct cms_screening {
 		int32_t cinema_id;
-		int32_t hall_id;
+		int32_t hall_number;
 		char date[CMS_DATE_LEN];
 		char time[CMS_TIME_LEN];
 		char price[CMS_DECIMAL_LEN];
@@ -50,7 +50,7 @@ extern int cms_get_cinema_halls(cms_t cms, struct cms_get_cinema_halls_request* 
 
 struct cms_get_available_seats_request {
 	int32_t cinema_id;
-	int32_t hall_id;
+	int32_t hall_number;
 	const char date[CMS_DATE_LEN];
 	const char start_time[CMS_TIME_LEN];
 };
@@ -65,7 +65,7 @@ extern int cms_get_available_seats(cms_t cms, struct cms_get_available_seats_req
 
 struct cms_book_seat_request {
 	int32_t cinema_id;
-	int32_t hall_id;
+	int32_t hall_number;
 	const char date[CMS_DATE_LEN];
 	const char start_time[CMS_TIME_LEN];
 	char seat_row;

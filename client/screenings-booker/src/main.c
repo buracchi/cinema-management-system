@@ -13,9 +13,9 @@
 #include "core.h"
 
 enum actions {
-	MAKE_BOOKING,
-	CANCEL_BOOKING,
-	QUIT
+	MAKE_BOOKING = '1',
+	CANCEL_BOOKING = '2',
+	QUIT = 'Q'
 };
 
 int main(void) {
@@ -37,9 +37,9 @@ int main(void) {
 		puts("Scegliere un'azione\n");
 		puts("1) Effettuare prenotazione");
 		puts("2) Cancellare prenotazione");
-		puts("3) Uscire");
+		puts("Q) Uscire");
 		puts("\n");
-		action = multi_choice("Selezionare un opzione", ((char[3]){ '1', '2', '3' })) - '1';
+		action = multi_choice("Selezionare un opzione", ((char[3]){ '1', '2', 'Q' }));
 		switch (action) {
 		case MAKE_BOOKING:
 			struct booking_data booking_data = { 0 };

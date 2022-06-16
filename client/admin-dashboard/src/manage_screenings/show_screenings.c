@@ -53,7 +53,7 @@ extern int select_screening(cms_t cms, struct cms_screening* screening) {
 		puts(screening_table);
 		free(screening_table);
 		get_input("Inserire il numero della proiezione scelta o Q per tornare indietro: ", input, false);
-		if ((input[0] == 'Q' || input[0] == 'q') && input[1] == '\0') {
+		if (input[0] == 'Q' && input[1] == '\0') {
 			back = true;
 			break;
 		}

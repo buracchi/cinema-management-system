@@ -9,11 +9,11 @@
 #include "../core.h"
 
 enum actions {
-	SHOW_SCREENINGS,
-	ADD_SCREENINGS,
-	REMOVE_SCREENINGS,
-	ASSIGN_PROJECTIONIST,
-	BACK_TO_MENU
+	SHOW_SCREENINGS = '1',
+	ADD_SCREENINGS = '2',
+	REMOVE_SCREENINGS = '3',
+	ASSIGN_PROJECTIONIST = '4',
+	BACK_TO_MENU = 'Q'
 };
 
 extern int show_screenings(cms_t cms);
@@ -32,9 +32,9 @@ extern int choose_manage_screenings_action(cms_t cms) {
 		puts("2) Aggiungere nuove proiezioni");
 		puts("3) Eliminare proiezioni esistenti in programma");
 		puts("4) Assegnare ad una proiezione in programma un proiezionista");
-		puts("5) Tornare al menu' principale");
+		puts("Q) Tornare al menu' principale");
 		puts("\n");
-		action = multi_choice("Selezionare un opzione", ((char[5]){ '1', '2', '3', '4', '5' })) - '1';
+		action = multi_choice("Selezionare un opzione", ((char[5]){ '1', '2', '3', '4', 'Q' }));
 		switch (action) {
 		case SHOW_SCREENINGS:
 			try(show_screenings(cms), 1, fail);

@@ -9,10 +9,10 @@
 #include "../core.h"
 
 enum actions {
-	SHOW_EMPLOYEES,
-	ADD_EMPLOYEE,
-	REMOVE_EMPLOYEE,
-	BACK_TO_MENU
+	SHOW_EMPLOYEES = '1',
+	ADD_EMPLOYEE = '2',
+	REMOVE_EMPLOYEE = '3',
+	BACK_TO_MENU = 'Q'
 };
 
 extern int show_employees(cms_t cms);
@@ -29,9 +29,9 @@ extern int choose_manage_employees_action(cms_t cms) {
 		puts("1) Visualizzare i dipendenti");
 		puts("2) Aggiungere un dipendente");
 		puts("3) Eliminare un dipendente");
-		puts("4) Tornare al menu' principale");
+		puts("Q) Tornare al menu' principale");
 		puts("\n");
-		action = multi_choice("Selezionare un opzione", ((char[4]){ '1', '2', '3', '4'})) - '1';
+		action = multi_choice("Selezionare un opzione", ((char[4]){ '1', '2', '3', 'Q'}));
 		switch (action) {
 		case SHOW_EMPLOYEES:
 			try(show_employees(cms), 1, fail);

@@ -13,7 +13,7 @@
 extern int make_payment(cms_t cms, struct booking_data* booking_data) {
 	struct cms_book_seat_request request = {
 		.cinema_id = booking_data->cinema_id,
-		.hall_id = booking_data->hall,
+		.hall_number = booking_data->hall,
 		.seat_row = booking_data->seat_row,
 		.seat_number = (int32_t)booking_data->seat_number
 	};

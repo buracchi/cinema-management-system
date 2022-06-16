@@ -24,7 +24,7 @@ static inline int print_cinema_map(struct cms_get_available_seats_response* resp
 extern int choose_seat(cms_t cms, struct booking_data* booking_data) {
 	struct cms_get_available_seats_request request = {
 		.cinema_id = booking_data->cinema_id,
-		.hall_id = booking_data->hall,
+		.hall_number = booking_data->hall,
 	};
 	strcpy((char*)request.date, booking_data->date);
 	strcpy((char*)request.start_time, booking_data->time);
@@ -59,7 +59,7 @@ extern int choose_seat(cms_t cms, struct booking_data* booking_data) {
 		printf("Prezzo: %s\n", booking_data->price);
 		try(print_cinema_map(response, num_rows, num_cols) < 0, true, fail2);
 		get_input("Inserire lettera e numero (i.e. A1) per scegliere un posto o Q per tornare indietro: ", input, false);
-		if ((input[0] == 'Q' || input[0] == 'q') && input[1] == '\0') {
+		if (input[0] == 'Q' && input[1] == '\0') {
 			back = true;
 			break;
 		}

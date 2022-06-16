@@ -65,7 +65,7 @@ extern int select_hall(cms_t cms, int32_t cinema_id, int32_t* hall_number) {
 		puts(hall_table);
 		free(hall_table);
 		get_input("Inserire il numero della sala scelta o Q per tornare indietro: ", input, false);
-		if ((input[0] == 'Q' || input[0] == 'q') && input[1] == '\0') {
+		if (input[0] == 'Q' && input[1] == '\0') {
 			back = true;
 			break;
 		}

@@ -9,10 +9,10 @@
 #include "../core.h"
 
 enum actions {
-	SHOW_SHIFTS,
-	ADD_SHIFTS,
-	REMOVE_SHIFTS,
-	BACK_TO_MENU
+	SHOW_SHIFTS = '1',
+	ADD_SHIFTS = '2',
+	REMOVE_SHIFTS = '3',
+	BACK_TO_MENU = 'Q'
 };
 
 extern int show_shift(cms_t cms);
@@ -29,9 +29,9 @@ extern int choose_manage_shifts_action(cms_t cms) {
 		puts("1) Visualizzare i turni in programma");
 		puts("2) Aggiungere nuovi turni");
 		puts("3) Eliminare turni esistenti in programma");
-		puts("4) Tornare al menu' principale");
+		puts("Q) Tornare al menu' principale");
 		puts("\n");
-		action = multi_choice("Selezionare un opzione", ((char[4]){ '1', '2', '3', '4'})) - '1';
+		action = multi_choice("Selezionare un opzione", ((char[4]){ '1', '2', '3', 'Q'}));
 		switch (action) {
 		case SHOW_SHIFTS:
 			try(show_shift(cms), 1, fail);

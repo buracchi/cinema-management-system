@@ -214,7 +214,7 @@ extern int cms_operation_execute(cms_t cms,
 	struct cms_result_bitmap* result_bitmap) {
 	MYSQL_STMT* statement;
 	try(*response = calloc(1, sizeof * *response), NULL, fail);
-	try(statement = get_prepared_stmt(cms, operation), NULL, fail2);
+	try(statement = get_prepared_stmt(cms, operation, (char**)&((*response)->error_message)), NULL, fail2);
 	try(send_mysql_stmt_request(cms->operation_data[operation], request_param), 1, fail3);
 	try(recv_mysql_stmt_result(cms->operation_data[operation], response, result_bitmap), 1, fail4);
 	try(mysql_stmt_reset(statement) == 0, false, fail4);
@@ -227,12 +227,14 @@ fail3:
 	asprintf((char**)&((*response)->error_message), "%s", mysql_stmt_error(statement));
 	return statement->last_errno == MYSQL_USER_DEFINED_ERROR ? 0 : 1;
 fail2:
-	asprintf((char**)&((*response)->error_message), "%s", cms_get_error_message(cms));
+	if (!(*response)->error_message) {
+		asprintf((char**)&((*response)->error_message), "%s", cms_get_error_message(cms));
+	}
 fail:
 	return 1;
 }
 
-static MYSQL_STMT* get_prepared_stmt(cms_t cms, enum cms_operation operation) {
+static MYSQL_STMT* get_prepared_stmt(cms_t cms, enum cms_operation operation, char** error_message) {
 	MYSQL_STMT** stmt = &(cms->operation_data[operation].statement);
 	if (!*stmt) {
 		const char* query = cms->operation_data[operation].query;
@@ -243,7 +245,7 @@ static MYSQL_STMT* get_prepared_stmt(cms_t cms, enum cms_operation operation) {
 	}
 	return *stmt;
 fail2:
-	// error message is lost!
+	asprintf(error_message, "%s", mysql_stmt_error(*stmt));
 	mysql_stmt_close(*stmt);
 	*stmt = NULL;
 fail:

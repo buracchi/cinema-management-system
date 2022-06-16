@@ -53,7 +53,7 @@ extern int select_shift(cms_t cms, struct cms_shift* shift) {
 		puts(shift_table);
 		free(shift_table);
 		get_input("Inserire il numero della proiezione scelta o Q per tornare indietro: ", input, false);
-		if ((input[0] == 'Q' || input[0] == 'q') && input[1] == '\0') {
+		if (input[0] == 'Q' && input[1] == '\0') {
 			back = true;
 			break;
 		}

@@ -9,10 +9,10 @@
 #include "../core.h"
 
 enum actions {
-	SHOW_SHIFTS_WITHOUT_PROJECTIONIST,
-	SHOW_CINEMA_WITHOUT_ENOUGH_USHERS,
-	SHOW_MONTHLY_BOOKING_STATE,
-	BACK_TO_MENU
+	SHOW_SHIFTS_WITHOUT_PROJECTIONIST = '1',
+	SHOW_CINEMA_WITHOUT_ENOUGH_USHERS = '2',
+	SHOW_MONTHLY_BOOKING_STATE = '3',
+	BACK_TO_MENU = 'Q'
 };
 
 extern int show_cinema_without_enough_ushers(cms_t cms);
@@ -29,9 +29,9 @@ extern int choose_generate_report_action(cms_t cms) {
 		puts("1) Visualizzare le proiezioni sprovviste di proiezionisti");
 		puts("2) Visualizzare i cinema sprovvisti di almeno due maschere");
 		puts("3) Visualizzare lo stato delle prenotazioni di questo mese");
-		puts("4) Tornare al menu' principale");
+		puts("Q) Tornare al menu' principale");
 		puts("\n");
-		action = multi_choice("Selezionare un opzione", ((char[4]){ '1', '2', '3', '4'})) - '1';
+		action = multi_choice("Selezionare un opzione", ((char[4]){ '1', '2', '3', 'Q'}));
 		switch (action) {
 		case SHOW_SHIFTS_WITHOUT_PROJECTIONIST:
 			try(show_screenings_without_projectionist(cms), 1, fail);

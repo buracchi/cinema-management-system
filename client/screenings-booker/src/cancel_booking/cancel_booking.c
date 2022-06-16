@@ -20,7 +20,7 @@ extern int cancel_booking(cms_t cms) {
 			io_clear_screen();
 			puts(title);
 			get_input("Inserire il codice di prenotazione da annullare o Q per tornare indietro: ", input, false);
-			if ((input[0] == 'Q' || input[0] == 'q') && input[1] == '\0') {
+			if (input[0] == 'Q' && input[1] == '\0') {
 				return 0;
 			}
 			if (cmn_strto_int32(&(request.booking_code), input, 10) == 0) {

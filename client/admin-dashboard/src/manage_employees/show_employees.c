@@ -54,7 +54,7 @@ extern int select_employee(cms_t cms, struct cms_employee* employee) {
 		puts(employees_table);
 		free(employees_table);
 		get_input("Inserire il numero del employee scelto o Q per tornare indietro: ", input, false);
-		if ((input[0] == 'Q' || input[0] == 'q') && input[1] == '\0') {
+		if (input[0] == 'Q' && input[1] == '\0') {
 			back = true;
 			break;
 		}
