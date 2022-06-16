@@ -10,7 +10,7 @@
 static char* get_projectionists_table(struct cms_get_available_projectionists_response* response);
 
 extern int select_projectionist(cms_t cms, struct cms_get_available_projectionists_request* request, struct cms_available_projectionist* projectionist) {
-	struct cms_get_available_projectionists_response* response;
+	struct cms_get_available_projectionists_response* response = NULL;
 	char* projectionists_table;
 	char input[INT32DSTR_LEN];
 	int32_t selected_movie;
@@ -25,7 +25,7 @@ extern int select_projectionist(cms_t cms, struct cms_get_available_projectionis
 			press_anykey();
 			return 2;
 		}
-		try(projectionists_table = get_projectionists_table(response), NULL, fail2);
+		try(projectionists_table = get_projectionists_table(response), NULL, fail);
 		puts(projectionists_table);
 		free(projectionists_table);
 		get_input("Inserire il numero del film scelto o Q per tornare indietro: ", input, false);
@@ -43,9 +43,13 @@ extern int select_projectionist(cms_t cms, struct cms_get_available_projectionis
 	}
 	cms_destroy_response((struct cms_response*)response);
 	return back ? 2 : 0;
-fail2:
-	cms_destroy_response((struct cms_response*)response);
 fail:
+	if (response) {
+		if (response->error_message) {
+			fprintf(stderr, "%s\n", response->error_message);
+		}
+		cms_destroy_response((struct cms_response*)response);
+	}
 	return 1;
 }
 

@@ -24,7 +24,7 @@ extern int assign_projectionist(cms_t cms);
 extern int choose_manage_screenings_action(cms_t cms) {
 	bool end = false;
 	while (!end) {
-		int action;
+		char action;
 		io_clear_screen();
 		puts(title);
 		puts("Scegliere un'azione\n");

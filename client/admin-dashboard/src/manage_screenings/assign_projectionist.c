@@ -10,7 +10,7 @@ extern int select_projectionist(cms_t cms, struct cms_get_available_projectionis
 
 extern int assign_projectionist(cms_t cms) {
 	struct cms_assign_projectionist_request request = { 0 };
-	struct cms_assign_projectionist_response* response;
+	struct cms_assign_projectionist_response* response = NULL;
 	struct cms_screening screening;
 	struct cms_available_projectionist projectionist;
 	switch (select_screening(cms, &screening)) {
@@ -18,7 +18,7 @@ extern int assign_projectionist(cms_t cms) {
 			goto fail;
 		case 2:
 			return 0;
-	};
+	}
 	struct cms_get_available_projectionists_request projectionists_request;
 	projectionists_request.cinema_id = screening.cinema_id;
 	projectionists_request.hall_number = screening.hall_number;
@@ -51,5 +51,11 @@ extern int assign_projectionist(cms_t cms) {
 	press_anykey();
 	return 0;
 fail:
+	if (response) {
+		if (response->error_message) {
+			fprintf(stderr, "%s\n", response->error_message);
+		}
+		cms_destroy_response((struct cms_response*)response);
+	}
 	return 1;
 }

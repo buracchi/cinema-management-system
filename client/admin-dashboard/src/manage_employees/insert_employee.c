@@ -7,7 +7,7 @@
 
 extern int insert_employee(cms_t cms) {
 	struct cms_add_employee_request request = { 0 };
-	struct cms_add_employee_response* response;
+	struct cms_add_employee_response* response = NULL;
 	io_clear_screen();
 	puts(title);
 	get_input_len("Nome: ", sizeof(request.name), (char*)request.name, false);
@@ -27,5 +27,11 @@ extern int insert_employee(cms_t cms) {
 	press_anykey();
 	return 0;
 fail:
+	if (response) {
+		if (response->error_message) {
+			fprintf(stderr, "%s\n", response->error_message);
+		}
+		cms_destroy_response((struct cms_response*)response);
+	}
 	return 1;
 }

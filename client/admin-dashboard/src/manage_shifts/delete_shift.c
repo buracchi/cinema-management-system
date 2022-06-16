@@ -9,7 +9,7 @@ extern int select_shift(cms_t cms, struct cms_shift* shift);
 
 extern int delete_shift(cms_t cms) {
 	struct cms_delete_shift_request request = { 0 };
-	struct cms_delete_shift_response* response;
+	struct cms_delete_shift_response* response = NULL;
 	struct cms_shift shift;
 	switch (select_shift(cms, &shift)) {
 	case 1:
@@ -36,5 +36,11 @@ extern int delete_shift(cms_t cms) {
 	press_anykey();
 	return 0;
 fail:
+	if (response) {
+		if (response->error_message) {
+			fprintf(stderr, "%s\n", response->error_message);
+		}
+		cms_destroy_response((struct cms_response*)response);
+	}
 	return 1;
 }

@@ -8,12 +8,12 @@
 #include "../core.h"
 
 extern int select_cinema(cms_t cms, struct cms_cinema* cinema);
-extern int select_hall(cms_t cms, int32_t cinema_id, int32_t* hall_number);
+extern int select_hall(cms_t cms, int32_t cinema_id, struct cms_hall* hall);
 static char* get_halls_table(struct cms_get_cinema_halls_response* response);
 
 extern int show_halls(cms_t cms) {
 	struct cms_get_cinema_halls_request request = { 0 };
-	struct cms_get_cinema_halls_response* response;
+	struct cms_get_cinema_halls_response* response = NULL;
 	struct cms_cinema cinema;
 	switch (select_cinema(cms, &cinema)) {
 	case 1:
@@ -30,22 +30,26 @@ extern int show_halls(cms_t cms) {
 	}
 	else {
 		char* halls_table;
-		try(halls_table = get_halls_table(response), NULL, fail2);
+		try(halls_table = get_halls_table(response), NULL, fail);
 		puts(halls_table);
 		free(halls_table);
 	}
 	cms_destroy_response((struct cms_response*)response);
 	press_anykey();
 	return 0;
-fail2:
-	cms_destroy_response((struct cms_response*)response);
 fail:
+	if (response) {
+		if (response->error_message) {
+			fprintf(stderr, "%s\n", response->error_message);
+		}
+		cms_destroy_response((struct cms_response*)response);
+	}
 	return 1;
 }
 
-extern int select_hall(cms_t cms, int32_t cinema_id, int32_t* hall_number) {
+extern int select_hall(cms_t cms, int32_t cinema_id, struct cms_hall* hall) {
 	struct cms_get_cinema_halls_request request = { .cinema_id = cinema_id };
-	struct cms_get_cinema_halls_response* response;
+	struct cms_get_cinema_halls_response* response = NULL;
 	char* hall_table;
 	char input[INT32DSTR_LEN];
 	int32_t selected_hall;
@@ -61,7 +65,7 @@ extern int select_hall(cms_t cms, int32_t cinema_id, int32_t* hall_number) {
 			press_anykey();
 			return 2;
 		}
-		try(hall_table = get_halls_table(response), NULL, fail2);
+		try(hall_table = get_halls_table(response), NULL, fail);
 		puts(hall_table);
 		free(hall_table);
 		get_input("Inserire il numero della sala scelta o Q per tornare indietro: ", input, false);
@@ -72,7 +76,7 @@ extern int select_hall(cms_t cms, int32_t cinema_id, int32_t* hall_number) {
 		else if (cmn_strto_int32(&selected_hall, input, 10) == 0) {
 			for (uint64_t i = 0; i < response->num_elements; i++) {
 				if (selected_hall == response->result[i].id) {
-					*hall_number = selected_hall;
+					memcpy(hall, &(response->result[i]), sizeof * hall);
 					valid_input = true;
 					break;
 				}
@@ -85,9 +89,13 @@ extern int select_hall(cms_t cms, int32_t cinema_id, int32_t* hall_number) {
 	}
 	cms_destroy_response((struct cms_response*)response);
 	return back ? 2 : 0;
-fail2:
-	cms_destroy_response((struct cms_response*)response);
 fail:
+	if (response) {
+		if (response->error_message) {
+			fprintf(stderr, "%s\n", response->error_message);
+		}
+		cms_destroy_response((struct cms_response*)response);
+	}
 	return 1;
 }
 

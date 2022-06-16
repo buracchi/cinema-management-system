@@ -7,14 +7,15 @@
 #include "../core.h"
 
 extern int select_cinema(cms_t cms, struct cms_cinema* cinema);
-extern int select_hall(cms_t cms, int32_t cinema_id, int32_t* hall_number);
+extern int select_hall(cms_t cms, int32_t cinema_id, struct cms_hall* hall);
 extern int select_movie(cms_t cms, struct cms_movie* movie);
 
 extern int insert_screening(cms_t cms) {
 	struct cms_add_screening_request request = { 0 };
-	struct cms_add_screening_response* response;
+	struct cms_add_screening_response* response = NULL;
 	struct cms_movie movie;
 	struct cms_cinema cinema;
+	struct cms_hall hall;
 	switch (select_movie(cms, &movie)) {
 		case 1:
 			goto fail;
@@ -27,7 +28,7 @@ extern int insert_screening(cms_t cms) {
 		case 2:
 			return 0;
 	}
-	switch (select_hall(cms, cinema.id, &request.hall_number)) {
+	switch (select_hall(cms, cinema.id, &hall)) {
 		case 1:
 			goto fail;
 		case 2:
@@ -43,6 +44,7 @@ extern int insert_screening(cms_t cms) {
 	}
 	request.film_id = movie.film_id;
 	request.cinema_id = cinema.id;
+	request.hall_number = hall.id;
 	try(cms_add_screening(cms, &request, &response), 1, fail);
 	if (response->error_message) {
 		printf("%s", response->error_message);
@@ -54,5 +56,11 @@ extern int insert_screening(cms_t cms) {
 	press_anykey();
 	return 0;
 fail:
+	if (response) {
+		if (response->error_message) {
+			fprintf(stderr, "%s\n", response->error_message);
+		}
+		cms_destroy_response((struct cms_response*)response);
+	}
 	return 1;
 }

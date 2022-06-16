@@ -9,7 +9,7 @@
 static char* get_booking_table(struct cms_get_reservations_status_response* response);
 
 extern int show_monthly_booking_state(cms_t cms) {
-	struct cms_get_reservations_status_response* response;
+	struct cms_get_reservations_status_response* response = NULL;
 	io_clear_screen();
 	puts(title);
 	try(cms_get_reservations_status(cms, &response), 1, fail);
@@ -18,16 +18,20 @@ extern int show_monthly_booking_state(cms_t cms) {
 	}
 	else {
 		char* booking_table;
-		try(booking_table = get_booking_table(response), NULL, fail2);
+		try(booking_table = get_booking_table(response), NULL, fail);
 		puts(booking_table);
 		free(booking_table);
 	}
 	cms_destroy_response((struct cms_response*)response);
 	press_anykey();
 	return 0;
-fail2:
-	cms_destroy_response((struct cms_response*)response);
 fail:
+	if (response) {
+		if (response->error_message) {
+			fprintf(stderr, "%s\n", response->error_message);
+		}
+		cms_destroy_response((struct cms_response*)response);
+	}
 	return 1;
 }
 

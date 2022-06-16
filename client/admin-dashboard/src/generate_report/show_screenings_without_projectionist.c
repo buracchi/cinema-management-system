@@ -9,7 +9,7 @@
 static char* get_screenings_table(struct cms_get_screenings_without_projectionist_response* response);
 
 extern int show_screenings_without_projectionist(cms_t cms) {
-	struct cms_get_screenings_without_projectionist_response* response;
+	struct cms_get_screenings_without_projectionist_response* response = NULL;
 	io_clear_screen();
 	puts(title);
 	try(cms_get_screenings_without_projectionist(cms, &response), 1, fail);
@@ -18,16 +18,20 @@ extern int show_screenings_without_projectionist(cms_t cms) {
 	}
 	else {
 		char* screenings_table;
-		try(screenings_table = get_screenings_table(response), NULL, fail2);
+		try(screenings_table = get_screenings_table(response), NULL, fail);
 		puts(screenings_table);
 		free(screenings_table);
 	}
 	cms_destroy_response((struct cms_response*)response);
 	press_anykey();
 	return 0;
-fail2:
-	cms_destroy_response((struct cms_response*)response);
 fail:
+	if (response) {
+		if (response->error_message) {
+			fprintf(stderr, "%s\n", response->error_message);
+		}
+		cms_destroy_response((struct cms_response*)response);
+	}
 	return 1;
 }
 

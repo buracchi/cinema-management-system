@@ -22,7 +22,7 @@ extern int delete_employee(cms_t cms);
 extern int choose_manage_employees_action(cms_t cms) {
 	bool end = false;
 	while (!end) {
-		int action;
+		char action;
 		io_clear_screen();
 		puts(title);
 		puts("Scegliere un'azione\n");

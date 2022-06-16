@@ -11,7 +11,7 @@ extern int select_screening(cms_t cms, struct cms_screening* screening);
 static char* get_screenings_table(struct cms_get_screenings_response* response);
 
 extern int show_screenings(cms_t cms) {
-	struct cms_get_screenings_response* response;
+	struct cms_get_screenings_response* response = NULL;
 	io_clear_screen();
 	try(cms_get_screenings(cms, &response), 1, fail);
 	if (response->error_message) {
@@ -19,7 +19,7 @@ extern int show_screenings(cms_t cms) {
 	}
 	else {
 		char* screening_table;
-		try(screening_table = get_screenings_table(response), NULL, fail2);
+		try(screening_table = get_screenings_table(response), NULL, fail);
 		puts(title);
 		puts(screening_table);
 		free(screening_table);
@@ -27,14 +27,18 @@ extern int show_screenings(cms_t cms) {
 	cms_destroy_response((struct cms_response*)response);
 	press_anykey();
 	return 0;
-fail2:
-	cms_destroy_response((struct cms_response*)response);
 fail:
+	if (response) {
+		if (response->error_message) {
+			fprintf(stderr, "%s\n", response->error_message);
+		}
+		cms_destroy_response((struct cms_response*)response);
+	}
 	return 1;
 }
 
 extern int select_screening(cms_t cms, struct cms_screening* screening) {
-	struct cms_get_screenings_response* response;
+	struct cms_get_screenings_response* response = NULL;
 	char* screening_table;
 	char input[INT32DSTR_LEN];
 	int32_t selected_screening;
@@ -49,7 +53,7 @@ extern int select_screening(cms_t cms, struct cms_screening* screening) {
 			press_anykey();
 			return 2;
 		}
-		try(screening_table = get_screenings_table(response), NULL, fail2);
+		try(screening_table = get_screenings_table(response), NULL, fail);
 		puts(screening_table);
 		free(screening_table);
 		get_input("Inserire il numero della proiezione scelta o Q per tornare indietro: ", input, false);
@@ -67,9 +71,13 @@ extern int select_screening(cms_t cms, struct cms_screening* screening) {
 	}
 	cms_destroy_response((struct cms_response*)response);
 	return back ? 2 : 0;
-fail2:
-	cms_destroy_response((struct cms_response*)response);
 fail:
+	if (response) {
+		if (response->error_message) {
+			fprintf(stderr, "%s\n", response->error_message);
+		}
+		cms_destroy_response((struct cms_response*)response);
+	}
 	return 1;
 }
 

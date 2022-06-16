@@ -9,7 +9,7 @@ extern int select_screening(cms_t cms, struct cms_screening* screening);
 
 extern int delete_screening(cms_t cms) {
 	struct cms_delete_screening_request request = { 0 };
-	struct cms_delete_screening_response* response;
+	struct cms_delete_screening_response* response = NULL;
 	struct cms_screening screening;
 	switch (select_screening(cms, &screening)) {
 	case 1:
@@ -38,5 +38,11 @@ extern int delete_screening(cms_t cms) {
 	press_anykey();
 	return 0;
 fail:
+	if (response) {
+		if (response->error_message) {
+			fprintf(stderr, "%s\n", response->error_message);
+		}
+		cms_destroy_response((struct cms_response*)response);
+	}
 	return 1;
 }

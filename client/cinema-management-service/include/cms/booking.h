@@ -40,7 +40,7 @@ struct cms_get_cinema_halls_request {
 };
 struct cms_get_cinema_halls_response {
 	struct cms_response;
-	struct cms_hall_info {
+	struct cms_hall {
 		int32_t id;
 		uint64_t num_rows;
 		uint64_t num_cols;

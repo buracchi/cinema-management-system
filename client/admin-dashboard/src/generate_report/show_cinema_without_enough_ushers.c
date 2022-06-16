@@ -9,7 +9,7 @@
 static char* get_cinema_table(struct cms_get_cinema_without_ushers_response* response);
 
 extern int show_cinema_without_enough_ushers(cms_t cms) {
-	struct cms_get_cinema_without_ushers_response* response;
+	struct cms_get_cinema_without_ushers_response* response = NULL;
 	io_clear_screen();
 	puts(title);
 	try(cms_get_cinema_without_ushers(cms, &response), 1, fail);
@@ -18,16 +18,20 @@ extern int show_cinema_without_enough_ushers(cms_t cms) {
 	}
 	else {
 		char* cinema_table;
-		try(cinema_table = get_cinema_table(response), NULL, fail2);
+		try(cinema_table = get_cinema_table(response), NULL, fail);
 		puts(cinema_table);
 		free(cinema_table);
 	}
 	cms_destroy_response((struct cms_response*)response);
 	press_anykey();
 	return 0;
-fail2:
-	cms_destroy_response((struct cms_response*)response);
 fail:
+	if (response) {
+		if (response->error_message) {
+			fprintf(stderr, "%s\n", response->error_message);
+		}
+		cms_destroy_response((struct cms_response*)response);
+	}
 	return 1;
 }
 

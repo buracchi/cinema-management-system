@@ -32,7 +32,7 @@ extern int cms_get_cinema_halls(cms_t cms, struct cms_get_cinema_halls_request* 
 	};
 	struct cms_result_bitmap result_bitmap[] = {
 			CMS_RESULT_BITMAP_INFO(struct cms_get_cinema_halls_response, result[0]),
-			CMS_RESULT_BITMAP_INFO(struct cms_hall_info, id, num_rows, num_cols)
+			CMS_RESULT_BITMAP_INFO(struct cms_hall, id, num_rows, num_cols)
 	};
 	return cms_operation_execute(cms, GET_HALLS, request_params, (struct cms_response**)response, result_bitmap);
 }

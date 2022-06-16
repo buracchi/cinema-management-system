@@ -10,7 +10,7 @@
 static char* get_movies_table(struct cms_get_movies_response* response);
 
 extern int select_movie(cms_t cms, struct cms_movie* movie) {
-	struct cms_get_movies_response* response;
+	struct cms_get_movies_response* response = NULL;
 	char* movies_table;
 	char input[INT32DSTR_LEN];
 	int32_t selected_movie;
@@ -25,7 +25,7 @@ extern int select_movie(cms_t cms, struct cms_movie* movie) {
 			press_anykey();
 			return 2;
 		}
-		try(movies_table = get_movies_table(response), NULL, fail2);
+		try(movies_table = get_movies_table(response), NULL, fail);
 		puts(movies_table);
 		free(movies_table);
 		get_input("Inserire il numero del film scelto o Q per tornare indietro: ", input, false);
@@ -43,9 +43,13 @@ extern int select_movie(cms_t cms, struct cms_movie* movie) {
 	}
 	cms_destroy_response((struct cms_response*)response);
 	return back ? 2 : 0;
-fail2:
-	cms_destroy_response((struct cms_response*)response);
 fail:
+	if (response) {
+		if (response->error_message) {
+			fprintf(stderr, "%s\n", response->error_message);
+		}
+		cms_destroy_response((struct cms_response*)response);
+	}
 	return 1;
 }
 

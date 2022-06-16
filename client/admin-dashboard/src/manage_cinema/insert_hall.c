@@ -10,7 +10,7 @@ extern int select_cinema(cms_t cms, struct cms_cinema* cinema);
 
 extern int insert_hall(cms_t cms) {
 	struct cms_add_hall_request request = { 0 };
-	struct cms_add_hall_response* response;
+	struct cms_add_hall_response* response = NULL;
 	struct cms_cinema cinema;
 	char hall_number[INT32DSTR_LEN];
 	char rows[INT32DSTR_LEN];
@@ -45,5 +45,11 @@ extern int insert_hall(cms_t cms) {
 	press_anykey();
 	return 0;
 fail:
+	if (response) {
+		if (response->error_message) {
+			fprintf(stderr, "%s\n", response->error_message);
+		}
+		cms_destroy_response((struct cms_response*)response);
+	}
 	return 1;
 }

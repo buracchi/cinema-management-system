@@ -11,7 +11,7 @@ extern int select_employee(cms_t cms, struct cms_employee* employee);
 static char* get_employees_table(struct cms_get_employees_response* response);
 
 extern int show_employees(cms_t cms) {
-	struct cms_get_employees_response* response;
+	struct cms_get_employees_response* response = NULL;
 	io_clear_screen();
 	try(cms_get_employees(cms, &response), 1, fail);
 	if (response->error_message) {
@@ -19,7 +19,7 @@ extern int show_employees(cms_t cms) {
 	}
 	else {
 		char* cinema_table;
-		try(cinema_table = get_employees_table(response), NULL, fail2);
+		try(cinema_table = get_employees_table(response), NULL, fail);
 		puts(title);
 		puts(cinema_table);
 		free(cinema_table);
@@ -27,14 +27,18 @@ extern int show_employees(cms_t cms) {
 	cms_destroy_response((struct cms_response*)response);
 	press_anykey();
 	return 0;
-fail2:
-	cms_destroy_response((struct cms_response*)response);
 fail:
+	if (response) {
+		if (response->error_message) {
+			fprintf(stderr, "%s\n", response->error_message);
+		}
+		cms_destroy_response((struct cms_response*)response);
+	}
 	return 1;
 }
 
 extern int select_employee(cms_t cms, struct cms_employee* employee) {
-	struct cms_get_employees_response* response;
+	struct cms_get_employees_response* response = NULL;
 	char* employees_table;
 	char input[INT32DSTR_LEN];
 	int32_t selected_employee;
@@ -50,7 +54,7 @@ extern int select_employee(cms_t cms, struct cms_employee* employee) {
 			press_anykey();
 			return 2;
 		}
-		try(employees_table = get_employees_table(response), NULL, fail2);
+		try(employees_table = get_employees_table(response), NULL, fail);
 		puts(employees_table);
 		free(employees_table);
 		get_input("Inserire il numero del employee scelto o Q per tornare indietro: ", input, false);
@@ -74,9 +78,13 @@ extern int select_employee(cms_t cms, struct cms_employee* employee) {
 	}
 	cms_destroy_response((struct cms_response*)response);
 	return back ? 2 : 0;
-fail2:
-	cms_destroy_response((struct cms_response*)response);
 fail:
+	if (response) {
+		if (response->error_message) {
+			fprintf(stderr, "%s\n", response->error_message);
+		}
+		cms_destroy_response((struct cms_response*)response);
+	}
 	return 1;
 }
 
