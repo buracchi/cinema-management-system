@@ -20,13 +20,13 @@ extern int insert_shift(cms_t cms) {
 			goto fail;
 		case 2:
 			return 0;
-	};
+	}
 	switch (select_cinema(cms, &cinema)) {
 		case 1:
 			goto fail;
 		case 2:
 			return 0;
-	};
+	}
 	io_clear_screen();
 	puts(title);
 	get_input_len("Giorno <Lunedi' | Martedi' | Mercoledi' | Giovedi' | Venerdi' | Sabato | Domenica>: ", sizeof(request.day), (char*)request.day, false);

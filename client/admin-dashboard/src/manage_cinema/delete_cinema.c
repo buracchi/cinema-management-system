@@ -16,7 +16,7 @@ extern int delete_cinema(cms_t cms) {
 		goto fail;
 	case 2:
 		return 0;
-	};
+	}
 	io_clear_screen();
 	puts(title);
 	printf("Cinema: %s\n\n", cinema.address);

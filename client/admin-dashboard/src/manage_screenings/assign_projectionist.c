@@ -1,7 +1,6 @@
 #include <buracchi/common/utilities/try.h>
 #include <cms/cms.h>
 #include <cms/screenings_scheduling.h.>
-#include <cms/cinema_management.h>
 #include <cliutils/io.h>
 
 #include "../core.h"
@@ -30,7 +29,7 @@ extern int assign_projectionist(cms_t cms) {
 			goto fail;
 		case 2:
 			return 0;
-	};
+	}
 	io_clear_screen();
 	puts(title);
 	if (multi_choice("Procedere?", ((char[2]){ 'S', 'N' })) == 'N') {

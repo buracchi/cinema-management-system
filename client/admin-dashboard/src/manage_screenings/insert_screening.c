@@ -20,19 +20,19 @@ extern int insert_screening(cms_t cms) {
 			goto fail;
 		case 2:
 			return 0;
-	};
+	}
 	switch (select_cinema(cms, &cinema)) {
 		case 1:
 			goto fail;
 		case 2:
 			return 0;
-	};
+	}
 	switch (select_hall(cms, cinema.id, &request.hall_number)) {
 		case 1:
 			goto fail;
 		case 2:
 			return 0;
-	};
+	}
 	io_clear_screen();
 	puts(title);
 	get_input_len("Data [YYYY-MM-DD]: ", sizeof(request.date), (char*)request.date, false);

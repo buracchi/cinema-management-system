@@ -16,7 +16,7 @@ extern int delete_employee(cms_t cms) {
 		goto fail;
 	case 2:
 		return 0;
-	};
+	}
 	io_clear_screen();
 	puts(title);
 	printf("Dipendente: %d %s %s\n\n", employee.id, employee.name, employee.surname);

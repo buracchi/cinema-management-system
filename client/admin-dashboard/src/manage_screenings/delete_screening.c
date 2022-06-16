@@ -16,7 +16,7 @@ extern int delete_screening(cms_t cms) {
 		goto fail;
 	case 2:
 		return 0;
-	};
+	}
 	io_clear_screen();
 	puts(title);
 	printf("Proiezione: %s - Sala %d il %s alle %s\n\n", screening.cinema_address, screening.hall_number, screening.date, screening.start_time);

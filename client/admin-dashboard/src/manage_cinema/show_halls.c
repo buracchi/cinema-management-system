@@ -20,7 +20,7 @@ extern int show_halls(cms_t cms) {
 		goto fail;
 	case 2:
 		return 0;
-	};
+	}
 	request.cinema_id = cinema.id;
 	io_clear_screen();
 	puts(title);

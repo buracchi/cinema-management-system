@@ -17,13 +17,13 @@ extern int delete_hall(cms_t cms) {
 		goto fail;
 	case 2:
 		return 0;
-	};
+	}
 	switch (select_hall(cms, cinema.id, &(request.hall_number))) {
 	case 1:
 		goto fail;
 	case 2:
 		return 0;
-	};
+	}
 	io_clear_screen();
 	puts(title);
 	printf("Cinema: %s\n", cinema.address);

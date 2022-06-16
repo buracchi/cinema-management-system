@@ -16,7 +16,7 @@ extern int delete_shift(cms_t cms) {
 		goto fail;
 	case 2:
 		return 0;
-	};
+	}
 	io_clear_screen();
 	puts(title);
 	if (multi_choice("Il turno selezionato verra' rimosso, procedere?", ((char[2]){ 'S', 'N' })) == 'N') {
