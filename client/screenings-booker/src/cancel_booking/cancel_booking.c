@@ -27,7 +27,7 @@ extern int cancel_booking(cms_t cms) {
 				break;
 			}
 		}
-		try(cms_cancel_booking(cms, request, &response), 1, fail);
+		try(cms_cancel_booking(cms, &request, &response), 1, fail);
 		if (response->error_message) {
 			printf("%s\n", response->error_message);
 			cms_destroy_response((struct cms_response*)response);

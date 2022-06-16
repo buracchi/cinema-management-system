@@ -24,7 +24,7 @@ extern int delete_cinema(cms_t cms) {
 		return 0;
 	}
 	request.id = cinema.id;
-	try(cms_delete_cinema(cms, request, &response), 1, fail);
+	try(cms_delete_cinema(cms, &request, &response), 1, fail);
 	if (response->error_message) {
 		printf("%s", response->error_message);
 	}

@@ -6,7 +6,7 @@
 #include "../core.h"
 
 extern int select_screening(cms_t cms, struct cms_screening* screening);
-extern int select_projectionist(cms_t cms, struct cms_get_available_projectionists_request request, struct cms_available_projectionist* projectionist);
+extern int select_projectionist(cms_t cms, struct cms_get_available_projectionists_request* request, struct cms_available_projectionist* projectionist);
 
 extern int assign_projectionist(cms_t cms) {
 	struct cms_assign_projectionist_request request = { 0 };
@@ -24,7 +24,7 @@ extern int assign_projectionist(cms_t cms) {
 	projectionists_request.hall_number = screening.hall_number;
 	memcpy(projectionists_request.date, screening.date, sizeof(projectionists_request.date));
 	memcpy(projectionists_request.start_time, screening.start_time, sizeof(projectionists_request.start_time));
-	switch (select_projectionist(cms, projectionists_request, &projectionist)) {
+	switch (select_projectionist(cms, &projectionists_request, &projectionist)) {
 		case 1:
 			goto fail;
 		case 2:
@@ -40,7 +40,7 @@ extern int assign_projectionist(cms_t cms) {
 	request.hall_number = screening.hall_number;
 	memcpy(request.date, screening.date, sizeof(request.date));
 	memcpy(request.start_time, screening.start_time, sizeof(request.start_time));
-	try(cms_assign_projectionist(cms, request, &response), 1, fail);
+	try(cms_assign_projectionist(cms, &request, &response), 1, fail);
 	if (response->error_message) {
 		printf("%s", response->error_message);
 	}

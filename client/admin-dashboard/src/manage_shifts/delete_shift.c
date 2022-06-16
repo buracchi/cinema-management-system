@@ -25,7 +25,7 @@ extern int delete_shift(cms_t cms) {
 	request.employee_id = shift.employee_id;
 	memcpy(request.day, shift.day, sizeof(request.day));
 	memcpy(request.start_time, shift.start_time, sizeof(request.start_time));
-	try(cms_delete_shift(cms, request, &response), 1, fail);
+	try(cms_delete_shift(cms, &request, &response), 1, fail);
 	if (response->error_message) {
 		printf("%s", response->error_message);
 	}

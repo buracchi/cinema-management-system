@@ -44,7 +44,7 @@ extern int choose_seat(cms_t cms, struct booking_data* booking_data) {
 		case 2:
 			return 0;
 		}
-		try(cms_get_available_seats(cms, request, &response), 1, fail);
+		try(cms_get_available_seats(cms, &request, &response), 1, fail);
 		if (response->error_message) {
 			printf("%s", response->error_message);
 			cms_destroy_response((struct cms_response*)response);
@@ -94,7 +94,7 @@ fail:
 static int get_hall_info(cms_t cms, struct booking_data* booking_data, uint64_t* num_rows, uint64_t* num_cols) {
 	struct cms_get_cinema_halls_request request = { .cinema_id = booking_data->cinema_id };
 	struct cms_get_cinema_halls_response* response;
-	try(cms_get_cinema_halls(cms, request, &response), 1, fail);
+	try(cms_get_cinema_halls(cms, &request, &response), 1, fail);
 	if (response->error_message) {
 		printf("%s", response->error_message);
 		cms_destroy_response((struct cms_response*)response);

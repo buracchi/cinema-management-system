@@ -3,7 +3,7 @@ find_package(unofficial-libmariadb CONFIG REQUIRED)
 
 add_library(cinema-management-service STATIC
     "src/cms.c"
-    "src/cms-operation.h"
+    "src/cms_operation.h"
     "src/booking.c"
     "src/cinema_management.c"
     "src/employee_management.c"

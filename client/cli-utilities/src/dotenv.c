@@ -1,5 +1,3 @@
-#pragma warning(disable:4996)
-
 #include <stdio.h>
 #include <memory.h>
 #include <stdlib.h>

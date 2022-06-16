@@ -38,7 +38,7 @@ extern int make_payment(cms_t cms, struct booking_data* booking_data) {
 	get_input_len("Numero carta: ", sizeof(request.card_number), (char*)request.card_number, false);
 	get_input_len("Data di scadenza [YYYY-MM]: ", sizeof(request.expiry_date), (char*)request.expiry_date, false);
 	get_input_len("Codice di sicurezza (CVV): ", sizeof(request.security_code), (char*)request.security_code, true);
-	try(cms_book_seat(cms, request, &response), 1, fail);
+	try(cms_book_seat(cms, &request, &response), 1, fail);
 	if (response->error_message) {
 		printf("%s", response->error_message);
 		cms_destroy_response((struct cms_response*)response);

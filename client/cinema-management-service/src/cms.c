@@ -6,7 +6,7 @@
 #include <buracchi/common/utilities/utilities.h>
 #include <buracchi/common/utilities/try.h>
 
-#include "cms-operation.h"
+#include "cms_operation.h"
 #include "utilities/dbutil.h"
 
 #define FIELD_TYPE enum enum_field_types
@@ -208,12 +208,12 @@ extern inline const char* cms_get_error_message(cms_t cms) {
 }
 
 extern int cms_operation_execute(cms_t cms,
-								 enum cms_operation operation,
-								 struct cms_request_param* request_param,
-								 struct cms_response** response,
-								 struct cms_result_bitmap* result_bitmap) {
+	enum cms_operation operation,
+	struct cms_request_param* request_param,
+	struct cms_response** response,
+	struct cms_result_bitmap* result_bitmap) {
 	MYSQL_STMT* statement;
-	try(*response = calloc(1, sizeof **response), NULL, fail);
+	try(*response = calloc(1, sizeof * *response), NULL, fail);
 	try(statement = get_prepared_stmt(cms, operation), NULL, fail2);
 	try(send_mysql_stmt_request(cms->operation_data[operation], request_param), 1, fail3);
 	try(recv_mysql_stmt_result(cms->operation_data[operation], response, result_bitmap), 1, fail4);

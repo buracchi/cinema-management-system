@@ -5,7 +5,7 @@ add_executable(screenings-booker
                "src/main.c"
                "src/make_booking/make_booking.h"
                "src/make_booking/choose_cinema.c"
-               "src/make_booking/choose_screenings.c"
+               "src/make_booking/choose_screening.c"
                "src/make_booking/choose_seat.c"
                "src/make_booking/make_payment.c"
                "src/cancel_booking/cancel_booking.h"

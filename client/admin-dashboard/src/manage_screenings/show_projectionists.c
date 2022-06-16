@@ -9,7 +9,7 @@
 
 static char* get_projectionists_table(struct cms_get_available_projectionists_response* response);
 
-extern int select_projectionist(cms_t cms, struct cms_get_available_projectionists_request request, struct cms_available_projectionist* projectionist) {
+extern int select_projectionist(cms_t cms, struct cms_get_available_projectionists_request* request, struct cms_available_projectionist* projectionist) {
 	struct cms_get_available_projectionists_response* response;
 	char* projectionists_table;
 	char input[INT32DSTR_LEN];

@@ -34,7 +34,7 @@ extern int insert_hall(cms_t cms) {
 	try(cmn_strto_int32(&request.hall_number, hall_number, 10), 1, fail);
 	try(cmn_strto_int32(&request.rows, rows, 10), 1, fail);
 	try(cmn_strto_int32(&request.rows_seats, rows_seats, 10), 1, fail);
-	try(cms_add_hall(cms, request, &response), 1, fail);
+	try(cms_add_hall(cms, &request, &response), 1, fail);
 	if (response->error_message) {
 		printf("%s", response->error_message);
 	}

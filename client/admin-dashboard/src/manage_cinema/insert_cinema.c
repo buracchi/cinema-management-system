@@ -16,7 +16,7 @@ extern int insert_cinema(cms_t cms) {
 	if (multi_choice("Procedere?", ((char[2]){ 'S', 'N' })) == 'N') {
 		return 0;
 	}
-	try(cms_add_cinema(cms, request, &response), 1, fail);
+	try(cms_add_cinema(cms, &request, &response), 1, fail);
 	if (response->error_message) {
 		printf("%s", response->error_message);
 	}

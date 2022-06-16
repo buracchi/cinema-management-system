@@ -37,7 +37,7 @@ extern int insert_shift(cms_t cms) {
 	}
 	request.employee_id = employee.id;
 	request.cinema_id = cinema.id;
-	try(cms_add_shift(cms, request, &response), 1, fail);
+	try(cms_add_shift(cms, &request, &response), 1, fail);
 	if (response->error_message) {
 		printf("%s", response->error_message);
 	}

@@ -1,6 +1,6 @@
 #include <cms/report.h>
 
-#include "cms-operation.h"
+#include "cms_operation.h"
 
 extern int cms_get_screenings_without_projectionist(cms_t cms, struct cms_get_screenings_without_projectionist_response** response) {
 	struct cms_result_bitmap result_bitmap[] = {

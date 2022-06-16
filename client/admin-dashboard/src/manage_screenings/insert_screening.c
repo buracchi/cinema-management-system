@@ -43,7 +43,7 @@ extern int insert_screening(cms_t cms) {
 	}
 	request.film_id = movie.film_id;
 	request.cinema_id = cinema.id;
-	try(cms_add_screening(cms, request, &response), 1, fail);
+	try(cms_add_screening(cms, &request, &response), 1, fail);
 	if (response->error_message) {
 		printf("%s", response->error_message);
 	}

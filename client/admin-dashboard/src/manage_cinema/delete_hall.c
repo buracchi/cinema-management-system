@@ -32,7 +32,7 @@ extern int delete_hall(cms_t cms) {
 		return 0;
 	}
 	request.cinema_id = cinema.id;
-	try(cms_delete_hall(cms, request, &response), 1, fail);
+	try(cms_delete_hall(cms, &request, &response), 1, fail);
 	if (response->error_message) {
 		printf("%s", response->error_message);
 	}

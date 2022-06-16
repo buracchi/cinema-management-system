@@ -60,3 +60,26 @@
 \renewcommand{\linenumberfont}{\normalfont\bfseries\small}
 
 \newcolumntype{Y}{>{\centering\arraybackslash}X}
+
+\lstdefinestyle{customc}{
+  basicstyle=\footnotesize\ttfamily,
+  belowcaptionskip=1\baselineskip,
+  breaklines=true,
+  commentstyle=\color{gray},
+  keywordstyle=\color{blue},
+  language=C,
+  numbers=left,
+  numbersep=5pt,
+  numberstyle=\tiny\color{black},
+  showstringspaces=false,
+  stepnumber=1,
+  tabsize=2,
+  title=\lstname,
+}
+
+\lstset{
+  mathescape=false,
+  escapechar=,
+  style=customc}
+
+\newcommand{\inputcfile}[1]{{\lstinputlisting[language=C]{#1}\pagebreak}}

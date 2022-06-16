@@ -24,7 +24,7 @@ extern int delete_employee(cms_t cms) {
 		return 0;
 	}
 	request.id = employee.id;
-	try(cms_delete_employee(cms, request, &response), 1, fail);
+	try(cms_delete_employee(cms, &request, &response), 1, fail);
 	if (response->error_message) {
 		printf("%s", response->error_message);
 	}

@@ -27,7 +27,7 @@ extern int delete_screening(cms_t cms) {
 	request.hall_number = screening.hall_number;
 	memcpy(request.date, screening.date, sizeof(request.date));
 	memcpy(request.start_time, screening.start_time, sizeof(request.start_time));
-	try(cms_delete_screening(cms, request, &response), 1, fail);
+	try(cms_delete_screening(cms, &request, &response), 1, fail);
 	if (response->error_message) {
 		printf("%s", response->error_message);
 	}

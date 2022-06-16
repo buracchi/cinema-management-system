@@ -54,7 +54,7 @@ static int validate_booking(const char* booking_code) {
 	try(cmn_strto_uint16((uint16_t *) &(credentials.port), getenv("PORT"), 10), 1, fail);
 	try(cmn_strto_int32(&(request.booking_code), booking_code, 10), 1, fail);
 	try(cms = cms_init(&credentials), NULL, fail);
-	try(cms_validate_booking(cms, request, &response), 1, fail2);
+	try(cms_validate_booking(cms, &request, &response), 1, fail2);
 	if (response->error_message) {
 		fprintf(stderr, "%s\n", response->error_message);
 		cms_destroy(cms);

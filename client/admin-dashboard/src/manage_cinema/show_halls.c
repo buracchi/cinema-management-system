@@ -24,7 +24,7 @@ extern int show_halls(cms_t cms) {
 	request.cinema_id = cinema.id;
 	io_clear_screen();
 	puts(title);
-	try(cms_get_cinema_halls(cms, request, &response), 1, fail);
+	try(cms_get_cinema_halls(cms, &request, &response), 1, fail);
 	if (response->error_message) {
 		printf("%s", response->error_message);
 	}
@@ -54,7 +54,7 @@ extern int select_hall(cms_t cms, int32_t cinema_id, int32_t* hall_number) {
 		bool valid_input = false;
 		io_clear_screen();
 		puts(title);
-		try(cms_get_cinema_halls(cms, request, &response), 1, fail);
+		try(cms_get_cinema_halls(cms, &request, &response), 1, fail);
 		if (response->error_message) {
 			printf("%s", response->error_message);
 			cms_destroy_response((struct cms_response*)response);

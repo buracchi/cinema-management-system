@@ -14,7 +14,8 @@ struct cms_get_screenings_without_projectionist_response {
 		char time[CMS_TIME_LEN];
 		char price[CMS_DECIMAL_LEN];
 		char film_name[CMS_FILM_NAME_LEN];
-	} result[]; };
+	} result[];
+};
 extern int cms_get_screenings_without_projectionist(cms_t cms, struct cms_get_screenings_without_projectionist_response** response);
 
 struct cms_get_cinema_without_ushers_response {
@@ -26,7 +27,8 @@ struct cms_get_cinema_without_ushers_response {
 		char since[CMS_TIME_LEN];
 		char until[CMS_TIME_LEN];
 		char ushers[CMS_DECIMAL_LEN];
-	} result[]; };
+	} result[];
+};
 extern int cms_get_cinema_without_ushers(cms_t cms, struct cms_get_cinema_without_ushers_response** response);
 
 struct cms_get_reservations_status_response {
@@ -39,5 +41,6 @@ struct cms_get_reservations_status_response {
 		char cancelled[CMS_DECIMAL_LEN];
 		char validated[CMS_DECIMAL_LEN];
 		char expired[CMS_DECIMAL_LEN];
-	} result[]; };
+	} result[];
+};
 extern int cms_get_reservations_status(cms_t cms, struct cms_get_reservations_status_response** response);

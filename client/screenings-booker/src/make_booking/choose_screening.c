@@ -26,7 +26,7 @@ extern int choose_screening(cms_t cms, struct booking_data* booking_data) {
 	while (true) {
 		io_clear_screen();
 		puts(title);
-		try(cms_get_cinema_screenings(cms, request, &response), 1, fail);
+		try(cms_get_cinema_screenings(cms, &request, &response), 1, fail);
 		if (response->error_message) {
 			printf("%s", response->error_message);
 			cms_destroy_response((struct cms_response*)response);
