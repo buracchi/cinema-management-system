@@ -15,6 +15,10 @@ enum actions {
 	BACK_TO_MENU
 };
 
+extern int show_shift(cms_t cms);
+extern int insert_shift(cms_t cms);
+extern int delete_shift(cms_t cms);
+
 extern int choose_manage_shifts_action(cms_t cms) {
 	bool end = false;
 	while (!end) {
@@ -30,10 +34,13 @@ extern int choose_manage_shifts_action(cms_t cms) {
 		action = multi_choice("Selezionare un opzione", ((char[4]){ '1', '2', '3', '4'})) - '1';
 		switch (action) {
 		case SHOW_SHIFTS:
+			try(show_shift(cms), 1, fail);
 			break;
 		case ADD_SHIFTS:
+			try(insert_shift(cms), 1, fail);
 			break;
 		case REMOVE_SHIFTS:
+			try(delete_shift(cms), 1, fail);
 			break;
 		case BACK_TO_MENU:
 			end = true;

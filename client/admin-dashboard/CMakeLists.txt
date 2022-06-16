@@ -30,7 +30,10 @@ add_executable(admin-dashboard
     "src/manage_screenings/delete_screening.c"
     "src/manage_screenings/assign_projectionist.c"
     "src/manage_shifts/manage_shifts.h"
-    "src/manage_shifts/choose_manage_shifts_action.c")
+    "src/manage_shifts/choose_manage_shifts_action.c"
+    "src/manage_shifts/show_shifts.c"
+    "src/manage_shifts/insert_shift.c"
+    "src/manage_shifts/delete_shift.c")
 target_link_libraries(admin-dashboard PRIVATE cinema-management-service)
 target_link_libraries(admin-dashboard PRIVATE cli-utilities)
 target_link_libraries(admin-dashboard PRIVATE buracchi::common::utilities)

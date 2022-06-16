@@ -7,7 +7,7 @@
 
 struct cms_get_employees_response {
 	struct cms_response;
-	struct cms_employees {
+	struct cms_employee {
 		int32_t id;
 		char name[CMS_EMPLOYEE_NAME_LEN];
 		char surname[CMS_EMPLOYEE_SURNAME_LEN];

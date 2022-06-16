@@ -5,12 +5,12 @@
 
 #include "../core.h"
 
-extern int select_employee(cms_t cms, struct cms_employees* employee);
+extern int select_employee(cms_t cms, struct cms_employee* employee);
 
 extern int delete_employee(cms_t cms) {
 	struct cms_delete_employee_request request = { 0 };
 	struct cms_delete_employee_response* response;
-	struct cms_employees employee;
+	struct cms_employee employee;
 	switch (select_employee(cms, &employee)) {
 	case 1:
 		goto fail;

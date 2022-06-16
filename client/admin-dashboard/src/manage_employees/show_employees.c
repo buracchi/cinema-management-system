@@ -7,7 +7,7 @@
 
 #include "../core.h"
 
-extern int select_employee(cms_t cms, struct cms_employees* employee);
+extern int select_employee(cms_t cms, struct cms_employee* employee);
 static char* get_employees_table(struct cms_get_employees_response* response);
 
 extern int show_employees(cms_t cms) {
@@ -33,7 +33,7 @@ fail:
 	return 1;
 }
 
-extern int select_employee(cms_t cms, struct cms_employees* employee) {
+extern int select_employee(cms_t cms, struct cms_employee* employee) {
 	struct cms_get_employees_response* response;
 	char* employees_table;
 	char input[INT32DSTR_LEN];

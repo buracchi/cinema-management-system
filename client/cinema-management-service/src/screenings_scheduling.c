@@ -25,7 +25,7 @@ extern int cms_add_screening(cms_t cms, struct cms_add_screening_request request
 			CMS_REQUEST_PARAM_INFO(request.cinema_id),
 			CMS_REQUEST_PARAM_INFO(request.hall_number),
 			CMS_REQUEST_PARAM_INFO(request.date),
-			CMS_REQUEST_PARAM_INFO(request.star_time),
+			CMS_REQUEST_PARAM_INFO(request.start_time),
 			CMS_REQUEST_PARAM_INFO(request.price),
 			CMS_REQUEST_PARAM_INFO(request.film_id)
 	};

@@ -38,7 +38,7 @@ struct cms_add_screening_request {
 	int32_t cinema_id;
 	int32_t hall_number;
 	char date[CMS_DATE_LEN];
-	char star_time[CMS_TIME_LEN];
+	char start_time[CMS_TIME_LEN];
 	char price[CMS_DECIMAL_LEN];
 	int32_t film_id;
 };

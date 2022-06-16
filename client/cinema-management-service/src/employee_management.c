@@ -5,7 +5,7 @@
 extern int cms_get_employees(cms_t cms, struct cms_get_employees_response** response) {
 	struct cms_result_bitmap result_bitmap[] = {
 			CMS_RESULT_BITMAP_INFO(struct cms_get_employees_response, result[0]),
-			CMS_RESULT_BITMAP_INFO(struct cms_employees, id, name, surname, role)
+			CMS_RESULT_BITMAP_INFO(struct cms_employee, id, name, surname, role)
 	};
 	return cms_operation_execute(cms, GET_EMPLOYEES, NULL, (struct cms_response**)response, result_bitmap);
 }

@@ -1,21 +1,21 @@
 #include <buracchi/common/utilities/try.h>
 #include <cms/cms.h>
-#include <cms/screenings_scheduling.h.>
+#include <cms/shift_scheduling.h>
+#include <cms/employee_management.h>
 #include <cms/cinema_management.h>
 #include <cliutils/io.h>
 
 #include "../core.h"
 
 extern int select_cinema(cms_t cms, struct cms_cinema* cinema);
-extern int select_hall(cms_t cms, int32_t cinema_id, int32_t* hall_number);
-extern int select_movie(cms_t cms, struct cms_movie* movie);
+extern int select_employee(cms_t cms, struct cms_employee* employee);
 
-extern int insert_screening(cms_t cms) {
-	struct cms_add_screening_request request = { 0 };
-	struct cms_add_screening_response* response;
-	struct cms_movie movie;
+extern int insert_shift(cms_t cms) {
+	struct cms_add_shift_request request = { 0 };
+	struct cms_add_shift_response* response;
 	struct cms_cinema cinema;
-	switch (select_movie(cms, &movie)) {
+	struct cms_employee employee;
+	switch (select_employee(cms, &employee)) {
 		case 1:
 			goto fail;
 		case 2:
@@ -27,23 +27,17 @@ extern int insert_screening(cms_t cms) {
 		case 2:
 			return 0;
 	};
-	switch (select_hall(cms, cinema.id, &request.hall_number)) {
-		case 1:
-			goto fail;
-		case 2:
-			return 0;
-	};
 	io_clear_screen();
 	puts(title);
-	get_input_len("Data [YYYY-MM-DD]: ", sizeof(request.date), (char*)request.date, false);
+	get_input_len("Giorno <Lunedi' | Martedi' | Mercoledi' | Giovedi' | Venerdi' | Sabato | Domenica>: ", sizeof(request.day), (char*)request.day, false);
 	get_input_len("Ora inizio [hh:mm:ss]: ", sizeof(request.start_time), (char*)request.start_time, false);
-	get_input_len("Prezzo: ", sizeof(request.price), (char*)request.price, false);
+	get_input_len("Durata [hh:mm:ss]: ", sizeof(request.duration), (char*)request.duration, false);
 	if (multi_choice("Procedere?", ((char[2]){ 'S', 'N' })) == 'N') {
 		return 0;
 	}
-	request.film_id = movie.film_id;
+	request.employee_id = employee.id;
 	request.cinema_id = cinema.id;
-	try(cms_add_screening(cms, request, &response), 1, fail);
+	try(cms_add_shift(cms, request, &response), 1, fail);
 	if (response->error_message) {
 		printf("%s", response->error_message);
 	}
