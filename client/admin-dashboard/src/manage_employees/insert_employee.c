@@ -5,6 +5,8 @@
 
 #include "../core.h"
 
+static char* get_role(char* role);
+
 extern int insert_employee(cms_t cms) {
 	struct cms_add_employee_request request = { 0 };
 	struct cms_add_employee_response* response = NULL;
@@ -12,8 +14,8 @@ extern int insert_employee(cms_t cms) {
 	puts(title);
 	get_input_len("Nome: ", sizeof(request.name), (char*)request.name, false);
 	get_input_len("Cognome: ", sizeof(request.surname), (char*)request.surname, false);
-	get_input_len("Ruolo <Maschera | Proiezionista>: ", sizeof(request.role), (char*)request.role, false);
-	if (multi_choice("Procedere?", ((char[2]){ 'S', 'N' })) == 'N') {
+	get_role((char*)request.role);
+	if (multi_choice("\nProcedere?", ((char[]){ 'S', 'N' })) == 'N') {
 		return 0;
 	}
 	try(cms_add_employee(cms, &request, &response), 1, fail);
@@ -34,4 +36,10 @@ fail:
 		cms_destroy_response((struct cms_response*)response);
 	}
 	return 1;
+}
+static char* get_role(char* role) {
+	const char* roles[] = { "Maschera", "Proiezionista" };
+	size_t selection = multi_choice("Ruolo <1=Maschera | 2=Proiezionista> ", ((char[]){ '1', '2' })) - '1';
+	strcpy(role, roles[selection]);
+	return role;
 }

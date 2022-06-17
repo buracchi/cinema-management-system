@@ -48,7 +48,7 @@ int main(void) {
 		puts("5) Generare report");
 		puts("Q) Uscire");
 		puts("\n");
-		action = multi_choice("Selezionare un opzione", ((char[6]){ '1', '2', '3', '4', '5', 'Q' }));
+		action = multi_choice("Selezionare un opzione", ((char[]){ '1', '2', '3', '4', '5', 'Q' }));
 		switch (action) {
 		case MANAGE_CINEMA:
 			try(choose_manage_cinema_action(cms), 1, fail2);

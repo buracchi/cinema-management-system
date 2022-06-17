@@ -13,7 +13,7 @@ extern int insert_cinema(cms_t cms) {
 	get_input_len("Indirizzo: ", sizeof(request.address), (char*)request.address, false);
 	get_input_len("Orario apertura [hh:mm:ss]: ", sizeof(request.opening_time), (char*)request.opening_time, false);
 	get_input_len("Orario chiusura [hh:mm:ss]: ", sizeof(request.closing_time), (char*)request.closing_time, false);
-	if (multi_choice("Procedere?", ((char[2]){ 'S', 'N' })) == 'N') {
+	if (multi_choice("Procedere?", ((char[]){ 'S', 'N' })) == 'N') {
 		return 0;
 	}
 	try(cms_add_cinema(cms, &request, &response), 1, fail);

@@ -31,7 +31,7 @@ extern int cancel_booking(cms_t cms) {
 		if (response->error_message) {
 			printf("%s\n", response->error_message);
 			cms_destroy_response((struct cms_response*)response);
-			if (multi_choice("Riprovare con un altro codice?", ((char[2]){ 'S', 'N' })) == 'S') {
+			if (multi_choice("Riprovare con un altro codice?", ((char[]){ 'S', 'N' })) == 'S') {
 				continue;
 			}
 			return 0;

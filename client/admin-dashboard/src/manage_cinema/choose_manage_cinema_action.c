@@ -40,7 +40,7 @@ extern int choose_manage_cinema_action(cms_t cms) {
 		puts("6) Eliminare una sala di un cinema");
 		puts("Q) Tornare al menu' principale");
 		puts("\n");
-		action = multi_choice("Selezionare un opzione", ((char[7]){ '1', '2', '3', '4', '5', '6', 'Q' }));
+		action = multi_choice("Selezionare un opzione", ((char[]){ '1', '2', '3', '4', '5', '6', 'Q' }));
 		switch (action) {
 		case SHOW_CINEMA:
 			try(show_cinema(cms), 1, fail);

@@ -34,7 +34,7 @@ extern int choose_manage_screenings_action(cms_t cms) {
 		puts("4) Assegnare ad una proiezione in programma un proiezionista");
 		puts("Q) Tornare al menu' principale");
 		puts("\n");
-		action = multi_choice("Selezionare un opzione", ((char[5]){ '1', '2', '3', '4', 'Q' }));
+		action = multi_choice("Selezionare un opzione", ((char[]){ '1', '2', '3', '4', 'Q' }));
 		switch (action) {
 		case SHOW_SCREENINGS:
 			try(show_screenings(cms), 1, fail);

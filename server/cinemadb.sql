@@ -760,7 +760,7 @@ BEGIN
 				WHEN _codice = 45006 THEN "Il proiezionista selezionato e' già assegnato ad un'altra  proiezione nel periodo richiesto."
 				WHEN _codice = 45007 THEN "Impossibile creare un turno di piu' di 8 ore."
 				WHEN _codice = 45008 THEN "La somma della durata dei turni nella giornata supera le 8 ore."
-				WHEN _codice = 45009 THEN "Il dipendente e' già assegnato ad un turno nell'arco temporale selezionato."
+				WHEN _codice = 45009 THEN "Il dipendente e' gia' assegnato ad un turno nell'arco temporale selezionato."
 				WHEN _codice = 45010 THEN "Impossibile creare una prenotazione non in attesa."
 				WHEN _codice = 45011 THEN "Impossibile cambiare lo stato di una prenotazione annullata, scaduta o validata."
 				WHEN _codice = 45012 THEN "Non e' possibile annullare una prenotazione raggiunti i trenta minuti precedenti l'inizio della proiezione."

@@ -39,7 +39,7 @@ int main(void) {
 		puts("2) Cancellare prenotazione");
 		puts("Q) Uscire");
 		puts("\n");
-		action = multi_choice("Selezionare un opzione", ((char[3]){ '1', '2', 'Q' }));
+		action = multi_choice("Selezionare un opzione", ((char[]){ '1', '2', 'Q' }));
 		switch (action) {
 		case MAKE_BOOKING:
 			struct booking_data booking_data = { 0 };

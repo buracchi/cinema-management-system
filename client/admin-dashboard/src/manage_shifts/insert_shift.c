@@ -9,6 +9,7 @@
 
 extern int select_cinema(cms_t cms, struct cms_cinema* cinema);
 extern int select_employee(cms_t cms, struct cms_employee* employee);
+static char* get_day(char* day);
 
 extern int insert_shift(cms_t cms) {
 	struct cms_add_shift_request request = { 0 };
@@ -29,10 +30,12 @@ extern int insert_shift(cms_t cms) {
 	}
 	io_clear_screen();
 	puts(title);
-	get_input_len("Giorno <Lunedi' | Martedi' | Mercoledi' | Giovedi' | Venerdi' | Sabato | Domenica>: ", sizeof(request.day), (char*)request.day, false);
+	printf("Cinema: %s\n", cinema.address);
+	printf("Dipendente: %d - %s %s\n", employee.id, employee.name, employee.surname);
+	get_day((char*)request.day);
 	get_input_len("Ora inizio [hh:mm:ss]: ", sizeof(request.start_time), (char*)request.start_time, false);
 	get_input_len("Durata [hh:mm:ss]: ", sizeof(request.duration), (char*)request.duration, false);
-	if (multi_choice("Procedere?", ((char[2]){ 'S', 'N' })) == 'N') {
+	if (multi_choice("Procedere?", ((char[]){ 'S', 'N' })) == 'N') {
 		return 0;
 	}
 	request.employee_id = employee.id;
@@ -55,4 +58,13 @@ fail:
 		cms_destroy_response((struct cms_response*)response);
 	}
 	return 1;
+}
+
+static char* get_day(char* day) {
+	const char* days[] = { "Lunedi'", "Martedi'", "Mercoledi'", "Giovedi'", "Venerdi'", "Sabato", "Domenica" };
+	size_t selection = multi_choice(
+			"Giorno <1=Lunedi' | 2=Martedi' | 3=Mercoledi' | 4=Giovedi' | 5=Venerdi' | 6=Sabato | 7=Domenica> ",
+			((char[]){ '1', '2', '3', '4', '5', '6', '7' })) - '1';
+	strcpy(day, days[selection]);
+	return day;
 }

@@ -27,7 +27,7 @@ extern int insert_hall(cms_t cms) {
 	get_input("Numero sala: ", hall_number, false);
 	get_input("Numero file: ", rows, false);
 	get_input("Numero di posti per fila: ", rows_seats, false);
-	if (multi_choice("Procedere?", ((char[2]){ 'S', 'N' })) == 'N') {
+	if (multi_choice("Procedere?", ((char[]){ 'S', 'N' })) == 'N') {
 		return 0;
 	}
 	request.cinema_id = cinema.id;

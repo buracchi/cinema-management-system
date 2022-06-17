@@ -28,7 +28,7 @@ extern int select_projectionist(cms_t cms, struct cms_get_available_projectionis
 		try(projectionists_table = get_projectionists_table(response), NULL, fail);
 		puts(projectionists_table);
 		free(projectionists_table);
-		get_input("Inserire il numero del film scelto o Q per tornare indietro: ", input, false);
+		get_input("Inserire il numero del proiezionista scelto o Q per tornare indietro: ", input, false);
 		if (input[0] == 'Q' && input[1] == '\0') {
 			back = true;
 			break;

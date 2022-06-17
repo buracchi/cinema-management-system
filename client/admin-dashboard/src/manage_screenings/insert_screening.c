@@ -42,7 +42,7 @@ extern int insert_screening(cms_t cms) {
 	get_input_len("Data [YYYY-MM-DD]: ", sizeof(request.date), (char*)request.date, false);
 	get_input_len("Ora inizio [hh:mm:ss]: ", sizeof(request.start_time), (char*)request.start_time, false);
 	get_input_len("Prezzo: ", sizeof(request.price), (char*)request.price, false);
-	if (multi_choice("\nProcedere?", ((char[2]){ 'S', 'N' })) == 'N') {
+	if (multi_choice("\nProcedere?", ((char[]){ 'S', 'N' })) == 'N') {
 		return 0;
 	}
 	request.film_id = movie.film_id;

@@ -31,7 +31,7 @@ extern int choose_manage_employees_action(cms_t cms) {
 		puts("3) Eliminare un dipendente");
 		puts("Q) Tornare al menu' principale");
 		puts("\n");
-		action = multi_choice("Selezionare un opzione", ((char[4]){ '1', '2', '3', 'Q'}));
+		action = multi_choice("Selezionare un opzione", ((char[]){ '1', '2', '3', 'Q'}));
 		switch (action) {
 		case SHOW_EMPLOYEES:
 			try(show_employees(cms), 1, fail);

@@ -19,8 +19,8 @@ extern int delete_employee(cms_t cms) {
 	}
 	io_clear_screen();
 	puts(title);
-	printf("Dipendente: %d %s %s\n\n", employee.id, employee.name, employee.surname);
-	if (multi_choice("Il dipendente selezionato verra' rimosso, procedere?", ((char[2]){ 'S', 'N' })) == 'N') {
+	printf("Dipendente: %d - %s %s\n\n", employee.id, employee.name, employee.surname);
+	if (multi_choice("Il dipendente selezionato verra' rimosso, procedere?", ((char[]){ 'S', 'N' })) == 'N') {
 		return 0;
 	}
 	request.id = employee.id;

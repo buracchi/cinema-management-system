@@ -20,7 +20,7 @@ extern int delete_cinema(cms_t cms) {
 	io_clear_screen();
 	puts(title);
 	printf("Cinema: %s\n\n", cinema.address);
-	if (multi_choice("Il cinema selezionato verra' rimosso, procedere?", ((char[2]){ 'S', 'N' })) == 'N') {
+	if (multi_choice("Il cinema selezionato verra' rimosso, procedere?", ((char[]){ 'S', 'N' })) == 'N') {
 		return 0;
 	}
 	request.id = cinema.id;

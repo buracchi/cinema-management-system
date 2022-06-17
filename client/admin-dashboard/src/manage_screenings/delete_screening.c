@@ -24,7 +24,7 @@ extern int delete_screening(cms_t cms) {
 	printf("Film: %s\n", screening.film_name);
 	printf("Data: %s\n", screening.date);
 	printf("Ora: %s\n\n", screening.start_time);
-	if (multi_choice("La proiezione selezionata verra' rimossa, procedere?", ((char[2]){ 'S', 'N' })) == 'N') {
+	if (multi_choice("La proiezione selezionata verra' rimossa, procedere?", ((char[]){ 'S', 'N' })) == 'N') {
 		return 0;
 	}
 	request.cinema_id = screening.cinema_id;

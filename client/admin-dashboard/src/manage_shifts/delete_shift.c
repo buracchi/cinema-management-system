@@ -19,7 +19,12 @@ extern int delete_shift(cms_t cms) {
 	}
 	io_clear_screen();
 	puts(title);
-	if (multi_choice("Il turno selezionato verra' rimosso, procedere?", ((char[2]){ 'S', 'N' })) == 'N') {
+	printf("Cinema: %s\n", shift.cinema_address);
+	printf("Dipendente: %d - %s %s\n", shift.employee_id, shift.employee_name, shift.employee_surname);
+	printf("Giorno: %s\n", shift.day);
+	printf("Ora inizio: %s\n", shift.start_time);
+	printf("Durata: %s\n\n", shift.duration);
+	if (multi_choice("Il turno selezionato verra' rimosso, procedere?", ((char[]){ 'S', 'N' })) == 'N') {
 		return 0;
 	}
 	request.employee_id = shift.employee_id;

@@ -29,7 +29,7 @@ extern int delete_hall(cms_t cms) {
 	puts(title);
 	printf("Cinema: %s\n", cinema.address);
 	printf("Sala: %d\n\n", hall.id);
-	if (multi_choice("La sala selezionata verra' rimossa, procedere?", ((char[2]){ 'S', 'N' })) == 'N') {
+	if (multi_choice("La sala selezionata verra' rimossa, procedere?", ((char[]){ 'S', 'N' })) == 'N') {
 		return 0;
 	}
 	request.cinema_id = cinema.id;

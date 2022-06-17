@@ -30,7 +30,7 @@ extern int make_payment(cms_t cms, struct booking_data* booking_data) {
 	printf("Film: %s\n", booking_data->film_name);
 	printf("Posto: %c%u\n", booking_data->seat_row, booking_data->seat_number);
 	printf("Prezzo: %s\n\n", booking_data->price);
-	if (multi_choice("Procedere al pagamento?", ((char[2]){ 'S', 'N' })) == 'N') {
+	if (multi_choice("Procedere al pagamento?", ((char[]){ 'S', 'N' })) == 'N') {
 		return choose_seat(cms, booking_data);
 	}
 	puts("");

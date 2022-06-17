@@ -31,7 +31,7 @@ extern int choose_generate_report_action(cms_t cms) {
 		puts("3) Visualizzare lo stato delle prenotazioni di questo mese");
 		puts("Q) Tornare al menu' principale");
 		puts("\n");
-		action = multi_choice("Selezionare un opzione", ((char[4]){ '1', '2', '3', 'Q'}));
+		action = multi_choice("Selezionare un opzione", ((char[]){ '1', '2', '3', 'Q'}));
 		switch (action) {
 		case SHOW_SHIFTS_WITHOUT_PROJECTIONIST:
 			try(show_screenings_without_projectionist(cms), 1, fail);

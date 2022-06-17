@@ -31,7 +31,7 @@ extern int choose_manage_shifts_action(cms_t cms) {
 		puts("3) Eliminare turni esistenti in programma");
 		puts("Q) Tornare al menu' principale");
 		puts("\n");
-		action = multi_choice("Selezionare un opzione", ((char[4]){ '1', '2', '3', 'Q'}));
+		action = multi_choice("Selezionare un opzione", ((char[]){ '1', '2', '3', 'Q'}));
 		switch (action) {
 		case SHOW_SHIFTS:
 			try(show_shift(cms), 1, fail);

@@ -38,7 +38,7 @@ extern int assign_projectionist(cms_t cms) {
 	printf("Film: %s\n", screening.film_name);
 	printf("Data: %s\n", screening.date);
 	printf("Ora: %s\n\n", screening.start_time);
-	if (multi_choice("Procedere?", ((char[2]){ 'S', 'N' })) == 'N') {
+	if (multi_choice("Procedere?", ((char[]){ 'S', 'N' })) == 'N') {
 		return 0;
 	}
 	request.projectionist_id = projectionist.id;
