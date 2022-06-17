@@ -706,7 +706,6 @@ CREATE PROCEDURE `mostra_proiezionisti_disponibili` (
 	IN _data DATE,
 	IN _ora TIME)
 BEGIN
-	DECLARE _fine TIME;
 	IF (_cinema NOT IN (SELECT `id` FROM `Cinema`)) THEN
 		SET @err_msg = MESSAGGIO_ERRORE(45014);
 		SIGNAL SQLSTATE '45014'
@@ -717,30 +716,25 @@ BEGIN
 		SIGNAL SQLSTATE '45018'
 		SET MESSAGE_TEXT = @err_msg;
 	END IF;
-    SET _fine = (SELECT SEC_TO_TIME(TIME_TO_SEC(`ora`) + TIME_TO_SEC(`durata`))
-					FROM `Proiezioni` JOIN `Film` ON `id` = `film`
-                    WHERE `Proiezioni`.`cinema` = _cinema
-						AND `Proiezioni`.`sala` = _sala
-						AND `Proiezioni`.`data` = _data
-						AND `Proiezioni`.`ora` = _ora);
-	SELECT `matricola`, `Dipendenti`.`nome`, `cognome`
+    SELECT `matricola`, `Dipendenti`.`nome`, `cognome`
     FROM `Dipendenti` JOIN `Turni` ON `matricola` = `dipendente`
-		JOIN `Proiezioni` ON `Proiezioni`.`cinema` = `Turni`.`cinema`
-							AND GIORNO_DELLA_SETTIMANA(`Proiezioni`.`data`) = `Turni`.`giorno`
-							AND `Proiezioni`.`cinema` = _cinema
-                            AND `Proiezioni`.`sala` = _sala
-                            AND `Proiezioni`.`data` = _data
-                            AND `Proiezioni`.`ora` = _ora
-		JOIN `Film` ON `id` = `Proiezioni`.`film`
-    WHERE `ruolo` = 'Proiezionista' AND `inizio` <= _ora
-		AND `Turni`.`durata` >= `Film`.`durata`
-        AND NOT EXISTS (SELECT *
+		JOIN `Proiezioni` AS P ON P.`cinema` = `Turni`.`cinema`
+							AND GIORNO_DELLA_SETTIMANA(P.`data`) = `Turni`.`giorno`
+		JOIN `Film` AS F ON `id` = P.`film`
+    WHERE P.`cinema` = _cinema
+		AND P.`sala` = _sala
+		AND P.`data` = _data
+		AND P.`ora` = _ora
+		AND `ruolo` = 'Proiezionista'
+        AND `inizio` <= _ora
+        AND SEC_TO_TIME(TIME_TO_SEC(`Turni`.`inizio`) + TIME_TO_SEC(`Turni`.`durata`))
+			>= SEC_TO_TIME(TIME_TO_SEC(P.`ora`) + TIME_TO_SEC(F.`durata`))
+		AND NOT EXISTS (SELECT *
 						FROM `Proiezioni` JOIN `Film` ON `id` = `film`
 						WHERE `cinema` = _cinema
 						AND `data` = _data
-						AND `ora` <= _fine
-						AND SEC_TO_TIME(TIME_TO_SEC(`ora`) + TIME_TO_SEC(`durata`))
-							>= _ora
+						AND `ora` <= SEC_TO_TIME(TIME_TO_SEC(P.`ora`) + TIME_TO_SEC(F.`durata`))
+						AND SEC_TO_TIME(TIME_TO_SEC(`ora`) + TIME_TO_SEC(`durata`)) >= _ora
 						AND `proiezionista` = `matricola`);
 END$$
 
@@ -758,27 +752,27 @@ DETERMINISTIC
 BEGIN
 	RETURN (SELECT
 			CASE
-				WHEN _codice = 45001 THEN "L'orario di chiusura non può precedere quello di apertura"
-				WHEN _codice = 45002 THEN "La sala selezionata è già impegnata in una proiezione nell'orario selezionato."
-				WHEN _codice = 45003 THEN "Il cinema selezionato è chiuso nell'intervallo di tempo specificato."
+				WHEN _codice = 45001 THEN "L'orario di chiusura non puo' precedere quello di apertura"
+				WHEN _codice = 45002 THEN "La sala selezionata e' gia' impegnata in una proiezione nell'orario selezionato."
+				WHEN _codice = 45003 THEN "Il cinema selezionato e' chiuso nell'intervallo di tempo specificato."
 				WHEN _codice = 45004 THEN "Impossibile assegnare ad una proiezione un dipendente non proiezionista."
-				WHEN _codice = 45005 THEN "Il proiezionista selezionato non è assegnato ad un turno compatibile con la proiezione."
-				WHEN _codice = 45006 THEN "Il proiezionista selezionato è già assegnato ad un'altra  proiezione nel periodo richiesto."
-				WHEN _codice = 45007 THEN "Impossibile creare un turno di più di 8 ore."
+				WHEN _codice = 45005 THEN "Il proiezionista selezionato non e' assegnato ad un turno compatibile con la proiezione."
+				WHEN _codice = 45006 THEN "Il proiezionista selezionato e' già assegnato ad un'altra  proiezione nel periodo richiesto."
+				WHEN _codice = 45007 THEN "Impossibile creare un turno di piu' di 8 ore."
 				WHEN _codice = 45008 THEN "La somma della durata dei turni nella giornata supera le 8 ore."
-				WHEN _codice = 45009 THEN "Il dipendente è già assegnato ad un turno nell'arco temporale selezionato."
+				WHEN _codice = 45009 THEN "Il dipendente e' già assegnato ad un turno nell'arco temporale selezionato."
 				WHEN _codice = 45010 THEN "Impossibile creare una prenotazione non in attesa."
 				WHEN _codice = 45011 THEN "Impossibile cambiare lo stato di una prenotazione annullata, scaduta o validata."
-				WHEN _codice = 45012 THEN "Non è possibile annullare una prenotazione raggiunti i trenta minuti precedenti l'inizio della proiezione."
+				WHEN _codice = 45012 THEN "Non e' possibile annullare una prenotazione raggiunti i trenta minuti precedenti l'inizio della proiezione."
 				WHEN _codice = 45013 THEN "Codice prenotazione non valido."
-				WHEN _codice = 45014 THEN "Il cinema selezionato è invalido o inesistente."
-				WHEN _codice = 45015 THEN "Il posto selezionato è stato gia prenotato per la proiezione selezionata."
-				WHEN _codice = 45016 THEN "Il dipendente selezionato è invalido o inesistente."
-				WHEN _codice = 45017 THEN "La proiezione selezionata è invalida o inesistente."
-				WHEN _codice = 45018 THEN "La sala selezionata è invalida o inesistente."
-				WHEN _codice = 45019 THEN "Il turno selezionato è invalido o inesistente."
+				WHEN _codice = 45014 THEN "Il cinema selezionato e' invalido o inesistente."
+				WHEN _codice = 45015 THEN "Il posto selezionato e' stato gia prenotato per la proiezione selezionata."
+				WHEN _codice = 45016 THEN "Il dipendente selezionato e' invalido o inesistente."
+				WHEN _codice = 45017 THEN "La proiezione selezionata e' invalida o inesistente."
+				WHEN _codice = 45018 THEN "La sala selezionata e' invalida o inesistente."
+				WHEN _codice = 45019 THEN "Il turno selezionato e' invalido o inesistente."
 				WHEN _codice = 45020 THEN "Impossibile confermare una prenotazione non in attesa."
-				WHEN _codice = 45021 THEN "Una prenotazione in attesa può essere solamente confermata."
+				WHEN _codice = 45021 THEN "Una prenotazione in attesa puo' essere solamente confermata."
 				WHEN _codice = 45022 THEN "Impossibile completare l'operazione, riprovare in un secondo momento."
 				ELSE NULL
 			END);
@@ -969,7 +963,7 @@ NOT DETERMINISTIC
 READS SQL DATA
 BEGIN
 	# Se dopo 10 minuti non ho fatto niente SIGNAL errore
-	IF (FLOOR(RAND() * 10)) THEN
+	IF NOT (FLOOR(RAND() * 10)) THEN
 		SET @err_msg = MESSAGGIO_ERRORE(45022);
 		SIGNAL SQLSTATE '45022'
 		SET MESSAGE_TEXT = @err_msg;
@@ -1591,11 +1585,11 @@ COMMIT;
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `cinemadb`;
-INSERT INTO `cinemadb`.`Giorni` (`nome`, `numero`) VALUES ('Lunedì', 1);
-INSERT INTO `cinemadb`.`Giorni` (`nome`, `numero`) VALUES ('Martedì', 2);
-INSERT INTO `cinemadb`.`Giorni` (`nome`, `numero`) VALUES ('Mercoledì', 3);
-INSERT INTO `cinemadb`.`Giorni` (`nome`, `numero`) VALUES ('Giovedì', 4);
-INSERT INTO `cinemadb`.`Giorni` (`nome`, `numero`) VALUES ('Venerdì', 5);
+INSERT INTO `cinemadb`.`Giorni` (`nome`, `numero`) VALUES ('Lunedi\'', 1);
+INSERT INTO `cinemadb`.`Giorni` (`nome`, `numero`) VALUES ('Martedi\'', 2);
+INSERT INTO `cinemadb`.`Giorni` (`nome`, `numero`) VALUES ('Mercoledi\'', 3);
+INSERT INTO `cinemadb`.`Giorni` (`nome`, `numero`) VALUES ('Giovedi\'', 4);
+INSERT INTO `cinemadb`.`Giorni` (`nome`, `numero`) VALUES ('Venerdi\'', 5);
 INSERT INTO `cinemadb`.`Giorni` (`nome`, `numero`) VALUES ('Sabato', 6);
 INSERT INTO `cinemadb`.`Giorni` (`nome`, `numero`) VALUES ('Domenica', 7);
 

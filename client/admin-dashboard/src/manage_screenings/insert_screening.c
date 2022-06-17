@@ -13,15 +13,9 @@ extern int select_movie(cms_t cms, struct cms_movie* movie);
 extern int insert_screening(cms_t cms) {
 	struct cms_add_screening_request request = { 0 };
 	struct cms_add_screening_response* response = NULL;
-	struct cms_movie movie;
 	struct cms_cinema cinema;
 	struct cms_hall hall;
-	switch (select_movie(cms, &movie)) {
-		case 1:
-			goto fail;
-		case 2:
-			return 0;
-	}
+	struct cms_movie movie;
 	switch (select_cinema(cms, &cinema)) {
 		case 1:
 			goto fail;
@@ -34,12 +28,21 @@ extern int insert_screening(cms_t cms) {
 		case 2:
 			return 0;
 	}
+	switch (select_movie(cms, &movie)) {
+		case 1:
+			goto fail;
+		case 2:
+			return 0;
+	}
 	io_clear_screen();
 	puts(title);
+	printf("Cinema: %s\n", cinema.address);
+	printf("Sala: %d\n", hall.id);
+	printf("Film: %s\n", movie.name);
 	get_input_len("Data [YYYY-MM-DD]: ", sizeof(request.date), (char*)request.date, false);
 	get_input_len("Ora inizio [hh:mm:ss]: ", sizeof(request.start_time), (char*)request.start_time, false);
 	get_input_len("Prezzo: ", sizeof(request.price), (char*)request.price, false);
-	if (multi_choice("Procedere?", ((char[2]){ 'S', 'N' })) == 'N') {
+	if (multi_choice("\nProcedere?", ((char[2]){ 'S', 'N' })) == 'N') {
 		return 0;
 	}
 	request.film_id = movie.film_id;

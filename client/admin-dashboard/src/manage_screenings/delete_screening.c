@@ -19,7 +19,11 @@ extern int delete_screening(cms_t cms) {
 	}
 	io_clear_screen();
 	puts(title);
-	printf("Proiezione: %s - Sala %d il %s alle %s\n\n", screening.cinema_address, screening.hall_number, screening.date, screening.start_time);
+	printf("Cinema: %s\n", screening.cinema_address);
+	printf("Sala: %d\n", screening.hall_number);
+	printf("Film: %s\n", screening.film_name);
+	printf("Data: %s\n", screening.date);
+	printf("Ora: %s\n\n", screening.start_time);
 	if (multi_choice("La proiezione selezionata verra' rimossa, procedere?", ((char[2]){ 'S', 'N' })) == 'N') {
 		return 0;
 	}

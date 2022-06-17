@@ -32,6 +32,12 @@ extern int assign_projectionist(cms_t cms) {
 	}
 	io_clear_screen();
 	puts(title);
+	printf("Proiezionista: %d - %s %s\n", projectionist.id, projectionist.name, projectionist.surname);
+	printf("Cinema: %s\n", screening.cinema_address);
+	printf("Sala: %d\n", screening.hall_number);
+	printf("Film: %s\n", screening.film_name);
+	printf("Data: %s\n", screening.date);
+	printf("Ora: %s\n\n", screening.start_time);
 	if (multi_choice("Procedere?", ((char[2]){ 'S', 'N' })) == 'N') {
 		return 0;
 	}

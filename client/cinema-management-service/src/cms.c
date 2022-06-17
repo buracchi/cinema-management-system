@@ -154,7 +154,7 @@ struct cms {
 	struct operation_data operation_data[OPERATIONS_NUMBER];
 };
 
-static MYSQL_STMT* get_prepared_stmt(cms_t cms, enum cms_operation operation);
+static MYSQL_STMT* get_prepared_stmt(cms_t cms, enum cms_operation operation, char** error_message);
 static int send_mysql_stmt_request(struct operation_data operation_data, struct cms_request_param* request_param);
 static int recv_mysql_stmt_result(struct operation_data operation_data, struct cms_response** response, struct cms_result_bitmap* result_bitmap);
 

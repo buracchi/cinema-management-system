@@ -34,10 +34,15 @@
     {
       "name": "x64-windows-release",
       "displayName": "x64 Release",
-      "inherits": "x64-windows-debug",
+      "inherits": "windows-base",
+      "architecture": {
+        "value": "x64",
+        "strategy": "external"
+      },
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
-        "CMAKE_C_FLAGS_RELEASE": "/std:c17"
+        "CMAKE_C_FLAGS_RELEASE": "/std:c17",
+        "CMAKE_CXX_FLAGS_RELEASE": "/std:c++20"
       }
     },
     {

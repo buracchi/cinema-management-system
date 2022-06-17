@@ -48,7 +48,7 @@ fail:
 
 static int validate_booking(int32_t booking_code) {
 	struct cms_validate_booking_request request = { .booking_code = booking_code };
-	struct cms_validate_booking_response* response;
+	struct cms_validate_booking_response* response = NULL;
 	struct cms_credentials credentials = {
 			.username = getenv("USHER_USERNAME"),
 			.password = getenv("USHER_PASSWORD"),
