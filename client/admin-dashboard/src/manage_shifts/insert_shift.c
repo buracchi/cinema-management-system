@@ -16,17 +16,20 @@ extern int insert_shift(cms_t cms) {
 	struct cms_add_shift_response* response = NULL;
 	struct cms_cinema cinema;
 	struct cms_employee employee;
-	switch (select_employee(cms, &employee)) {
-		case 1:
-			goto fail;
-		case 2:
-			return 0;
-	}
-	switch (select_cinema(cms, &cinema)) {
-		case 1:
-			goto fail;
-		case 2:
-			return 0;
+	while (true) {
+		switch (select_employee(cms, &employee)) {
+			case 1:
+				goto fail;
+			case 2:
+				return 0;
+		}
+		switch (select_cinema(cms, &cinema)) {
+			case 1:
+				goto fail;
+			case 2:
+				continue;
+		}
+		break;
 	}
 	io_clear_screen();
 	puts(title);

@@ -13,17 +13,20 @@ extern int delete_hall(cms_t cms) {
 	struct cms_delete_hall_response* response = NULL;
 	struct cms_cinema cinema;
 	struct cms_hall hall;
-	switch (select_cinema(cms, &cinema)) {
-	case 1:
-		goto fail;
-	case 2:
-		return 0;
-	}
-	switch (select_hall(cms, cinema.id, &hall)) {
-	case 1:
-		goto fail;
-	case 2:
-		return 0;
+	while (true) {
+		switch (select_cinema(cms, &cinema)) {
+			case 1:
+				goto fail;
+			case 2:
+				return 0;
+		}
+		switch (select_hall(cms, cinema.id, &hall)) {
+			case 1:
+				goto fail;
+			case 2:
+				continue;
+		}
+		break;
 	}
 	io_clear_screen();
 	puts(title);

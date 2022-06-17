@@ -16,23 +16,36 @@ extern int insert_screening(cms_t cms) {
 	struct cms_cinema cinema;
 	struct cms_hall hall;
 	struct cms_movie movie;
-	switch (select_cinema(cms, &cinema)) {
-		case 1:
-			goto fail;
-		case 2:
-			return 0;
-	}
-	switch (select_hall(cms, cinema.id, &hall)) {
-		case 1:
-			goto fail;
-		case 2:
-			return 0;
-	}
-	switch (select_movie(cms, &movie)) {
-		case 1:
-			goto fail;
-		case 2:
-			return 0;
+	while (true) {
+		bool back = false;
+		switch (select_cinema(cms, &cinema)) {
+			case 1:
+				goto fail;
+			case 2:
+				return 0;
+		}
+		while (true) {
+			if (back) {
+				break;
+			}
+			switch (select_hall(cms, cinema.id, &hall)) {
+				case 1:
+					goto fail;
+				case 2:
+					back = true;
+					continue;
+			}
+			switch (select_movie(cms, &movie)) {
+				case 1:
+					goto fail;
+				case 2:
+					continue;
+			}
+			break;
+		}
+		if (!back) {
+			break;
+		}
 	}
 	io_clear_screen();
 	puts(title);
