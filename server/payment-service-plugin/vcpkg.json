@@ -2,7 +2,6 @@
   "name": "payment-service-plugin",
   "version": "1",
   "dependencies": [
-    "libcommon",
     "libmariadb"
   ],
   "features": {

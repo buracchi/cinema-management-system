@@ -5,6 +5,7 @@ option(ENABLE_TEST_COVERAGE "Enable coverage reporting" OFF)
 
 include("${CMAKE_CURRENT_SOURCE_DIR}/.cmake/vcpkg.cmake")
 include("${CMAKE_CURRENT_SOURCE_DIR}/.cmake/gtest.cmake")
+include(GNUInstallDirs)
 
 project ("payment-service-plugin" VERSION 1.0)
 
@@ -39,16 +40,17 @@ endif ()
 
 # Project
 
-find_package(buracchi-common CONFIG REQUIRED)
 find_package(unofficial-libmariadb CONFIG REQUIRED)
 
-add_library (payment-service-plugin SHARED "src/mock.cxx")
-target_include_directories(payment-service-plugin PUBLIC
+add_library (payment-service SHARED "src/mock.cxx")
+target_include_directories(payment-service PUBLIC
                            "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
                            "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
-target_link_libraries(payment-service-plugin PRIVATE unofficial::libmariadb)
-target_compile_definitions(payment-service-plugin PRIVATE "EXPORTING_PAYMENT_SERVICE_PLUGIN")
-set_target_properties(payment-service-plugin PROPERTIES VERSION ${PROJECT_VERSION})
+target_link_libraries(payment-service PUBLIC unofficial::libmariadb)
+target_compile_definitions(payment-service PRIVATE "EXPORTING_PAYMENT_SERVICE_PLUGIN")
+set_target_properties(payment-service PROPERTIES VERSION ${PROJECT_VERSION})
+
+install(TARGETS payment-service LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
 if (BUILD_TESTS)
     add_subdirectory("test")
