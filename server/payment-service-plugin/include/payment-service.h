@@ -87,7 +87,7 @@ extern "C" {
 
 	DECLSPEC extern bool effettua_pagamento_init(UDF_INIT* initid, const UDF_ARGS* args, char* message);
 
-	DECLSPEC extern char* effettua_pagamento(UDF_INIT* initid, const UDF_ARGS* args, const char*, unsigned long* length, const char*, char* error);
+	DECLSPEC extern char* effettua_pagamento(UDF_INIT* initid, const UDF_ARGS* args, const char*, unsigned long* length, char* is_null, char* error);
 
 	DECLSPEC extern void effettua_pagamento_deinit(UDF_INIT* initid);
 

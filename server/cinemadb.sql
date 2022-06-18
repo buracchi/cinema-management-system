@@ -198,7 +198,6 @@ CREATE TABLE IF NOT EXISTS `cinemadb`.`Prenotazioni` (
   `data` DATE NOT NULL,
   `ora` TIME NOT NULL,
   `stato` VARCHAR(15) NOT NULL,
-  `timestamp` TIMESTAMP NOT NULL,
   PRIMARY KEY (`codice`),
   UNIQUE INDEX `transazione_UNIQUE` (`transazione` ASC) VISIBLE,
   INDEX `fk_Prenotazioni_Posti1_idx` (`cinema` ASC, `sala` ASC, `fila` ASC, `numero` ASC) VISIBLE,
@@ -320,8 +319,9 @@ CREATE PROCEDURE `effettua_prenotazione` (
     IN _scadenza DATE,
 	IN _CVV2 NUMERIC(3))
 BEGIN
-	DECLARE codice_prenotazione INT;
-    DECLARE tid VARCHAR(256);
+	DECLARE var_codice_prenotazione INT;
+	DECLARE var_importo DECIMAL(15, 2);
+    DECLARE var_tid VARCHAR(256);
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
         ROLLBACK;
@@ -329,22 +329,33 @@ BEGIN
     END;
     SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
 	START TRANSACTION;
-    INSERT INTO `Prenotazioni` (`stato`, `cinema`, `sala`, `data`, `ora`, `fila`, `numero`, `timestamp`)
-		VALUES ('Attesa', _cinema_id, _sala_id, _data, _ora, _fila, _numero, NOW());
-	SET codice_prenotazione = (SELECT `codice`
-								FROM `Prenotazioni`
-                                WHERE `stato` = 'Attesa'
-                                AND `cinema` = _cinema_id
-                                AND `sala` = _sala_id
-                                AND `data` = _data
-                                AND `ora` = _ora
-                                AND `fila` = _fila
-                                AND `numero` = _numero);
-		SET tid = EFFETTUA_PAGAMENTO(codice_prenotazione, _intestatario, _numero_carta, _scadenza, _CVV2);
-		UPDATE `Prenotazioni` SET `stato` = 'Confermata', `transazione` = tid
-		WHERE `codice` = codice_prenotazione;
+	SET var_importo = (SELECT `prezzo`
+						FROM `Proiezioni`
+						WHERE `cinema` = @_cinema_id
+							AND `sala` = @_sala_id
+							AND `data` = @_data
+							AND `ora` = @_ora);
+    INSERT INTO `Prenotazioni` (`stato`, `cinema`, `sala`, `data`, `ora`, `fila`, `numero`)
+		VALUES ('Attesa', _cinema_id, _sala_id, _data, _ora, _fila, _numero);
+	SET var_codice_prenotazione = (SELECT `codice`
+									FROM `Prenotazioni`
+									WHERE `stato` = 'Attesa'
+									AND `cinema` = _cinema_id
+									AND `sala` = _sala_id
+									AND `data` = _data
+									AND `ora` = _ora
+									AND `fila` = _fila
+									AND `numero` = _numero);
+		SET var_tid = effettua_pagamento(var_codice_prenotazione, var_importo, _intestatario, _numero_carta, _scadenza, _CVV2);
+        IF NOT var_tid THEN
+			SET @err_msg = MESSAGGIO_ERRORE(45022);
+			SIGNAL SQLSTATE '45022'
+			SET MESSAGE_TEXT = @err_msg;
+		END IF;
+		UPDATE `Prenotazioni` SET `stato` = 'Confermata', `transazione` = var_tid
+		WHERE `codice` = var_codice_prenotazione;
     COMMIT;
-	SELECT codice_prenotazione;
+	SELECT var_codice_prenotazione;
 END$$
 
 DELIMITER ;
@@ -371,7 +382,7 @@ BEGIN
 		END IF;
 		UPDATE `Prenotazioni` SET `stato`='Annullata'
 		WHERE `codice` = _codice;
-		IF (EFFETTUA_RIMBORSO((SELECT `transazione`
+		IF (effettua_rimborso((SELECT `transazione`
 								FROM `Prenotazioni`
 								WHERE `codice` = _codice)) != 0) THEN
 			SET @err_msg = MESSAGGIO_ERRORE(45022);
@@ -941,59 +952,6 @@ END$$
 DELIMITER ;
 
 -- -----------------------------------------------------
--- function EFFETTUA_PAGAMENTO
--- -----------------------------------------------------
-
-DELIMITER $$
-USE `cinemadb`$$
-# Mock della UDF di pagamento
-# Ritorna un valore DECIMAL in quanto non è possibile
-# STRING non è supportato per funzioni normali.
-# Ritorna il codice della transazione associata al
-# pagamento della prenotazione associata al codice
-# in input o NULL in caso di esito negativo.
-CREATE FUNCTION `EFFETTUA_PAGAMENTO` (
-	_codice_prenotazione INT,
-	_intestatario VARCHAR(128),
-	_numero_carta NUMERIC(16,0),
-	_scadenza DATE,
-	_CVV2 NUMERIC(3))
-RETURNS DECIMAL
-NOT DETERMINISTIC
-READS SQL DATA
-BEGIN
-	# Se dopo 10 minuti non ho fatto niente SIGNAL errore
-	IF NOT (FLOOR(RAND() * 10)) THEN
-		SET @err_msg = MESSAGGIO_ERRORE(45022);
-		SIGNAL SQLSTATE '45022'
-		SET MESSAGE_TEXT = @err_msg;
-	END IF;
-    RETURN (SELECT IFNULL(MAX(CAST(`transazione` AS UNSIGNED INTEGER)) + 1, 1)
-		FROM `Prenotazioni`);
-END$$
-
-DELIMITER ;
-
--- -----------------------------------------------------
--- function EFFETTUA_RIMBORSO
--- -----------------------------------------------------
-
-DELIMITER $$
-USE `cinemadb`$$
-# Mock della UDF di rimborso
-# Richiede di annullare la transazione associata al codice in input
-# Ritorna 0 se il codice della transazione è associato
-# ad una transazione annullata
-CREATE FUNCTION `EFFETTUA_RIMBORSO` (_tid VARCHAR(256))
-RETURNS INTEGER
-DETERMINISTIC
-BEGIN
-    RETURN 0;
-END$$
-
-DELIMITER ;
-
--- -----------------------------------------------------
 -- procedure mostra_film
 -- -----------------------------------------------------
 
@@ -1004,6 +962,37 @@ BEGIN
 	SELECT *
     FROM `FILM`;
 END$$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- udf effettua_pagamento
+-- -----------------------------------------------------
+
+DELIMITER $$
+USE `cinemadb`$$
+DROP FUNCTION IF EXISTS effettua_pagamento;
+CREATE FUNCTION effettua_pagamento RETURNS STRING SONAME "payment-service.dll";
+# SEGNATURA:
+# effettua_pagamento(IN codice_prenotazione INT,
+#	IN prezzo DECIMAL(15, 2), 
+#	intestatario VARCHAR(128),
+#	numero_carta NUMERIC(16,0),
+#	scadenza DATE,
+#	CVV2 NUMERIC(3))$$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- udf effettua_rimborso
+-- -----------------------------------------------------
+
+DELIMITER $$
+USE `cinemadb`$$
+DROP FUNCTION IF EXISTS effettua_rimborso;
+CREATE FUNCTION effettua_rimborso RETURNS INTEGER SONAME "payment-service.dll";
+# SEGNATURA:
+# effettua_rimborso(IN codice_transazione VARCHAR(256))$$
 
 DELIMITER ;
 USE `cinemadb`;
@@ -1635,15 +1624,6 @@ ON SCHEDULE EVERY 1 MONTH
 STARTS TIMESTAMP(DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL 1 MONTH), '%Y-%m-1'))
 DO
 	DELETE FROM `Prenotazioni` WHERE `data` < CURDATE();
-
-DROP EVENT IF EXISTS `cinemadb`.`scadenza_prenotazioni_in_attesa`;
-CREATE EVENT `cinemadb`.`scadenza_prenotazioni_in_attesa`
-ON SCHEDULE EVERY 1 MINUTE
-STARTS TIMESTAMP(CURDATE())
-DO
-	DELETE FROM `Prenotazioni`
-			WHERE `stato`='Attesa'
-				AND `timestamp` < DATE_SUB(NOW(), INTERVAL 10 MINUTE);
 
 DROP EVENT IF EXISTS `cinemadb`.`scadenza_prenotazioni`;
 CREATE EVENT `cinemadb`.`scadenza_prenotazioni`
