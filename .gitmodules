@@ -1,3 +1,6 @@
 [submodule "client/vcpkg"]
 	path = client/vcpkg
 	url = https://github.com/microsoft/vcpkg.git
+[submodule "server/payment-service-plugin/vcpkg"]
+	path = server/payment-service-plugin/vcpkg
+	url = https://github.com/microsoft/vcpkg.git

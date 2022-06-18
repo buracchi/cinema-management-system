@@ -27,22 +27,16 @@
       },
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
-        "CMAKE_C_FLAGS_DEBUG": "/std:c17 /Wall /Zi /MTd /fsanitize=address",
-        "CMAKE_CXX_FLAGS_DEBUG": "/Wall /Zi"
+        "CMAKE_CXX_FLAGS_DEBUG": "/std:c++20 /Wall /Zi"
       }
     },
     {
       "name": "x64-windows-release",
       "displayName": "x64 Release",
       "inherits": "windows-base",
-      "architecture": {
-        "value": "x64",
-        "strategy": "external"
-      },
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
-        "CMAKE_C_FLAGS_RELEASE": "/std:c17",
-        "CMAKE_CXX_FLAGS_RELEASE": "/std:c++20"
+        "CMAKE_CXX_FLAGS_DEBUG": "/std:c++20"
       }
     },
     {
@@ -76,8 +70,7 @@
       },
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
-        "CMAKE_C_FLAGS_DEBUG": "-Wall -Wextra -pedantic -fms-extensions -fsanitize=address",
-        "CMAKE_CXX_FLAGS_DEBUG": "-std=c++20 -Wall -Wextra -pedantic -fsanitize=address"
+        "CMAKE_CXX_FLAGS_DEBUG": "-std=c++20 -Wall -Wextra -pedantic"
       }
     },
     {
@@ -86,7 +79,7 @@
       "inherits": "x64-linux-debug",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
-        "CMAKE_C_FLAGS_RELEASE": "-fms-extensions"
+        "CMAKE_CXX_FLAGS_DEBUG": "-std=c++20"
       }
     }
   ]

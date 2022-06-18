@@ -1,0 +1,14 @@
+{
+  "name": "payment-service-plugin",
+  "version": "1",
+  "dependencies": [
+    "libcommon",
+    "libmariadb"
+  ],
+  "features": {
+    "tests": {
+      "description": "Build Tests",
+      "dependencies": [ "gtest" ]
+    }
+  }
+}
