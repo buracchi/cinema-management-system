@@ -1,2 +1,23 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+*.h linguist-detectable=true
+*.h linguist-language=C
+
+*.c linguist-detectable=true
+*.c linguist-language=C
+
+*.cxx linguist-detectable=true
+*.cxx linguist-language=C++
+
+*.sql linguist-detectable=true
+*.sql linguist-language=SQL
+
+*.tex linguist-detectable=true
+*.tex linguist-language=TeX
+
+*.py linguist-detectable=true
+*.py linguist-language=Python
+
+*.sh linguist-detectable=true
+*.sh linguist-language=Shell
