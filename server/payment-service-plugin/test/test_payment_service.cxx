@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include <payment-service.h>
 
-TEST(effettua_pagamento, return_buffer_pointer) {
+TEST(EFFETTUA_PAGAMENTO, return_buffer_pointer) {
 	char buffer[256] = { };
 	long long trash = 0;
 	char garbage = 0;
@@ -12,11 +12,11 @@ TEST(effettua_pagamento, return_buffer_pointer) {
 	unsigned long length;
 	char is_null;
 	char error;
-	char* result = effettua_pagamento(&initid, &udf_args, nullptr, &length, &is_null, &error);
+	char* result = EFFETTUA_PAGAMENTO(&initid, &udf_args, nullptr, &length, &is_null, &error);
 	ASSERT_EQ(result, buffer);
 }
 
-TEST(effettua_rimborso, return_zero) {
-	int result = effettua_rimborso(nullptr, nullptr, nullptr, nullptr);
+TEST(EFFETTUA_RIMBORSO, return_zero) {
+	int result = EFFETTUA_RIMBORSO(nullptr, nullptr, nullptr, nullptr);
 	ASSERT_EQ(result, 0);
 }

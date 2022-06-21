@@ -4,6 +4,23 @@ SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
 
+-- begin attached script 'UDF'
+DROP FUNCTION IF EXISTS EFFETTUA_PAGAMENTO;
+CREATE FUNCTION EFFETTUA_PAGAMENTO RETURNS STRING SONAME "payment-service.dll";
+# SEGNATURA:
+# EFFETTUA_PAGAMENTO(IN codice_prenotazione INT,
+#	IN prezzo DECIMAL(15, 2), 
+#	intestatario VARCHAR(128),
+#	numero_carta NUMERIC(16,0),
+#	scadenza DATE,
+#	CVV2 NUMERIC(3))
+
+DROP FUNCTION IF EXISTS EFFETTUA_RIMBORSO;
+CREATE FUNCTION EFFETTUA_RIMBORSO RETURNS INTEGER SONAME "payment-service.dll";
+# SEGNATURA:
+# EFFETTUA_RIMBORSO(IN codice_transazione VARCHAR(256))
+
+-- end attached script 'UDF'
 -- -----------------------------------------------------
 -- Schema cinemadb
 -- -----------------------------------------------------
@@ -189,7 +206,7 @@ ENGINE = InnoDB;
 -- Table `cinemadb`.`Prenotazioni`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `cinemadb`.`Prenotazioni` (
-  `codice` INT NOT NULL AUTO_INCREMENT,
+  `codice` INT NOT NULL,
   `transazione` VARCHAR(256) NULL,
   `cinema` INT NOT NULL,
   `sala` INT NOT NULL,
@@ -198,6 +215,7 @@ CREATE TABLE IF NOT EXISTS `cinemadb`.`Prenotazioni` (
   `data` DATE NOT NULL,
   `ora` TIME NOT NULL,
   `stato` VARCHAR(15) NOT NULL,
+  `timestamp` TIMESTAMP NOT NULL,
   PRIMARY KEY (`codice`),
   UNIQUE INDEX `transazione_UNIQUE` (`transazione` ASC) VISIBLE,
   INDEX `fk_Prenotazioni_Posti1_idx` (`cinema` ASC, `sala` ASC, `fila` ASC, `numero` ASC) VISIBLE,
@@ -302,60 +320,43 @@ END$$
 DELIMITER ;
 
 -- -----------------------------------------------------
--- procedure effettua_prenotazione
+-- procedure finalizza_prenotazione
 -- -----------------------------------------------------
 
 DELIMITER $$
 USE `cinemadb`$$
-CREATE PROCEDURE `effettua_prenotazione` (
-	IN _cinema_id INT,
-    IN _sala_id INT,
-    IN _data DATE,
-    IN _ora TIME,
-    IN _fila CHAR(1),
-    IN _numero INT,
+CREATE PROCEDURE `finalizza_prenotazione` (
+	IN _codice_prenotazione VARCHAR(6),
     IN _intestatario VARCHAR(128),
     IN _numero_carta NUMERIC(16,0),
     IN _scadenza DATE,
 	IN _CVV2 NUMERIC(3))
 BEGIN
-	DECLARE var_codice_prenotazione INT;
-	DECLARE var_importo DECIMAL(15, 2);
-    DECLARE var_tid VARCHAR(256);
-    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+	DECLARE var_tid VARCHAR(256);
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
         ROLLBACK;
         RESIGNAL;
     END;
     SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
 	START TRANSACTION;
-	SET var_importo = (SELECT `prezzo`
-						FROM `Proiezioni`
-						WHERE `cinema` = @_cinema_id
-							AND `sala` = @_sala_id
-							AND `data` = @_data
-							AND `ora` = @_ora);
-    INSERT INTO `Prenotazioni` (`stato`, `cinema`, `sala`, `data`, `ora`, `fila`, `numero`)
-		VALUES ('Attesa', _cinema_id, _sala_id, _data, _ora, _fila, _numero);
-	SET var_codice_prenotazione = (SELECT `codice`
-									FROM `Prenotazioni`
-									WHERE `stato` = 'Attesa'
-									AND `cinema` = _cinema_id
-									AND `sala` = _sala_id
-									AND `data` = _data
-									AND `ora` = _ora
-									AND `fila` = _fila
-									AND `numero` = _numero);
-		SET var_tid = effettua_pagamento(var_codice_prenotazione, var_importo, _intestatario, _numero_carta, _scadenza, _CVV2);
+		SET var_tid = EFFETTUA_PAGAMENTO(
+			CAST(CONV(_codice_prenotazione, 16, 10) AS SIGNED),
+            (SELECT `prezzo` FROM `Prenotazioni`
+             NATURAL JOIN `Proiezioni`
+             WHERE `codice` = CONV(_codice_prenotazione, 16, 10)),
+            _intestatario,
+            _numero_carta,
+            _scadenza,
+            _CVV2);
         IF NOT var_tid THEN
 			SET @err_msg = MESSAGGIO_ERRORE(45022);
 			SIGNAL SQLSTATE '45022'
 			SET MESSAGE_TEXT = @err_msg;
 		END IF;
 		UPDATE `Prenotazioni` SET `stato` = 'Confermata', `transazione` = var_tid
-		WHERE `codice` = var_codice_prenotazione;
+		WHERE `codice` = CONV(_codice_prenotazione, 16, 10);
     COMMIT;
-	SELECT var_codice_prenotazione;
 END$$
 
 DELIMITER ;
@@ -366,7 +367,7 @@ DELIMITER ;
 
 DELIMITER $$
 USE `cinemadb`$$
-CREATE PROCEDURE `annulla_prenotazione` (IN _codice INT)
+CREATE PROCEDURE `annulla_prenotazione` (IN _codice VARCHAR(6))
 BEGIN
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
@@ -375,16 +376,16 @@ BEGIN
     END;
     SET TRANSACTION ISOLATION LEVEL READ COMMITTED;
 	START TRANSACTION;
-		IF (_codice NOT IN (SELECT `codice` FROM `Prenotazioni`)) THEN
+		IF (CONV(_codice, 16, 10) NOT IN (SELECT `codice` FROM `Prenotazioni`)) THEN
 			SET @err_msg = MESSAGGIO_ERRORE(45013);
 			SIGNAL SQLSTATE '45013'
 			SET MESSAGE_TEXT = @err_msg;
 		END IF;
 		UPDATE `Prenotazioni` SET `stato`='Annullata'
-		WHERE `codice` = _codice;
-		IF (effettua_rimborso((SELECT `transazione`
+		WHERE `codice` = CONV(_codice, 16, 10);
+		IF (EFFETTUA_RIMBORSO((SELECT `transazione`
 								FROM `Prenotazioni`
-								WHERE `codice` = _codice)) != 0) THEN
+								WHERE `codice` = CONV(_codice, 16, 10))) != 0) THEN
 			SET @err_msg = MESSAGGIO_ERRORE(45022);
 			SIGNAL SQLSTATE '45022'
 			SET MESSAGE_TEXT = @err_msg;
@@ -400,7 +401,7 @@ DELIMITER ;
 
 DELIMITER $$
 USE `cinemadb`$$
-CREATE PROCEDURE `valida_prenotazione` (IN _codice INT)
+CREATE PROCEDURE `valida_prenotazione` (IN _codice VARCHAR(7))
 BEGIN
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
@@ -409,13 +410,13 @@ BEGIN
     END;
     SET TRANSACTION ISOLATION LEVEL READ COMMITTED;
 	START TRANSACTION;
-		IF (_codice NOT IN (SELECT `codice` FROM `Prenotazioni`)) THEN
+		IF (CONV(_codice, 16, 10) NOT IN (SELECT `codice` FROM `Prenotazioni`)) THEN
 			SET @err_msg = MESSAGGIO_ERRORE(45013);
 			SIGNAL SQLSTATE '45013'
 			SET MESSAGE_TEXT = @err_msg;
 		END IF;
 		UPDATE `Prenotazioni` SET `stato` = 'Validata'
-		WHERE `codice` = _codice;
+		WHERE `codice` = CONV(_codice, 16, 10);
 	COMMIT;
 END$$
 
@@ -966,33 +967,58 @@ END$$
 DELIMITER ;
 
 -- -----------------------------------------------------
--- udf effettua_pagamento
+-- procedure inizializza_prenotazione
 -- -----------------------------------------------------
 
 DELIMITER $$
 USE `cinemadb`$$
-DROP FUNCTION IF EXISTS effettua_pagamento;
-CREATE FUNCTION effettua_pagamento RETURNS STRING SONAME "payment-service.dll";
-# SEGNATURA:
-# effettua_pagamento(IN codice_prenotazione INT,
-#	IN prezzo DECIMAL(15, 2), 
-#	intestatario VARCHAR(128),
-#	numero_carta NUMERIC(16,0),
-#	scadenza DATE,
-#	CVV2 NUMERIC(3))$$
+CREATE PROCEDURE `inizializza_prenotazione` (
+	IN _cinema_id INT,
+    IN _sala_id INT,
+    IN _data DATE,
+    IN _ora TIME,
+    IN _fila CHAR(1),
+    IN _numero INT)
+BEGIN
+    INSERT INTO `Prenotazioni` (`codice`, `stato`, `cinema`, `sala`, `data`, `ora`, `fila`, `numero`, `timestamp`)
+		VALUES (LAST_INSERT_ID(GENERA_CODICE_PRENOTAZIONE()), 'Attesa', _cinema_id, _sala_id, _data, _ora, _fila, _numero, NOW());
+	SELECT HEX(LAST_INSERT_ID());
+END$$
 
 DELIMITER ;
 
 -- -----------------------------------------------------
--- udf effettua_rimborso
+-- procedure elimina_prenotazione
 -- -----------------------------------------------------
 
 DELIMITER $$
 USE `cinemadb`$$
-DROP FUNCTION IF EXISTS effettua_rimborso;
-CREATE FUNCTION effettua_rimborso RETURNS INTEGER SONAME "payment-service.dll";
-# SEGNATURA:
-# effettua_rimborso(IN codice_transazione VARCHAR(256))$$
+CREATE PROCEDURE `elimina_prenotazione` (IN _codice_prenotazione VARCHAR(6))
+BEGIN
+    DELETE FROM `Prenotazioni`
+			WHERE `codice` = CONV(_codice_prenotazione, 16, 10) AND `stato`='Attesa';
+END$$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- function GENERA_CODICE_PRENOTAZIONE
+-- -----------------------------------------------------
+
+DELIMITER $$
+USE `cinemadb`$$
+CREATE FUNCTION `GENERA_CODICE_PRENOTAZIONE` ()
+RETURNS INT
+NOT DETERMINISTIC
+NO SQL
+BEGIN
+	RETURN FLOOR((RAND() * 0x0000000f) + 0x00000001) * 0x00000001
+		 + FLOOR((RAND() * 0x0000000f) + 0x00000001) * 0x00000010
+		 + FLOOR((RAND() * 0x0000000f) + 0x00000001) * 0x00000100
+		 + FLOOR((RAND() * 0x0000000f) + 0x00000001) * 0x00001000
+		 + FLOOR((RAND() * 0x0000000f) + 0x00000001) * 0x00010000
+		 + FLOOR((RAND() * 0x0000000f) + 0x00000001) * 0x00100000;
+END$$
 
 DELIMITER ;
 USE `cinemadb`;
@@ -1530,7 +1556,7 @@ GRANT EXECUTE ON procedure `cinemadb`.`mostra_film` TO 'amministratore'@'localho
 GRANT EXECUTE ON procedure `cinemadb`.`mostra_cinema` TO 'cliente'@'localhost';
 GRANT EXECUTE ON procedure `cinemadb`.`mostra_palinsesto` TO 'cliente'@'localhost';
 GRANT EXECUTE ON procedure `cinemadb`.`mostra_posti_disponibili` TO 'cliente'@'localhost';
-GRANT EXECUTE ON procedure `cinemadb`.`effettua_prenotazione` TO 'cliente'@'localhost';
+GRANT EXECUTE ON procedure `cinemadb`.`finalizza_prenotazione` TO 'cliente'@'localhost';
 GRANT EXECUTE ON procedure `cinemadb`.`annulla_prenotazione` TO 'cliente'@'localhost';
 GRANT EXECUTE ON procedure `cinemadb`.`mostra_sale` TO 'cliente'@'localhost';
 GRANT EXECUTE ON procedure `cinemadb`.`valida_prenotazione` TO 'maschera'@'localhost';
@@ -1624,6 +1650,15 @@ ON SCHEDULE EVERY 1 MONTH
 STARTS TIMESTAMP(DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL 1 MONTH), '%Y-%m-1'))
 DO
 	DELETE FROM `Prenotazioni` WHERE `data` < CURDATE();
+
+DROP EVENT IF EXISTS `cinemadb`.`pulizia_prenotazioni_in_attesa`;
+CREATE EVENT `cinemadb`.`pulizia_prenotazioni_in_attesa`
+ON SCHEDULE EVERY 1 MINUTE
+STARTS TIMESTAMP(CURDATE())
+DO
+	DELETE FROM `Prenotazioni`
+			WHERE `stato`='Attesa'
+				AND `timestamp` < DATE_SUB(NOW(), INTERVAL 10 MINUTE);
 
 DROP EVENT IF EXISTS `cinemadb`.`scadenza_prenotazioni`;
 CREATE EVENT `cinemadb`.`scadenza_prenotazioni`

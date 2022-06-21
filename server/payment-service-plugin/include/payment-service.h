@@ -40,21 +40,21 @@
 *
 * On Windows use the commands:
 *
-* CREATE FUNCTION effettua_pagamento RETURNS STRING SONAME "payment-service.dll";
-* CREATE FUNCTION effettua_rimborso RETURNS INTEGER SONAME "payment-service.dll";
+* CREATE FUNCTION EFFETTUA_PAGAMENTO RETURNS STRING SONAME "payment-service.dll";
+* CREATE FUNCTION EFFETTUA_RIMBORSO RETURNS INTEGER SONAME "payment-service.dll";
 *
 * Otherwise use the commands:
 *
-* CREATE FUNCTION effettua_pagamento RETURNS STRING SONAME "payment-service.so";
-* CREATE FUNCTION effettua_rimborso RETURNS INTEGER SONAME "payment-service.so";
+* CREATE FUNCTION EFFETTUA_PAGAMENTO RETURNS STRING SONAME "payment-service.so";
+* CREATE FUNCTION EFFETTUA_RIMBORSO RETURNS INTEGER SONAME "payment-service.so";
 *
 * After this the functions will work exactly like native MySQL functions.
 * Functions should be created only once.
 *
 * The functions can be deleted by:
 *
-* DROP FUNCTION effettua_pagamento;
-* DROP FUNCTION effettua_rimborso;
+* DROP FUNCTION EFFETTUA_PAGAMENTO;
+* DROP FUNCTION EFFETTUA_RIMBORSO;
 *
 * The CREATE FUNCTION and DROP FUNCTION update the func@mysql table. All
 * Active function will be reloaded on every restart of server
@@ -85,17 +85,17 @@
 extern "C" {
 #endif
 
-	DECLSPEC extern bool effettua_pagamento_init(UDF_INIT* initid, const UDF_ARGS* args, char* message);
+	DECLSPEC extern bool EFFETTUA_PAGAMENTO_init(UDF_INIT* initid, const UDF_ARGS* args, char* message);
 
-	DECLSPEC extern char* effettua_pagamento(UDF_INIT* initid, const UDF_ARGS* args, const char*, unsigned long* length, char* is_null, char* error);
+	DECLSPEC extern char* EFFETTUA_PAGAMENTO(UDF_INIT* initid, const UDF_ARGS* args, const char*, unsigned long* length, char* is_null, char* error);
 
-	DECLSPEC extern void effettua_pagamento_deinit(UDF_INIT* initid);
+	DECLSPEC extern void EFFETTUA_PAGAMENTO_deinit(UDF_INIT* initid);
 
-	DECLSPEC extern bool effettua_rimborso_init(UDF_INIT* initid, const UDF_ARGS* args, char* message);
+	DECLSPEC extern bool EFFETTUA_RIMBORSO_init(UDF_INIT* initid, const UDF_ARGS* args, char* message);
 
-	DECLSPEC extern long long effettua_rimborso(const UDF_INIT*, const UDF_ARGS*, const char*, const char*);
+	DECLSPEC extern long long EFFETTUA_RIMBORSO(const UDF_INIT*, const UDF_ARGS*, const char*, const char*);
 
-	DECLSPEC extern void effettua_rimborso_deinit(const UDF_INIT*);
+	DECLSPEC extern void EFFETTUA_RIMBORSO_deinit(const UDF_INIT*);
 
 #ifdef __cplusplus
 }

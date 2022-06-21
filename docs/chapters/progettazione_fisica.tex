@@ -62,6 +62,68 @@
     amministratore & Amministratore                       \\\hline
 \end{tabularx}
 
+\pagebreak
+\subsection*{Considerazioni sulle strutture di memorizzazione}
+
+È necessario effettuare alcune considerazioni sulla natura del codice di
+prenotazione e sulla sua rappresentazione in memoria.
+
+L'iterazione tra un cliente e la sua personale prenotazione avviene attraverso
+l'uso del codice di prenotazione, è dunque desiderabile che un utente terzo non
+possa interagire con essa intenzionalmente o per errore. Essendo inoltre
+il codice utilizzato direttamente dall'utente per interagire con il sistema
+ed accedere ai cinema è necessario che questo sia relativamente breve e
+disambiguo.
+
+Ricapitolando il codice di prenotazione deve essere univoco, imprevedibile,
+breve, stampabile e formato da caratteri facilmente distinguibili.
+
+Poiché la funzione UUID versione 4 definita nell'RFC 4122 genera codici
+relativamente lunghi formati da alcuni caratteri difficilmente distinguibili
+si è deciso di generare i codici in maniera alternativa.
+
+Per rendere più efficiente l'indicizzazione ed il confronto si è scelto di
+memorizzare il codice generato randomicamente come un numero intero convertito
+durante l'interazione con l'utente in una stringa rappresentante il numero in
+formato esadecimale, costituente un codice alfanumerico formato da caratteri
+facilmente distinguibili e ragionevolmente breve, rispettante in particolare
+l'espressione regolare \verb|[1-9A-F]{6}|
+
+Dovendo il codice essere univoco la lunghezza della stringa è stata scelta
+tenendo in considerazione il problema delle collisioni durante gli inserimenti
+procedendo come descritto in seguito.
+
+Posto $X$ il numero di codici identici generati in $n$ tentativi, in quanto
+il fenomeno aleatorio equivale ad uno schema successo insuccesso con rimpiazzo
+formato da $n$ prove di Bernoulli indipendenti di parametro
+$p = \frac{1}{\left( 9 + 5 \right)^l} = 14^{-l}$,
+dove con $l$ indichiamo la lunghezza in caratteri del codice di prenotazione,
+possiamo affermare che la variabile aleatoria ha distribuzione binomiale
+$X \sim \mathrm{B}\left( n, 14^{-l} \right)$.
+
+Consideriamo ora un periodo temporale della durata di un mese, secondo il volume
+atteso dei dati il numero di prenotazioni generato è di un ordine di grandezza
+inferiore a $10^6$. Poniamo quindi $n = 10^6$ ed approssimiamo $X$ ad una
+variabile aleatoria con distribuzione di Poisson
+$\begin{aligned}[t]
+        X \sim \mathrm{Poisson}\left( \frac{10^6}{14^l} \right)
+    \end{aligned}$,
+la probabilità che avvengano collisioni in un mese è dunque
+
+$\begin{aligned}
+        \mathrm{P}\left( X \geq 2 \right)
+         & = 1 - \mathrm{P}\left( X = 0 \right)
+        - \mathrm{P}\left( X = 1 \right)           \\
+         & = 1 - e^{-\frac{10^6}{14^l}}
+        - \frac{10^6}{14^l} e^{-\frac{10^6}{14^l}} \\
+    \end{aligned}$
+
+In particolare
+
+$\mathrm{P}\left( X \geq 2 \right) \leq 0.5546, \quad$ per $l = 5$
+
+$\mathrm{P}\left( X \geq 2 \right) \leq 0.0081, \quad$ per $l = 6$
+
 \subsection*{Strutture di memorizzazione}
 %
 % Compilare la tabella seguente indicando quali tipi di dato vengono
@@ -325,7 +387,7 @@
 \begin{tabularx}{\linewidth}{|X|X|X|}
     \hline
     \multicolumn{3}{|>{\columncolor{tblhdrcolor}}l|}{
-    \textbf{Prenotazioni}}                                    \\\hline
+    \textbf{Prenotazioni}}                         \\\hline
     \rowcolor{tblhdrcolor}
     \multicolumn{1}{|c|}{\textbf{Colonna}}
      & \multicolumn{1}{|c|}{\textbf{Tipo di dato}}
@@ -384,7 +446,7 @@
 \begin{tabularx}{\linewidth}{|X|X|}
     \hline
     \multicolumn{2}{|>{\columncolor{tblhdrcolor}}l|}{
-    \textbf{Proiezioni}} \\\hline
+    \textbf{Proiezioni}}                  \\\hline
     \rowcolor{tblhdrcolor}
     \multicolumn{1}{|l|}{\textbf{order\_idx}}
      & \multicolumn{1}{|l|}{\textbf{Tipo}
@@ -403,15 +465,15 @@ range join optimization.
 L'indice risulta particolarmente vantaggioso in quanto:
 \begin{itemize}
     \item ottimizza l'operazione 11 avente per frequenza attesa il valore
-    massimo tra quelli stimati.
+          massimo tra quelli stimati.
     \item l'operazione 8 di inserimento di nuove proiezioni,
-    sebbene aggiunga un numero considerevole di proiezioni ogni settimana,
-    è un operazione che avviene in blocco in un breve periodo di tempo,
-    ammortizzando il costo di aggiornamento degli indici.
+          sebbene aggiunga un numero considerevole di proiezioni ogni settimana,
+          è un operazione che avviene in blocco in un breve periodo di tempo,
+          ammortizzando il costo di aggiornamento degli indici.
     \item l'operazione 9 di cancellazione di una proiezione ha una frequenza
-    attesa trascurabile.
+          attesa trascurabile.
     \item l'evento giornaliero di cancellazione delle proiezioni terminate
-    avviene in blocco, ammortizzando il costo di aggiornamento degli indici.
+          avviene in blocco, ammortizzando il costo di aggiornamento degli indici.
 \end{itemize}
 
 \pagebreak
