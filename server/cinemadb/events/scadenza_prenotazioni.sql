@@ -14,4 +14,5 @@ CREATE EVENT `cinemadb`.`scadenza_prenotazioni`
                                 JOIN `Film` ON `film` = `id`
                        WHERE `stato` = 'Confermata'
                          AND CURRENT_TIMESTAMP() > TIMESTAMP(`Prenotazioni`.`data`,
-                                                             SEC_TO_TIME(TIME_TO_SEC(`Proiezioni`.`ora`) + TIME_TO_SEC(`durata`))));
+                                                             SEC_TO_TIME(TIME_TO_SEC(`Proiezioni`.`ora`)
+                                                                 + TIME_TO_SEC(`durata`))));

@@ -9,11 +9,7 @@ WITH RECURSIVE matricole AS (SELECT 1 AS matricola
 SELECT matricola,
        'Mario',
        'Rossi',
-       CASE
-           WHEN matricola <= 50
-               THEN 'Maschera'
-           ELSE 'Proiezionista'
-           END
+       IF(matricola <= 50, 'Maschera', 'Proiezionista')
 FROM matricole;
 
 COMMIT;

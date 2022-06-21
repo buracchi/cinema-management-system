@@ -43,13 +43,10 @@ BEGIN
                                       `dalle_ore`,
                                       `alle_ore`,
                                       `numero_maschere`,
-                                      CASE
-                                          WHEN `numero_maschere` != lag(`numero_maschere`)
-                                                                        OVER (PARTITION BY `cinema`, `giorno`
-                                                                            ORDER BY `dalle_ore`, `alle_ore`)
-                                              THEN 1
-                                          ELSE 0
-                                          END AS variazione
+                                      IF(`numero_maschere` != lag(`numero_maschere`)
+                                                                  OVER (PARTITION BY `cinema`, `giorno`
+                                                                      ORDER BY `dalle_ore`, `alle_ore`), 1,
+                                         0) AS variazione
                                FROM invervalli_eventi),
          gruppi_orari AS (SELECT `cinema`,
                                  `indirizzo`,
