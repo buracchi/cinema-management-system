@@ -63,6 +63,7 @@
 \end{tabularx}
 
 \pagebreak
+
 \subsection*{Considerazioni sulle strutture di memorizzazione}
 
 È necessario effettuare alcune considerazioni sulla natura del codice di
@@ -486,167 +487,46 @@ L'indice risulta particolarmente vantaggioso in quanto:
 % check ed asserzioni.
 %
 
-\begin{verbatim}
-CREATE TRIGGER `cinemadb`.`Cinema_BEFORE_INSERT`
-BEFORE INSERT ON `Cinema`
-FOR EACH ROW
-BEGIN
-    IF (NEW.`chiusura` < NEW.`apertura`) THEN
-        SIGNAL SQLSTATE '45001'
-        SET MESSAGE_TEXT = 'L\'orario di chiusura non può precedere quello
-                            di apertura';
-    END IF;
-END
-\end{verbatim}
-
-\begin{verbatim}
-CREATE TRIGGER `cinemadb`.`Turni_BEFORE_INSERT`
-BEFORE INSERT ON `Turni`
-FOR EACH ROW
-BEGIN
-    IF (NEW.`durata` > TIME('08:00:00')) THEN
-        SIGNAL SQLSTATE '45001'
-        SET MESSAGE_TEXT = 'Impossibile creare un turno di più di 8 ore.';
-    END IF;
-END
-\end{verbatim}
-
-\begin{verbatim}
-CREATE TRIGGER `cinemadb`.`Turni_BEFORE_INSERT_1` 
-BEFORE INSERT ON `Turni` 
-FOR EACH ROW
-BEGIN
-    DECLARE OreTotali TIME;
-    SET OreTotali = (SELECT SEC_TO_TIME(SUM(TIME_TO_SEC(`Turni`.`durata`)))
-                        FROM `Turni`
-                        WHERE `Turni`.`dipendente` = NEW.`dipendente`
-                            AND `Turni`.`giorno` = NEW.`giorno`);
-    IF (OreTotali + NEW.`durata` > TIME('08:00:00')) THEN
-        SIGNAL SQLSTATE '45001'
-        SET MESSAGE_TEXT = 'La somma della durata dei turni nella giornata
-                            supera le 8 ore.';
-    END IF;
-END
-\end{verbatim}
+\inputsqlfile{../server/cinemadb/triggers/Cinema_BEFORE_INSERT_Check_Orario.sql}
+\inputsqlfile{../server/cinemadb/triggers/Cinema_BEFORE_UPDATE_Check_Orario.sql}
+\inputsqlfile{../server/cinemadb/triggers/Prenotazioni_BEFORE_INSERT_Check_Duplicati.sql}
+\pagebreak
+\inputsqlfile{../server/cinemadb/triggers/Prenotazioni_BEFORE_INSERT_Check_Stato.sql}
+\inputsqlfile{../server/cinemadb/triggers/Prenotazioni_BEFORE_UPDATE_Check_Duplicati.sql}
+\pagebreak
+\inputsqlfile{../server/cinemadb/triggers/Prenotazioni_BEFORE_UPDATE_Check_Ora_Proiezione.sql}
+\inputsqlfile{../server/cinemadb/triggers/Prenotazioni_BEFORE_UPDATE_Check_Stato.sql}
+\pagebreak
+\inputsqlfile{../server/cinemadb/triggers/Proiezioni_BEFORE_INSERT_Check_Cinema_Aperto.sql}
+\inputsqlfile{../server/cinemadb/triggers/Proiezioni_BEFORE_INSERT_Check_Proiezionista.sql}
+\pagebreak
+\inputsqlfile{../server/cinemadb/triggers/Proiezioni_BEFORE_INSERT_Check_Proiezionista_Occupato.sql}
+\pagebreak
+\inputsqlfile{../server/cinemadb/triggers/Proiezioni_BEFORE_INSERT_Check_Sala_Libera.sql}
+\pagebreak
+\inputsqlfile{../server/cinemadb/triggers/Proiezioni_BEFORE_INSERT_Check_Turno.sql}
+\inputsqlfile{../server/cinemadb/triggers/Proiezioni_BEFORE_UPDATE_Check_Cinema_Aperto.sql}
+\pagebreak
+\inputsqlfile{../server/cinemadb/triggers/Proiezioni_BEFORE_UPDATE_Check_Proiezionista.sql}
+\inputsqlfile{../server/cinemadb/triggers/Proiezioni_BEFORE_UPDATE_Check_Proiezionista_Occupato.sql}
+\pagebreak
+\inputsqlfile{../server/cinemadb/triggers/Proiezioni_BEFORE_UPDATE_Check_Sala_Libera.sql}
+\pagebreak
+\inputsqlfile{../server/cinemadb/triggers/Proiezioni_BEFORE_UPDATE_Check_Turno.sql}
+\inputsqlfile{../server/cinemadb/triggers/Turni_AFTER_DELETE_Reset_Proiezionista_Proiezione.sql}
+\pagebreak
+\inputsqlfile{../server/cinemadb/triggers/Turni_BEFORE_INSERT_Check_Cinema_Aperto.sql}
+\inputsqlfile{../server/cinemadb/triggers/Turni_BEFORE_INSERT_Check_Durata.sql}
+\inputsqlfile{../server/cinemadb/triggers/Turni_BEFORE_INSERT_Check_Somma_Durate.sql}
+\inputsqlfile{../server/cinemadb/triggers/Turni_BEFORE_INSERT_Check_Sovrapposizioni.sql}
+\inputsqlfile{../server/cinemadb/triggers/Turni_BEFORE_UPDATE_Check_Cinema_Aperto.sql}
+\pagebreak
+\inputsqlfile{../server/cinemadb/triggers/Turni_BEFORE_UPDATE_Check_Durata.sql}
+\inputsqlfile{../server/cinemadb/triggers/Turni_BEFORE_UPDATE_Check_Somma_Durate.sql}
+\inputsqlfile{../server/cinemadb/triggers/Turni_BEFORE_UPDATE_Check_Sovrapposizioni.sql}
 
 \pagebreak
-\begin{verbatim}
-CREATE TRIGGER `cinemadb`.`Turni_BEFORE_INSERT_2`
-BEFORE INSERT ON `Turni`
-FOR EACH ROW
-BEGIN
-    DECLARE clash BOOL;
-    SET clash = EXISTS (SELECT * 
-                        FROM `Turni` 
-                        WHERE `Turni`.`dipendente` = NEW.`dipendente`
-                            AND `Turni`.`giorno` = NEW.`giorno`
-                            AND `Turni`.`inizio` < 
-                            (SEC_TO_TIME(TIME_TO_SEC(NEW.`inizio`) 
-                            + TIME_TO_SEC(NEW.`durata`))) 
-                            AND (SEC_TO_TIME(TIME_TO_SEC(`Turni`.`inizio`) 
-                            + TIME_TO_SEC(`Turni`.`durata`))) > NEW.`inizio`);
-    IF (clash) THEN
-        SIGNAL SQLSTATE '45001'
-        SET MESSAGE_TEXT = 'Il dipendente è già assegnato ad un turno
-                            nell\'arco temporale selezionato.';
-    END IF;
-END
-\end{verbatim}
 
-\begin{verbatim}
-CREATE TRIGGER `cinemadb`.`Turni_BEFORE_INSERT_3`
-BEFORE INSERT ON `Turni`
-FOR EACH ROW
-BEGIN
-    DECLARE ora_apertura_cinema TIME;
-    DECLARE ora_chiusura_cinema TIME;
-    SET ora_apertura_cinema = (SELECT `apertura`
-                                FROM `Cinema`
-                                WHERE `id` = NEW.`cinema`);
-    SET ora_chiusura_cinema = (SELECT `chiusura`
-                                FROM `Cinema`
-                                WHERE `id` = NEW.`cinema`);
-    IF (NEW.`inizio` < ora_apertura_cinema
-        OR SEC_TO_TIME(TIME_TO_SEC(NEW.`inizio`)
-        + TIME_TO_SEC(NEW.`durata`)) > ora_chiusura_cinema) THEN
-        SIGNAL SQLSTATE '45001'
-        SET MESSAGE_TEXT = 'Il cinema selezionato è chiuso nell\'intervallo
-                            di tempo specificato.';
-    END IF;
-END
-\end{verbatim}
-
-\pagebreak
-\begin{verbatim}
-CREATE TRIGGER `cinemadb`.`Proiezioni_BEFORE_INSERT`
-BEFORE INSERT ON `Proiezioni`
-FOR EACH ROW
-BEGIN
-    DECLARE inizio_proiezione TIMESTAMP;
-    DECLARE fine_proiezione TIMESTAMP;
-    DECLARE fine_proiezione_prec TIMESTAMP;
-    DECLARE inizio_proiezione_succ TIMESTAMP;
-    SET inizio_proiezione = TIMESTAMP(NEW.`data`, NEW.`ora`);
-    SET fine_proiezione = TIMESTAMP(NEW.`data`,
-                                    NEW.`ora` + (SELECT `durata`
-                                                 FROM `Film`
-                                                 WHERE `id` = NEW.`film`));
-    SET inizio_proiezione_succ = (SELECT TIMESTAMP(`data`, `ora`)
-                                  FROM `Proiezioni`
-                                  WHERE `cinema` = NEW.`cinema`
-                                    AND `sala` = NEW.`sala`
-                                    AND (`data` > NEW.`data`
-                                        OR (`data` = NEW.`data`
-                                            AND `ora` > NEW.`ora`))
-                                  ORDER BY `data` ASC, `ora` ASC
-                                  LIMIT 1);
-    SET fine_proiezione_prec = (SELECT TIMESTAMP(`data`, `ora` + `durata`)
-                                FROM `Proiezioni` JOIN `Film` on `id` = `film`
-                                WHERE `cinema` = NEW.`cinema`
-                                    AND `sala` = NEW.`sala`
-                                    AND (`data` < NEW.`data`
-                                        OR (`data` = NEW.`data`
-                                            AND `ora` <= NEW.`ora`))
-                                ORDER BY `data` DESC, `ora` DESC
-                                LIMIT 1);
-    IF ((fine_proiezione_prec IS NOT NULL
-            AND fine_proiezione_prec > inizio_proiezione)
-        OR (inizio_proiezione_succ IS NOT NULL
-            AND inizio_proiezione_succ < fine_proiezione)) THEN
-        SIGNAL SQLSTATE '45001'
-        SET MESSAGE_TEXT = 'La sala selezionata è già impegnata in una
-                            proiezione nell\'orario selezionato.';
-    END IF;
-END
-\end{verbatim}
-
-\pagebreak
-\begin{verbatim}
-CREATE TRIGGER `cinemadb`.`Proiezioni_BEFORE_INSERT_1`
-BEFORE INSERT ON `Proiezioni`
-FOR EACH ROW
-BEGIN
-    DECLARE ora_apertura_cinema TIME;
-    DECLARE ora_chiusura_cinema TIME;
-    DECLARE durata TIME;
-    SET ora_apertura_cinema = (SELECT `apertura`
-                                FROM `Cinema`
-                                WHERE `id` = NEW.`cinema`);
-    SET ora_chiusura_cinema = (SELECT `chiusura`
-                                FROM `Cinema`
-                                WHERE `id` = NEW.`cinema`);
-    SET durata = (SELECT `durata` FROM `Film` WHERE `id` = NEW.`film`);
-    IF (NEW.`ora` < ora_apertura_cinema
-        OR SEC_TO_TIME(TIME_TO_SEC(NEW.`ora`)
-        + TIME_TO_SEC(durata)) > ora_chiusura_cinema) THEN
-        SIGNAL SQLSTATE '45001'
-        SET MESSAGE_TEXT = 'Il cinema selezionato è chiuso nell\'intervallo
-                            di tempo specificato.';
-    END IF;
-END
-\end{verbatim}
-
-\pagebreak
 \subsection*{Eventi}
 %
 % Descrivere quali eventi sono stati implementati, mostrando il codice SQL
@@ -658,42 +538,12 @@ END
 
 Gli eventi sono istanziati unicamente in fase di configurazione del sistema
 
-\begin{verbatim}
-CREATE EVENT `pulizia_prenotazioni`
-ON SCHEDULE EVERY 1 MONTH
-STARTS TIMESTAMP(DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL 1 MONTH), '%Y-%m-1'))
-DO
-    DELETE FROM `Prenotazioni` WHERE `data` < CURDATE();
-\end{verbatim}
+\inputsqlfile{../server/cinemadb/events/pulizia_prenotazioni.sql}
+\inputsqlfile{../server/cinemadb/events/pulizia_prenotazioni_in_attesa.sql}
+\inputsqlfile{../server/cinemadb/events/pulizia_proiezioni.sql}
 
-\begin{verbatim}
-CREATE EVENT `scadenza_prenotazioni`
-ON SCHEDULE EVERY 1 MINUTE
-STARTS TIMESTAMP(CURDATE())
-DO
-    UPDATE `Prenotazioni` SET `stato`='Scaduta'
-    WHERE `codice` IN
-        (SELECT `codice`
-        FROM `Prenotazioni` JOIN `Proiezioni`
-                ON `Prenotazioni`.`cinema` = `Proiezioni`.`cinema`
-                AND `Prenotazioni`.`sala` = `Proiezioni`.`sala`
-                AND `Prenotazioni`.`data` = `Proiezioni`.`data`
-                AND `Prenotazioni`.`ora` = `Proiezioni`.`ora`
-            JOIN `Film` ON `film` = `id`
-        WHERE `stato` = 'Confermata'
-            AND CURRENT_TIMESTAMP() > TIMESTAMP(`Prenotazioni`.`data`,
-                SEC_TO_TIME(TIME_TO_SEC(`Proiezioni`.`ora`)
-                + TIME_TO_SEC(`durata`))));
-\end{verbatim}
-
-
-\begin{verbatim}
-CREATE EVENT `pulizia_proiezioni`
-ON SCHEDULE EVERY 1 DAY
-STARTS TIMESTAMP(CURDATE())
-DO
-    DELETE FROM `Proiezioni` WHERE `data` < CURDATE();
-\end{verbatim}
+\pagebreak
+\inputsqlfile{../server/cinemadb/events/scadenza_prenotazioni.sql}
 
 \subsection*{Viste}
 %
@@ -701,18 +551,12 @@ DO
 % necessarie per l’implementazione dell’applicazione.
 %
 
-\begin{verbatim}
-CREATE VIEW `Palinsesti` AS
-    SELECT `data`, `ora`, `cinema`, `sala`, `prezzo`,
-        `id` AS movie_id, `nome`, `durata`,
-        `casa_cinematografica`, `cast`
-    FROM `Proiezioni` JOIN `Film` ON `film` = `id`
-    WHERE `data` > CURDATE()
-        OR (`data` = CURDATE() AND `ora` > TIME(NOW()))
-    ORDER BY `data`, `ora`, `cinema`, `sala`;
-\end{verbatim}
+In quanto i requisiti non comprendevano, in lato sensu, la predisposizione
+del sistema ad interfacciarsi con tecnologie di ORM, non è risultato necessario
+implementare alcuna vista.
 
 \pagebreak
+
 \subsection*{Stored Procedures e transazioni}
 %
 % Mostrare e commentare le stored procedure che sono state realizzate per
@@ -720,136 +564,40 @@ CREATE VIEW `Palinsesti` AS
 % quando (e perché) sono state realizzate operazioni transazionali complesse.
 %
 
-\begin{verbatim}
-CREATE PROCEDURE `mostra_cinema` ()
-BEGIN
-    SELECT *
-    FROM `Cinema`;
-END
-\end{verbatim}
-
-\begin{verbatim}
-END
-CREATE PROCEDURE `mostra_proiezioni_cinema` (IN _cinema_id INT)
-BEGIN
-    SELECT `cinema`, `sala`, `data`, `ora`, `prezzo`, `film`,
-        `nome`, `durata`, `casa_cinematografica`, `cast`
-    FROM `Proiezioni` JOIN `Film` ON `film` = `id`
-    WHERE `cinema` = _cinema_id
-        AND (`data` > CURDATE()
-            OR (`data` = CURDATE() AND `ora` > TIME(NOW())));
-END
-\end{verbatim}
-
-\begin{verbatim}
-CREATE PROCEDURE `mostra_posti_disponibili` (
-    IN _cinema_id INT,
-    IN _sala_id INT,
-    IN _data DATE,
-    IN _ora TIME)
-BEGIN
-    SELECT `fila`, `numero`
-    FROM `Posti`
-    WHERE EXISTS (SELECT *
-                    FROM `Proiezioni`
-                    WHERE `Proiezioni`.`cinema` = _cinema_id
-                        AND `Proiezioni`.`sala` = _sala_id
-                        AND `Proiezioni`.`data` = _data
-                        AND `Proiezioni`.`ora` = _ora) 
-        AND (`fila`, `numero`) NOT IN (
-            SELECT `fila`, `numero`
-            FROM `Prenotazioni`
-            WHERE `Prenotazioni`.`cinema` = _cinema_id
-                AND `Prenotazioni`.`sala` = _sala_id
-                AND `Prenotazioni`.`data` = _data
-                AND `Prenotazioni`.`ora` = _ora
-                AND `Prenotazioni`.`stato` = 'confermata');
-END
-\end{verbatim}
-
+\inputsqlfile{../server/cinemadb/procedures/annulla_prenotazione.sql}
 \pagebreak
-\begin{verbatim}
-CREATE PROCEDURE `effettua_prenotazione` (
-    IN _cinema_id INT,
-    IN _sala_id INT,
-    IN _data DATE,
-    IN _ora TIME,
-    IN _fila CHAR(1),
-    IN _numero INT
-    IN _intestatario VARCHAR(128),
-    IN _numero_carta NUMERIC(16,0),
-    IN _scadenza DATE,
-    IN _CVV2 NUMERIC(3))
-BEGIN
-    # Mock servizio di pagamento---------------------------------------------
-    DECLARE tid INT;
-    SET tid = (SELECT IFNULL(MAX(`transazione`) + 1, 1) FROM `Prenotazioni`);
-    # -----------------------------------------------------------------------
-    INSERT INTO `Prenotazioni` (`transazione`, `stato`, `cinema`, `sala`,
-        `data`, `ora`, `fila`, `numero`)
-        VALUES (tid, 'confermata', _cinema_id, _sala_id, _data, _ora,
-        _fila, _numero);
-END
-\end{verbatim}
-
-\begin{verbatim}
-CREATE PROCEDURE `annulla_prenotazione` (IN _codice INT)
-BEGIN
-    DECLARE stato_prenotazione ENUM('confermata', 'annullata',
-        'validata', 'scaduta');
-    SET stato_prenotazione = (SELECT `stato`
-                                FROM `Prenotazioni`
-                                WHERE `codice` = _codice);
-    IF (stato_prenotazione != 'confermata') THEN
-        SIGNAL SQLSTATE '45002'
-        SET MESSAGE_TEXT = 'Prenotazione inesistente o invalida.';
-    END IF;
-    # Mock servizio di pagamento---------------------------------------------
-    # -----------------------------------------------------------------------
-    UPDATE `Prenotazioni` SET `stato`='annullata'
-    WHERE `codice` = _codice;
-END
-\end{verbatim}
-
+\inputsqlfile{../server/cinemadb/procedures/annulla_prenotazione.sql}
+\inputsqlfile{../server/cinemadb/procedures/assegna_proiezionista.sql}
 \pagebreak
-\begin{verbatim}
-CREATE PROCEDURE `valida_prenotazione` (IN _codice INT)
-BEGIN
-    DECLARE stato_prenotazione ENUM('confermata', 'annullata',
-        'validata', 'scaduta');
-    SET stato_prenotazione = (SELECT `stato`
-                                FROM `Prenotazioni`
-                                WHERE `codice` = _codice);
-    IF (stato_prenotazione != 'confermata') THEN
-        SIGNAL SQLSTATE '45002'
-        SET MESSAGE_TEXT = 'Prenotazione inesistente o invalida.';
-    END IF;
-    UPDATE `Prenotazioni` SET `stato`='validata'
-    WHERE `codice` = _codice;
-END
-\end{verbatim}
-
-\begin{verbatim}
-CREATE PROCEDURE `mostra_proiezioni_senza_proiezionista` ()
-BEGIN
-    SELECT *
-    FROM `Proiezioni`
-    WHERE `proiezionista` IS NULL
-        AND `data` > CURDATE();
-END
-\end{verbatim}
-
-\begin{verbatim}
-CREATE PROCEDURE `mostra_stato_prenotazioni` ()
-BEGIN
-    SELECT `Sale`.`cinema`, `Sale`.`numero` AS sala,
-        IFNULL(SUM(`stato` = 'confermata'), 0) AS confermate,
-        IFNULL(SUM(`stato` = 'annullata'), 0) AS annullate,
-        IFNULL(SUM(`stato` = 'validata'), 0) AS validate,
-        IFNULL(SUM(`stato` = 'scaduta'), 0) AS scadute
-    FROM `Prenotazioni` RIGHT OUTER JOIN `Sale`
-        ON `Prenotazioni`.`cinema` = `Sale`.`cinema`
-            AND `sala` = `Sale`.`numero`
-    GROUP BY `Sale`.`cinema`, `Sale`.`numero`;
-END
-\end{verbatim}
+\inputsqlfile{../server/cinemadb/procedures/elimina_cinema.sql}
+\inputsqlfile{../server/cinemadb/procedures/elimina_dipendente.sql}
+\inputsqlfile{../server/cinemadb/procedures/elimina_prenotazione.sql}
+\pagebreak
+\inputsqlfile{../server/cinemadb/procedures/elimina_proiezione.sql}
+\inputsqlfile{../server/cinemadb/procedures/elimina_sala.sql}
+\pagebreak
+\inputsqlfile{../server/cinemadb/procedures/elimina_turno.sql}
+\inputsqlfile{../server/cinemadb/procedures/finalizza_prenotazione.sql}
+\inputsqlfile{../server/cinemadb/procedures/inizializza_prenotazione.sql}
+\inputsqlfile{../server/cinemadb/procedures/inserisci_cinema.sql}
+\inputsqlfile{../server/cinemadb/procedures/inserisci_dipendente.sql}
+\inputsqlfile{../server/cinemadb/procedures/inserisci_proiezione.sql}
+\inputsqlfile{../server/cinemadb/procedures/inserisci_sala.sql}
+\inputsqlfile{../server/cinemadb/procedures/inserisci_turno.sql}
+\inputsqlfile{../server/cinemadb/procedures/mostra_cinema.sql}
+\pagebreak
+\inputsqlfile{../server/cinemadb/procedures/mostra_cinema_senza_maschere.sql}
+\inputsqlfile{../server/cinemadb/procedures/mostra_dipendenti.sql}
+\pagebreak
+\inputsqlfile{../server/cinemadb/procedures/mostra_film.sql}
+\inputsqlfile{../server/cinemadb/procedures/mostra_palinsesto.sql}
+\inputsqlfile{../server/cinemadb/procedures/mostra_posti_disponibili.sql}
+\inputsqlfile{../server/cinemadb/procedures/mostra_proiezioni.sql}
+\pagebreak
+\inputsqlfile{../server/cinemadb/procedures/mostra_proiezionisti_disponibili.sql}
+\inputsqlfile{../server/cinemadb/procedures/mostra_proiezioni_senza_proiezionista.sql}
+\inputsqlfile{../server/cinemadb/procedures/mostra_sale.sql}
+\inputsqlfile{../server/cinemadb/procedures/mostra_stato_prenotazioni.sql}
+\pagebreak
+\inputsqlfile{../server/cinemadb/procedures/mostra_turni.sql}
+\inputsqlfile{../server/cinemadb/procedures/valida_prenotazione.sql}

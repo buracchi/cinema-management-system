@@ -1,4 +1,4 @@
-CREATE PROCEDURE `mostra_dipendenti` ()
+CREATE PROCEDURE `mostra_dipendenti`()
 BEGIN
-	SELECT * FROM `Dipendenti`;
+    SELECT * FROM `Dipendenti`;
 END

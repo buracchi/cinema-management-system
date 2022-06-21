@@ -1,5 +1,5 @@
-CREATE PROCEDURE `mostra_film` ()
+CREATE PROCEDURE `mostra_film`()
 BEGIN
-	SELECT *
+    SELECT *
     FROM `FILM`;
 END
