@@ -4,7 +4,7 @@ import pathlib
 
 
 class SqlScriptGenerator:
-    def __init__(self, dbname, in_source_build=False, generate_tables=True, generate_udf=True,
+    def __init__(self, dbname, in_source_build=False, build_path=None, generate_tables=True, generate_udf=True,
                  generate_functions=True, generate_procedures=True, generate_triggers=True,
                  generate_grants=True, generate_data=True, generate_events=True):
         self.dbname = dbname
@@ -16,11 +16,12 @@ class SqlScriptGenerator:
         self.generate_grants = generate_grants
         self.generate_data = generate_data
         self.generate_events = generate_events
-        self.base_path = pathlib.Path(__file__).cwd()
+        self.base_path = pathlib.Path(__file__).resolve().parent
+        self.build_path = self.base_path.joinpath(pathlib.Path('build'))
         if in_source_build:
             self.build_path = pathlib.Path('.')
-        else:
-            self.build_path = self.base_path.joinpath(pathlib.Path('build'))
+        if build_path is not None:
+            self.build_path = build_path
 
     @staticmethod
     def _get_comment_header(title):
@@ -202,10 +203,16 @@ if __name__ == '__main__':
     sections_group.add_argument('--events-section', action=argparse.BooleanOptionalAction, default=True,
                                 help='include events generation section.')
     args = parser.parse_args()
-    sql_script_generator = SqlScriptGenerator(database_name, args.in_source_build, args.tables_section,
-                                              args.udf_section, args.functions_section, args.procedures_section,
-                                              args.triggers_section, args.grants_section, args.data_section,
-                                              args.events_section)
-    if args.build_path:
-        sql_script_generator.build_path = pathlib.Path(args.build_path)
+    sql_script_generator = SqlScriptGenerator(
+        dbname=database_name,
+        in_source_build=args.in_source_build,
+        build_path=pathlib.Path(args.build_path) if args.build_path is not None else None,
+        generate_tables=args.tables_section,
+        generate_udf=args.udf_section,
+        generate_functions=args.functions_section,
+        generate_procedures=args.procedures_section,
+        generate_triggers=args.triggers_section,
+        generate_grants=args.grants_section,
+        generate_data=args.data_section,
+        generate_events=args.events_section)
     sql_script_generator.generate_sql_script()

@@ -12,7 +12,7 @@ BEGIN
                        WHEN _codice = 45005
                            THEN "Il proiezionista selezionato non e' assegnato ad un turno compatibile con la proiezione."
                        WHEN _codice = 45006
-                           THEN "Il proiezionista selezionato e' già assegnato ad un'altra  proiezione nel periodo richiesto."
+                           THEN "Il proiezionista selezionato e' gia' assegnato ad un'altra  proiezione nel periodo richiesto."
                        WHEN _codice = 45007 THEN "Impossibile creare un turno di piu' di 8 ore."
                        WHEN _codice = 45008 THEN "La somma della durata dei turni nella giornata supera le 8 ore."
                        WHEN _codice = 45009
