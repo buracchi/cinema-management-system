@@ -1,4 +1,0 @@
-DROP SCHEMA IF EXISTS `cinemadb`;
-CREATE SCHEMA IF NOT EXISTS `cinemadb` DEFAULT CHARACTER SET utf8mb4;
-USE
-`cinemadb` ;
