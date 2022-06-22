@@ -1,3 +1,5 @@
+import argparse
+import os
 import pathlib
 
 
@@ -42,9 +44,9 @@ class SqlScriptGenerator:
         result += '\n'
         result += self._get_comment_header('Schema ' + self.dbname)
         result += '\n'
-        result += "DROP SCHEMA IF EXISTS `cinemadb`;\n"
-        result += 'CREATE SCHEMA IF NOT EXISTS `cinemadb` DEFAULT CHARACTER SET utf8mb4;\n'
-        result += 'USE `cinemadb`;\n'
+        result += "DROP SCHEMA IF EXISTS `" + self.dbname + "`;\n"
+        result += 'CREATE SCHEMA IF NOT EXISTS `' + self.dbname + '` DEFAULT CHARACTER SET utf8mb4;\n'
+        result += 'USE `' + self.dbname + '`;\n'
         result += '\n'
         return result
 
@@ -65,6 +67,8 @@ class SqlScriptGenerator:
         with open(self._absolute_path_of('udf/payment_service.sql'), 'r') as source:
             result += source.read()
         result += '\n'
+        if os.name != 'nt':
+            return result.replace('.dll', '.so')
         return result
 
     def _get_functions_section(self):
@@ -73,7 +77,7 @@ class SqlScriptGenerator:
             result += self._get_comment_header('Function `' + self.dbname + '`.`' + function.stem + '`')
             result += '\n'
             result += 'DELIMITER $$\n'
-            result += 'USE `cinemadb`$$\n'
+            result += 'USE `' + self.dbname + '`$$\n'
             with open(function, 'r') as source:
                 result += source.read()
             result = result[:-1] + '$$\n'
@@ -88,7 +92,7 @@ class SqlScriptGenerator:
             result += self._get_comment_header('Procedure `' + self.dbname + '`.`' + procedure.stem + '`')
             result += '\n'
             result += 'DELIMITER $$\n'
-            result += 'USE `cinemadb`$$\n'
+            result += 'USE `' + self.dbname + '`$$\n'
             with open(procedure, 'r') as source:
                 result += source.read()
             result = result[:-1] + '$$\n'
@@ -103,7 +107,7 @@ class SqlScriptGenerator:
             result += self._get_comment_header('Trigger `' + self.dbname + '`.`' + trigger.stem + '`')
             result += '\n'
             result += 'DELIMITER $$\n'
-            result += 'USE `cinemadb`$$\n'
+            result += 'USE `' + self.dbname + '`$$\n'
             with open(trigger, 'r') as source:
                 result += source.read()
             result = result[:-1] + '$$\n'
@@ -131,7 +135,7 @@ class SqlScriptGenerator:
         return result
 
     def _get_events_section(self):
-        result = 'SET GLOBAL event_scheduler = ON;\n'
+        result = ''
         for event in pathlib.Path('events').iterdir():
             result += '\n'
             result += self._get_comment_header('Event `' + self.dbname + '`.`' + event.stem + '`')
@@ -144,31 +148,64 @@ class SqlScriptGenerator:
     def generate_sql_script(self):
         self.build_path.mkdir(exist_ok=True)
         with open(self.build_path.joinpath(self.dbname + '.sql'), 'w') as sql_script:
-            sql_script.writelines(self._get_schema_section())
+            sql_script.write(self._get_schema_section())
             if self.generate_tables:
-                sql_script.writelines(self._get_tables_section())
+                sql_script.write(self._get_tables_section())
             sql_script.write('USE ' + '`' + self.dbname + '`;\n')
             sql_script.write('\n')
             if self.generate_udf:
-                sql_script.writelines(self._get_udf_section())
+                sql_script.write(self._get_udf_section())
             if self.generate_functions:
-                sql_script.writelines(self._get_functions_section())
+                sql_script.write(self._get_functions_section())
             if self.generate_procedures:
-                sql_script.writelines(self._get_procedures_section())
+                sql_script.write(self._get_procedures_section())
             if self.generate_triggers:
-                sql_script.writelines(self._get_triggers_section())
+                sql_script.write(self._get_triggers_section())
             if self.generate_grants:
-                sql_script.writelines(self._get_grants_section())
+                sql_script.write(self._get_grants_section())
             sql_script.write('SET SQL_MODE=@OLD_SQL_MODE;\n')
             sql_script.write('SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;\n')
             sql_script.write('SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;\n')
             sql_script.write('\n')
             if self.generate_data:
-                sql_script.writelines(self._get_data_section())
+                sql_script.write(self._get_data_section())
             if self.generate_events:
-                sql_script.writelines(self._get_events_section()[:-1])
+                sql_script.write('SET GLOBAL event_scheduler = ON;\n')
+                sql_script.write(self._get_events_section()[:-1])
 
 
 if __name__ == '__main__':
-    sql_script_generator = SqlScriptGenerator('cinemadb')
+    database_name = 'cinemadb'
+    parser = argparse.ArgumentParser(description=database_name + ' SQL script generator builder.')
+    build_path_group = parser.add_argument_group('build path')
+    build_path_group.add_argument('--in-source-build', action=argparse.BooleanOptionalAction, default=False,
+                                  help='the generator script will be created in the current directory '
+                                       'instead of the standard build directory if the BUIL_PATH option'
+                                       'is left unspecified, otherwise this option have no effect.')
+    build_path_group.add_argument('-b', '--build-path',
+                                  help='Specify the output directory of the database generator script.')
+    sections_group = parser.add_argument_group('script sections')
+    sections_group.add_argument('--tables-section', action=argparse.BooleanOptionalAction, default=True,
+                                help='include tables generation section.')
+    sections_group.add_argument('--udf-section', action=argparse.BooleanOptionalAction, default=True,
+                                help='include loadable functions (udf) generation section.')
+    sections_group.add_argument('--functions-section', action=argparse.BooleanOptionalAction, default=True,
+                                help='include native functions generation section.')
+    sections_group.add_argument('--procedures-section', action=argparse.BooleanOptionalAction, default=True,
+                                help='include procedures generation section.')
+    sections_group.add_argument('--triggers-section', action=argparse.BooleanOptionalAction, default=True,
+                                help='include triggers generation section.')
+    sections_group.add_argument('--grants-section', action=argparse.BooleanOptionalAction, default=True,
+                                help='include grants generation section.')
+    sections_group.add_argument('--data-section', action=argparse.BooleanOptionalAction, default=True,
+                                help='include data generation section.')
+    sections_group.add_argument('--events-section', action=argparse.BooleanOptionalAction, default=True,
+                                help='include events generation section.')
+    args = parser.parse_args()
+    sql_script_generator = SqlScriptGenerator(database_name, args.in_source_build, args.tables_section,
+                                              args.udf_section, args.functions_section, args.procedures_section,
+                                              args.triggers_section, args.grants_section, args.data_section,
+                                              args.events_section)
+    if args.build_path:
+        sql_script_generator.build_path = pathlib.Path(args.build_path)
     sql_script_generator.generate_sql_script()
