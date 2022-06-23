@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS `cinemadb`.`Prenotazioni`
 (
-    `codice`      INT          NOT NULL,
+    `codice`      CHAR(6)      NOT NULL,
     `transazione` VARCHAR(256) NULL,
     `cinema`      INT          NOT NULL,
     `sala`        INT          NOT NULL,

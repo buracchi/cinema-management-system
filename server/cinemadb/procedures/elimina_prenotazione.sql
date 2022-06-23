@@ -1,7 +1,7 @@
-CREATE PROCEDURE `elimina_prenotazione`(IN _codice_prenotazione VARCHAR(6))
+CREATE PROCEDURE `elimina_prenotazione`(IN _codice CHAR(6))
 BEGIN
     DELETE
     FROM `Prenotazioni`
-    WHERE `codice` = CONV(_codice_prenotazione, 16, 10)
+    WHERE `codice` = _codice
       AND `stato` = 'Attesa';
 END

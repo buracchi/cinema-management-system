@@ -55,9 +55,11 @@ extern int insert_screening(cms_t cms) {
 	get_input_len("Data [YYYY-MM-DD]: ", sizeof(request.date), (char*)request.date, false);
 	get_input_len("Ora inizio [hh:mm:ss]: ", sizeof(request.start_time), (char*)request.start_time, false);
 	get_input_len("Prezzo: ", sizeof(request.price), (char*)request.price, false);
-	if (multi_choice("\nProcedere?", ((char[]){ 'S', 'N' })) == 'N') {
+	puts("");
+	if (multi_choice("Procedere?", ((char[]){ 'S', 'N' })) == 'N') {
 		return 0;
 	}
+	puts("");
 	request.film_id = movie.film_id;
 	request.cinema_id = cinema.id;
 	request.hall_number = hall.id;
@@ -66,7 +68,7 @@ extern int insert_screening(cms_t cms) {
 		printf("%s", response->error_message);
 	}
 	else {
-		puts("\nProiezione aggiunta con successo");
+		puts("Proiezione aggiunta con successo");
 	}
 	cms_destroy_response((struct cms_response*)response);
 	press_anykey();

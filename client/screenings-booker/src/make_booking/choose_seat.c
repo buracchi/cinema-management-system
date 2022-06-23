@@ -69,10 +69,10 @@ extern int choose_seat(cms_t cms, struct booking_data* booking_data) {
 			&& (uint64_t)selected_number <= num_cols) {
 			char selected_row = input[0];
 			for (uint64_t i = 0; i < response->num_elements; i++) {
-				if (strncasecmp(&(response->result[i].row), &selected_row, 1) == 0
+				if (strncasecmp(&(response->result[i].row[0]), &selected_row, 1) == 0
 					&& response->result[i].number == (uint32_t)selected_number) {
 					selected_seat_available = true;
-					booking_data->seat_row = response->result[i].row;
+					booking_data->seat_row[0] = response->result[i].row[0];
 					booking_data->seat_number = response->result[i].number;
 					break;
 				}
@@ -159,7 +159,7 @@ static inline int print_cinema_map(struct cms_get_available_seats_response* resp
 		for (uint64_t j = 0; j < num_cols; j++) {
 			bool available = false;
 			for (uint64_t k = 0; k < response->num_elements; k++) {
-				if (response->result[k].row == (char)('A' + i)
+				if (response->result[k].row[0] == (char)('A' + i)
 					&& response->result[k].number == (j + 1)) {
 					available = true;
 					break;

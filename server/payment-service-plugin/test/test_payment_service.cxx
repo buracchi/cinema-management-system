@@ -3,10 +3,8 @@
 
 TEST(EFFETTUA_PAGAMENTO, return_buffer_pointer) {
 	char buffer[256] = { };
-	long long trash = 0;
-	char garbage = 0;
-	char* args[6] = { (char*) & trash, &garbage, &garbage, &garbage, &garbage, &garbage };
-	unsigned long lengths[6] = { };
+	char* args[5] = { buffer, buffer, buffer, buffer, buffer };
+	unsigned long lengths[5] = { };
 	UDF_INIT initid = { .ptr = buffer};
 	UDF_ARGS udf_args = { .args = args, .lengths = lengths};
 	unsigned long length;
@@ -17,6 +15,6 @@ TEST(EFFETTUA_PAGAMENTO, return_buffer_pointer) {
 }
 
 TEST(EFFETTUA_RIMBORSO, return_zero) {
-	int result = EFFETTUA_RIMBORSO(nullptr, nullptr, nullptr, nullptr);
+	long long result = EFFETTUA_RIMBORSO(nullptr, nullptr, nullptr, nullptr);
 	ASSERT_EQ(result, 0);
 }

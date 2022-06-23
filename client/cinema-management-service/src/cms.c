@@ -20,17 +20,12 @@ static const struct operation_data {
 	[CANCEL_BOOKING] = {
 		.statement = NULL,
 		.query = "call annulla_prenotazione(?)",
-		.params_type = (FIELD_TYPE[1]){FIELD_TYPE_LONG}
+		.params_type = (FIELD_TYPE[1]){FIELD_TYPE_STRING}
 	},
 	[ASSIGN_PROJECTIONIST] = {
 		.statement = NULL,
 		.query = "call assegna_proiezionista(?, ?, ?, ?, ?)",
 		.params_type = (FIELD_TYPE[5]){FIELD_TYPE_LONG, FIELD_TYPE_LONG, FIELD_TYPE_LONG, FIELD_TYPE_DATE, FIELD_TYPE_TIME}
-	},
-	[BOOK_SEAT] = {
-		.statement = NULL,
-		.query = "call effettua_prenotazione(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-		.params_type = (FIELD_TYPE[10]) { FIELD_TYPE_LONG, FIELD_TYPE_LONG, FIELD_TYPE_DATE, FIELD_TYPE_TIME, FIELD_TYPE_STRING, FIELD_TYPE_LONG, FIELD_TYPE_STRING, FIELD_TYPE_DECIMAL, FIELD_TYPE_DATE, FIELD_TYPE_DECIMAL }
 	},
 	[DELETE_CINEMA] = {
 		.statement = NULL,
@@ -41,6 +36,11 @@ static const struct operation_data {
 		.statement = NULL,
 		.query = "call elimina_dipendente(?)",
 		.params_type = (FIELD_TYPE[1]) { FIELD_TYPE_LONG }
+	},
+	[ABORT_BOOKING] = {
+		.statement = NULL,
+		.query = "call elimina_prenotazione(?)",
+		.params_type = (FIELD_TYPE[1]) { FIELD_TYPE_STRING }
 	},
 	[DELETE_SCREENING] = {
 		.statement = NULL,
@@ -56,6 +56,16 @@ static const struct operation_data {
 		.statement = NULL,
 		.query = "call elimina_turno(?, ?, ?)",
 		.params_type = (FIELD_TYPE[3]) { FIELD_TYPE_LONG, FIELD_TYPE_STRING, FIELD_TYPE_TIME }
+	},
+	[COMMIT_BOOKING] = {
+		.statement = NULL,
+		.query = "call finalizza_prenotazione(?, ?, ?, ?, ?)",
+		.params_type = (FIELD_TYPE[5]) { FIELD_TYPE_STRING, FIELD_TYPE_STRING, FIELD_TYPE_DECIMAL, FIELD_TYPE_DATE, FIELD_TYPE_DECIMAL }
+	},
+	[CREATE_BOOKING] = {
+		.statement = NULL,
+		.query = "call inizializza_prenotazione(?, ?, ?, ?, ?, ?)",
+		.params_type = (FIELD_TYPE[6]) { FIELD_TYPE_LONG, FIELD_TYPE_LONG, FIELD_TYPE_DATE, FIELD_TYPE_TIME, FIELD_TYPE_STRING, FIELD_TYPE_LONG }
 	},
 	[ADD_CINEMA] = {
 		.statement = NULL,
@@ -145,7 +155,7 @@ static const struct operation_data {
 	[VALIDATE_BOOKING] = {
 		.statement = NULL,
 		.query = "call valida_prenotazione(?)",
-		.params_type = (FIELD_TYPE[1]) { FIELD_TYPE_LONG }
+		.params_type = (FIELD_TYPE[1]) { FIELD_TYPE_STRING }
 	}
 };
 
@@ -278,7 +288,12 @@ static int send_mysql_stmt_request(struct operation_data operation_data, struct 
 				if (request_param[i].size > ULONG_MAX) {
 					goto fail3;
 				}
-				(bparams)[i].buffer_length = (unsigned long)request_param[i].size;
+				if ((bparams)[i].buffer_type == MYSQL_TYPE_STRING) {
+					(bparams)[i].buffer_length = (unsigned long)request_param[i].size - 1;
+				}
+				else {
+					(bparams)[i].buffer_length = (unsigned long)request_param[i].size;
+				}
 			}
 		}
 		try((mysql_stmt_bind_param(operation_data.statement, bparams) == 0), false, fail3);

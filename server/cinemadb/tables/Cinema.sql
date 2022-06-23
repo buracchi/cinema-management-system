@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS `cinemadb`.`Cinema`
 (
     `id`        INT          NOT NULL AUTO_INCREMENT,
-    `indirizzo` VARCHAR(128) NOT NULL,
+    `indirizzo` VARCHAR(127) NOT NULL,
     `apertura`  TIME         NOT NULL,
     `chiusura`  TIME         NOT NULL,
     PRIMARY KEY (`id`),

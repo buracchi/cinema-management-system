@@ -3,8 +3,11 @@
 option(BUILD_TESTS "Build test programs" ON)
 option(ENABLE_TEST_COVERAGE "Enable coverage reporting" OFF)
 
-include("${CMAKE_CURRENT_SOURCE_DIR}/.cmake/vcpkg.cmake")
-include("${CMAKE_CURRENT_SOURCE_DIR}/.cmake/gtest.cmake")
+if (BUILD_TESTS)
+    list(APPEND VCPKG_MANIFEST_FEATURES "tests")
+    include(GoogleTest)
+endif ()
+
 include(GNUInstallDirs)
 
 project ("payment-service-plugin" VERSION 1.0)

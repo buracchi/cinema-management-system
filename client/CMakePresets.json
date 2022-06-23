@@ -1,5 +1,10 @@
 ﻿{
   "version": 3,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 21,
+    "patch": 0
+  },
   "configurePresets": [
     {
       "name": "windows-base",
@@ -8,6 +13,10 @@
       "binaryDir": "${sourceDir}/out/build/${presetName}",
       "installDir": "${sourceDir}/out/install/${presetName}",
       "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": {
+          "value": "${sourceDir}/vcpkg/scripts/buildsystems/vcpkg.cmake",
+          "type": "FILEPATH"
+        },
         "CMAKE_C_COMPILER": "cl.exe",
         "CMAKE_CXX_COMPILER": "cl.exe"
       },
@@ -27,7 +36,7 @@
       },
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
-        "CMAKE_C_FLAGS_DEBUG": "/std:c17 /Wall /Zi /MTd /fsanitize=address",
+        "CMAKE_C_FLAGS_DEBUG": "/std:c17 /Zi",
         "CMAKE_CXX_FLAGS_DEBUG": "/Wall /Zi"
       }
     },
@@ -51,6 +60,12 @@
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/out/build/${presetName}",
       "installDir": "${sourceDir}/out/install/${presetName}",
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": {
+          "value": "${sourceDir}/vcpkg/scripts/buildsystems/vcpkg.cmake",
+          "type": "FILEPATH"
+        }
+      },
       "condition": {
         "type": "equals",
         "lhs": "${hostSystemName}",

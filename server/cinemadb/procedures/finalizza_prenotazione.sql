@@ -1,6 +1,6 @@
 CREATE PROCEDURE `finalizza_prenotazione`(
-    IN _codice_prenotazione VARCHAR(6),
-    IN _intestatario VARCHAR(128),
+    IN _codice VARCHAR(6),
+    IN _intestatario VARCHAR(127),
     IN _numero_carta NUMERIC(16, 0),
     IN _scadenza DATE,
     IN _CVV2 NUMERIC(3))
@@ -14,11 +14,10 @@ BEGIN
     SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
     START TRANSACTION;
     SET var_tid = EFFETTUA_PAGAMENTO(
-            CAST(CONV(_codice_prenotazione, 16, 10) AS SIGNED),
             (SELECT `prezzo`
              FROM `Prenotazioni`
                       NATURAL JOIN `Proiezioni`
-             WHERE `codice` = CONV(_codice_prenotazione, 16, 10)),
+             WHERE `codice` = _codice),
             _intestatario,
             _numero_carta,
             _scadenza,
@@ -31,6 +30,6 @@ BEGIN
     UPDATE `Prenotazioni`
     SET `stato`       = 'Confermata',
         `transazione` = var_tid
-    WHERE `codice` = CONV(_codice_prenotazione, 16, 10);
+    WHERE `codice` = _codice;
     COMMIT;
 END

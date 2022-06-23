@@ -4,15 +4,15 @@
 
 struct booking_data {
 	int32_t cinema_id;
-	char cinema_address[128];
+	char cinema_address[CMS_CINEMA_ADDRESS_LEN];
 	int32_t hall;
 	char date[CMS_DATE_LEN];
 	char time[CMS_TIME_LEN];
-	char film_name[45];
-	char price[18];
-	char seat_row;
+	char film_name[CMS_FILM_NAME_LEN];
+	char price[CMS_DECIMAL_LEN];
+	char seat_row[CMS_HALL_ROW_LEN];
 	uint32_t seat_number;
-	int32_t booking_code;
+	char booking_code[CMS_BOOKING_CODE_LEN];
 };
 
 extern int choose_cinema(cms_t cms, struct booking_data* booking_data);

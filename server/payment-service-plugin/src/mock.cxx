@@ -13,14 +13,13 @@ static std::string mock_api_execute_transaction(std::string_view price,
 static std::mutex mock_api_mutex;
 
 extern bool EFFETTUA_PAGAMENTO_init(UDF_INIT* initid, const UDF_ARGS* args, char* message) {
-	if (args->arg_count != 6
-		|| args->arg_type[0] != INT_RESULT
-		|| args->arg_type[1] != DECIMAL_RESULT
-		|| args->arg_type[2] != STRING_RESULT
-		|| args->arg_type[3] != DECIMAL_RESULT
-		|| args->arg_type[4] != STRING_RESULT
-		|| args->arg_type[5] != DECIMAL_RESULT) {
-		strcpy(message, "Segnatura richiesta: EFFETTUA_PAGAMENTO(int, decimal, string, decimal, data, decimal).");
+	if (args->arg_count != 5
+		|| args->arg_type[0] != DECIMAL_RESULT
+		|| args->arg_type[1] != STRING_RESULT
+		|| args->arg_type[2] != DECIMAL_RESULT
+		|| args->arg_type[3] != STRING_RESULT
+		|| args->arg_type[4] != DECIMAL_RESULT) {
+		strcpy(message, "Segnatura richiesta: EFFETTUA_PAGAMENTO(decimal, string, decimal, data, decimal).");
 		return true;
 	}
 	initid->const_item = false;
@@ -35,18 +34,16 @@ extern bool EFFETTUA_PAGAMENTO_init(UDF_INIT* initid, const UDF_ARGS* args, char
 }
 
 extern char* EFFETTUA_PAGAMENTO(UDF_INIT* initid, const UDF_ARGS* args, const char*, unsigned long* length, char* is_null, char* error) {
-	// TODO: implement a transaction history map <booking_id, transaction_id> in case of statement rollback.
-	[[maybe_unused]] long long booking_id = *((long long*)args->args[0]);
-	std::string price(args->args[1], args->lengths[1]);
-	std::string name_on_card(args->args[2], args->lengths[2]);
-	std::string card_number(args->args[3], args->lengths[3]);
-	std::string expiration_date(args->args[4], args->lengths[4]);
-	std::string cvv2(args->args[5], args->lengths[5]);
+	std::string price(args->args[0], args->lengths[0]);
+	std::string name_on_card(args->args[1], args->lengths[1]);
+	std::string card_number(args->args[2], args->lengths[2]);
+	std::string expiration_date(args->args[3], args->lengths[3]);
+	std::string cvv2(args->args[4], args->lengths[4]);
 	std::string transaction_id = mock_api_execute_transaction(price, name_on_card, card_number, expiration_date, cvv2);
 	*length = (unsigned long)transaction_id.length();
-	memcpy(initid->ptr, transaction_id.c_str(), *length);
 	*is_null = false;
 	*error = false;
+	memcpy(initid->ptr, transaction_id.c_str(), transaction_id.length());
 	return initid->ptr;
 }
 
