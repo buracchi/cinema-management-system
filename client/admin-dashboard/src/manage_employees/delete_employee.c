@@ -23,13 +23,14 @@ extern int delete_employee(cms_t cms) {
 	if (multi_choice("Il dipendente selezionato verra' rimosso, procedere?", ((char[]){ 'S', 'N' })) == 'N') {
 		return 0;
 	}
+	puts("");
 	request.id = employee.id;
 	try(cms_delete_employee(cms, &request, &response), 1, fail);
 	if (response->error_message) {
-		printf("%s", response->error_message);
+		printf("%s\n", response->error_message);
 	}
 	else {
-		puts("\nDipendente rimosso con successo");
+		puts("Dipendente rimosso con successo");
 	}
 	cms_destroy_response((struct cms_response*)response);
 	press_anykey();

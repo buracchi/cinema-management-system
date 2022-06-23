@@ -65,7 +65,7 @@ extern int insert_screening(cms_t cms) {
 	request.hall_number = hall.id;
 	try(cms_add_screening(cms, &request, &response), 1, fail);
 	if (response->error_message) {
-		printf("%s", response->error_message);
+		printf("%s\n", response->error_message);
 	}
 	else {
 		puts("Proiezione aggiunta con successo");

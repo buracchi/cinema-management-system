@@ -23,13 +23,14 @@ extern int delete_cinema(cms_t cms) {
 	if (multi_choice("Il cinema selezionato verra' rimosso, procedere?", ((char[]){ 'S', 'N' })) == 'N') {
 		return 0;
 	}
+	puts("");
 	request.id = cinema.id;
 	try(cms_delete_cinema(cms, &request, &response), 1, fail);
 	if (response->error_message) {
-		printf("%s", response->error_message);
+		printf("%s\n", response->error_message);
 	}
 	else {
-		puts("\nCinema rimosso con successo");
+		puts("Cinema rimosso con successo");
 	}
 	cms_destroy_response((struct cms_response*)response);
 	press_anykey();

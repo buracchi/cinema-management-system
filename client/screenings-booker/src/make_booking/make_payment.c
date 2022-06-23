@@ -52,19 +52,21 @@ extern int make_payment(cms_t cms, struct booking_data* booking_data) {
 		if (multi_choice("Confermare dati inseriti?", ((char[]){ 'S', 'N' })) == 'N') {
 			continue;
 		}
+		puts("");
 		((char*)request.expiry_date)[7] = '-';
 		((char*)request.expiry_date)[8] = '0';
 		((char*)request.expiry_date)[9] = '1';
 		((char*)request.expiry_date)[10] = '\0';
 		try(cms_commit_booking(cms, &request, &response), 1, fail);
 		if (response->error_message) {
-			printf("%s", response->error_message);
+			printf("%s\n", response->error_message);
 			cms_destroy_response((struct cms_response*)response);
 			press_anykey();
 			return 0;
 		}
 		cms_destroy_response((struct cms_response*)response);
-		printf("\nIl codice di prenotazione e': %s\n", booking_data->booking_code);
+		printf("Il codice di prenotazione e': %s\n", booking_data->booking_code);
+		puts("");
 		puts("Il codice di prenotazione e' necessario per accedere al cinema o per effettuare il rimborso.");
 		puts("Salvarlo in un luogo sicuro ed assicurarsi di non perderlo.");
 		press_anykey();
@@ -92,7 +94,7 @@ static int create_booking(cms_t cms, struct booking_data* booking_data) {
 	struct cms_create_booking_response* response = NULL;
 	try(cms_create_booking(cms, &request, &response), 1, fail);
 	if (response->error_message) {
-		printf("%s", response->error_message);
+		printf("%s\n", response->error_message);
 		cms_destroy_response((struct cms_response*)response);
 		press_anykey();
 		return 2;
@@ -116,7 +118,7 @@ static int abort_booking(cms_t cms, struct booking_data* booking_data) {
 	struct cms_abort_booking_response* response = NULL;
 	try(cms_abort_booking(cms, &request, &response), 1, fail);
 	if (response->error_message) {
-		printf("%s", response->error_message);
+		printf("%s\n", response->error_message);
 		cms_destroy_response((struct cms_response*)response);
 		press_anykey();
 		return 2;

@@ -14,7 +14,7 @@ extern int show_monthly_booking_state(cms_t cms) {
 	puts(title);
 	try(cms_get_reservations_status(cms, &response), 1, fail);
 	if (response->error_message) {
-		printf("%s", response->error_message);
+		printf("%s\n", response->error_message);
 	}
 	else {
 		char* booking_table;

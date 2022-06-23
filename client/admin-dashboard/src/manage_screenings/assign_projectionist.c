@@ -44,6 +44,7 @@ extern int assign_projectionist(cms_t cms) {
 	if (multi_choice("Procedere?", ((char[]){ 'S', 'N' })) == 'N') {
 		return 0;
 	}
+	puts("");
 	request.projectionist_id = projectionist.id;
 	request.cinema_id = screening.cinema_id;
 	request.hall_number = screening.hall_number;
@@ -51,10 +52,10 @@ extern int assign_projectionist(cms_t cms) {
 	memcpy(request.start_time, screening.start_time, sizeof(request.start_time));
 	try(cms_assign_projectionist(cms, &request, &response), 1, fail);
 	if (response->error_message) {
-		printf("%s", response->error_message);
+		printf("%s\n", response->error_message);
 	}
 	else {
-		puts("\nProiezionista assegnato con successo");
+		puts("Proiezionista assegnato con successo");
 	}
 	cms_destroy_response((struct cms_response*)response);
 	press_anykey();

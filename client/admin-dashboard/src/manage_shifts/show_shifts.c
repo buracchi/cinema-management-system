@@ -15,7 +15,7 @@ extern int show_shift(cms_t cms) {
 	io_clear_screen();
 	try(cms_get_shifts(cms, &response), 1, fail);
 	if (response->error_message) {
-		printf("%s", response->error_message);
+		printf("%s\n", response->error_message);
 	}
 	else {
 		char* shift_table;
@@ -48,7 +48,7 @@ extern int select_shift(cms_t cms, struct cms_shift* shift) {
 		puts(title);
 		try(cms_get_shifts(cms, &response), 1, fail);
 		if (response->error_message) {
-			printf("%s", response->error_message);
+			printf("%s\n", response->error_message);
 			cms_destroy_response((struct cms_response*)response);
 			press_anykey();
 			return 2;

@@ -35,14 +35,15 @@ extern int delete_hall(cms_t cms) {
 	if (multi_choice("La sala selezionata verra' rimossa, procedere?", ((char[]){ 'S', 'N' })) == 'N') {
 		return 0;
 	}
+	puts("");
 	request.cinema_id = cinema.id;
 	request.hall_number = hall.id;
 	try(cms_delete_hall(cms, &request, &response), 1, fail);
 	if (response->error_message) {
-		printf("%s", response->error_message);
+		printf("%s\n", response->error_message);
 	}
 	else {
-		puts("\nSala rimossa con successo");
+		puts("Sala rimossa con successo");
 	}
 	cms_destroy_response((struct cms_response*)response);
 	press_anykey();

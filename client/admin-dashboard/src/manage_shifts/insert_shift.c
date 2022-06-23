@@ -41,14 +41,15 @@ extern int insert_shift(cms_t cms) {
 	if (multi_choice("Procedere?", ((char[]){ 'S', 'N' })) == 'N') {
 		return 0;
 	}
+	puts("");
 	request.employee_id = employee.id;
 	request.cinema_id = cinema.id;
 	try(cms_add_shift(cms, &request, &response), 1, fail);
 	if (response->error_message) {
-		printf("%s", response->error_message);
+		printf("%s\n", response->error_message);
 	}
 	else {
-		puts("\nProiezione aggiunta con successo");
+		puts("Proiezione aggiunta con successo");
 	}
 	cms_destroy_response((struct cms_response*)response);
 	press_anykey();

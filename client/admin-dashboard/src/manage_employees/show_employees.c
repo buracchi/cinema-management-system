@@ -15,7 +15,7 @@ extern int show_employees(cms_t cms) {
 	io_clear_screen();
 	try(cms_get_employees(cms, &response), 1, fail);
 	if (response->error_message) {
-		printf("%s", response->error_message);
+		printf("%s\n", response->error_message);
 	}
 	else {
 		char* cinema_table;
@@ -49,7 +49,7 @@ extern int select_employee(cms_t cms, struct cms_employee* employee) {
 		puts(title);
 		try(cms_get_employees(cms, &response), 1, fail);
 		if (response->error_message) {
-			printf("%s", response->error_message);
+			printf("%s\n", response->error_message);
 			cms_destroy_response((struct cms_response*)response);
 			press_anykey();
 			return 2;

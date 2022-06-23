@@ -14,7 +14,7 @@ extern int show_cinema_without_enough_ushers(cms_t cms) {
 	puts(title);
 	try(cms_get_cinema_without_ushers(cms, &response), 1, fail);
 	if (response->error_message) {
-		printf("%s", response->error_message);
+		printf("%s\n", response->error_message);
 	}
 	else {
 		char* cinema_table;

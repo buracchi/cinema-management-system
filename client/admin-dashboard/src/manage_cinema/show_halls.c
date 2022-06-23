@@ -26,7 +26,7 @@ extern int show_halls(cms_t cms) {
 	puts(title);
 	try(cms_get_cinema_halls(cms, &request, &response), 1, fail);
 	if (response->error_message) {
-		printf("%s", response->error_message);
+		printf("%s\n", response->error_message);
 	}
 	else {
 		char* halls_table;
@@ -60,7 +60,7 @@ extern int select_hall(cms_t cms, int32_t cinema_id, struct cms_hall* hall) {
 		puts(title);
 		try(cms_get_cinema_halls(cms, &request, &response), 1, fail);
 		if (response->error_message) {
-			printf("%s", response->error_message);
+			printf("%s\n", response->error_message);
 			cms_destroy_response((struct cms_response*)response);
 			press_anykey();
 			return 2;

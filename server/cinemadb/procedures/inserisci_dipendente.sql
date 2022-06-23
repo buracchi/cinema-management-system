@@ -1,6 +1,6 @@
 CREATE PROCEDURE `inserisci_dipendente`(
-    IN _nome VARCHAR(45),
-    IN _cognome VARCHAR(45),
+    IN _nome VARCHAR(63),
+    IN _cognome VARCHAR(63),
     IN _ruolo VARCHAR(15))
 BEGIN
     INSERT INTO `Dipendenti` (`nome`, `cognome`, `ruolo`)

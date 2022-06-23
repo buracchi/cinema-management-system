@@ -1,5 +1,5 @@
 CREATE PROCEDURE `inserisci_cinema`(
-    IN _indirizzo VARCHAR(128),
+    IN _indirizzo VARCHAR(127),
     IN _apertura TIME,
     IN _chiusura TIME)
 BEGIN

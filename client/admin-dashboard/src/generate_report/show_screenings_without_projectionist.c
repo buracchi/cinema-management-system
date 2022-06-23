@@ -14,7 +14,7 @@ extern int show_screenings_without_projectionist(cms_t cms) {
 	puts(title);
 	try(cms_get_screenings_without_projectionist(cms, &response), 1, fail);
 	if (response->error_message) {
-		printf("%s", response->error_message);
+		printf("%s\n", response->error_message);
 	}
 	else {
 		char* screenings_table;

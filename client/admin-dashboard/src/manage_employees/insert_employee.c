@@ -18,12 +18,13 @@ extern int insert_employee(cms_t cms) {
 	if (multi_choice("\nProcedere?", ((char[]){ 'S', 'N' })) == 'N') {
 		return 0;
 	}
+	puts("");
 	try(cms_add_employee(cms, &request, &response), 1, fail);
 	if (response->error_message) {
-		printf("%s", response->error_message);
+		printf("%s\n", response->error_message);
 	}
 	else {
-		puts("\nDipendente aggiunto con successo");
+		puts("Dipendente aggiunto con successo");
 	}
 	cms_destroy_response((struct cms_response*)response);
 	press_anykey();

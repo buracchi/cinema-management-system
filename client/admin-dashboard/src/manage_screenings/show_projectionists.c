@@ -20,7 +20,7 @@ extern int select_projectionist(cms_t cms, struct cms_get_available_projectionis
 		puts(title);
 		try(cms_get_available_projectionists(cms, request, &response), 1, fail);
 		if (response->error_message) {
-			printf("%s", response->error_message);
+			printf("%s\n", response->error_message);
 			cms_destroy_response((struct cms_response*)response);
 			press_anykey();
 			return 2;

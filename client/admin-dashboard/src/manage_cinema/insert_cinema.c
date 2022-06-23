@@ -16,12 +16,13 @@ extern int insert_cinema(cms_t cms) {
 	if (multi_choice("Procedere?", ((char[]){ 'S', 'N' })) == 'N') {
 		return 0;
 	}
+	puts("");
 	try(cms_add_cinema(cms, &request, &response), 1, fail);
 	if (response->error_message) {
-		printf("%s", response->error_message);
+		printf("%s\n", response->error_message);
 	}
 	else {
-		puts("\nCinema aggiunto con successo");
+		puts("Cinema aggiunto con successo");
 	}
 	cms_destroy_response((struct cms_response*)response);
 	press_anykey();
