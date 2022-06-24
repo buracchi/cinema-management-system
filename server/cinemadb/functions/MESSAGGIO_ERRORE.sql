@@ -33,5 +33,6 @@ BEGIN
                        WHEN _codice = 45020 THEN "Impossibile confermare una prenotazione non in attesa."
                        WHEN _codice = 45021 THEN "Una prenotazione in attesa puo' essere solamente confermata."
                        WHEN _codice = 45022 THEN "Impossibile completare l'operazione, riprovare in un secondo momento."
+                       WHEN _codice = 45023 THEN "Impossibile modificare il codice di prenotazione."
                        END);
 END

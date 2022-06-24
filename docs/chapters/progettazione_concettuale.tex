@@ -20,10 +20,10 @@ soddisfare i requisiti relativi:
 \end{center}
 
 Il concetto successivo è proprio quello di sala, da cui si evince che è
-necessario rappresentare anche questo concetto per soddisfare i vincoli
-espressi nei requisiti, dunque si procede a reificare l'attributo utilizzando
-il pattern "parte-di" in quanto l'esistenza di un'occorrenza dell'entità
-sala dipende dall'esistenza di un'occorrenza di un entità cinema:
+necessario rappresentare anche questo concetto come entità per soddisfare i
+vincoli espressi nei requisiti, dunque si procede a reificare l'attributo
+utilizzando il pattern "parte-di" in quanto l'esistenza di un'occorrenza
+dell'entità sala dipende dall'esistenza di un'occorrenza di un entità cinema:
 
 \begin{center}
     \includegraphics[width=6cm]{er_diagrams/er_2.png}
@@ -142,13 +142,14 @@ identificativo artificiale.
     Una prenotazione deve poter essere validata un'unica volta. \\\hline
     Una prenotazione scaduta non deve poter essere validata.    \\\hline
     Una prenotazione annullata non deve poter essere validata.  \\\hline
+    Una prenotazione in attesa non deve poter essere validata.  \\\hline
     I turni devono essere di massimo otto ore.                  \\\hline
     I turni in un cinema devono avvenire nella fascia oraria d'apertura
     del cinema.                                                 \\\hline
     Le proiezioni in un cinema devono avvenire nella fascia oraria d'apertura
     del cinema.                                                 \\\hline
-    Una proiezione deve poter essere associata solamente ad un proiezionista
-    libero assegnato ad un turno che copre l'intervallo temporale ed il
+    Una proiezione deve poter essere associata unicamente a proiezionisti
+    liberi assegnati a turni che coprono l'intervallo temporale ed il
     cinema in cui essa avviene.                                 \\\hline
     In una sala non devono poter essere proiettati più film
     contemporaneamente.                                         \\ \hline
@@ -159,8 +160,8 @@ identificativo artificiale.
     %si ottiene
     %\textlangle{}operazione su concetti\textrangle{} \\
     I posti disponibili per una proiezione si ottengono rimuovendo dai posti
-    della sala in cui avviene la proiezione i posti associati a tutte le
-    prenotazioni confermate relative alla proiezione
+    della sala associata alla proiezione i posti associati a tutte le
+    prenotazioni non annullate relative alla proiezione
     \\\hline
 \end{longtable}
 

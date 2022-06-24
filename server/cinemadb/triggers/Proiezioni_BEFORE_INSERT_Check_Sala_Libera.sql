@@ -14,7 +14,7 @@ BEGIN
                                   WHERE `cinema` = NEW.`cinema`
                                     AND `sala` = NEW.`sala`
                                     AND (`data` > NEW.`data` OR (`data` = NEW.`data` AND `ora` > NEW.`ora`))
-                                  ORDER BY `data` ASC, `ora` ASC
+                                  ORDER BY `data`, `ora`
                                   LIMIT 1);
     SET fine_proiezione_prec = (SELECT TIMESTAMP(`data`, `ora` + `durata`)
                                 FROM `Proiezioni`

@@ -6,8 +6,7 @@ BEGIN
     DECLARE esiste_duplicato BOOL;
     SET esiste_duplicato = (SELECT COUNT(*)
                             FROM `Prenotazioni`
-                            WHERE (`cinema`, `sala`, `fila`, `numero`, `data`, `ora`) NOT IN
-                                  (SELECT OLD.`cinema`, OLD.`sala`, OLD.`fila`, OLD.`numero`, OLD.`data`, OLD.`ora`)
+                            WHERE `codice` != NEW.`codice`
                               AND `cinema` = NEW.`cinema`
                               AND `sala` = NEW.`sala`
                               AND `fila` = NEW.`fila`

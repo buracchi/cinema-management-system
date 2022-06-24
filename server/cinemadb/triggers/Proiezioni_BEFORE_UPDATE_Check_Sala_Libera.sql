@@ -16,7 +16,7 @@ BEGIN
                                     AND (`data` > NEW.`data` OR (`data` = NEW.`data` AND `ora` > NEW.`ora`))
                                     AND (`cinema`, `sala`, `data`, `ora`) NOT IN
                                         (SELECT OLD.`cinema`, OLD.`sala`, OLD.`data`, OLD.`ora`)
-                                  ORDER BY `data` ASC, `ora` ASC
+                                  ORDER BY `data`, `ora`
                                   LIMIT 1);
     SET fine_proiezione_prec = (SELECT TIMESTAMP(`data`, `ora` + `durata`)
                                 FROM `Proiezioni`

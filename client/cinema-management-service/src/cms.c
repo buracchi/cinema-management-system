@@ -225,21 +225,16 @@ extern int cms_operation_execute(cms_t cms,
 	MYSQL_STMT* statement;
 	try(*response = calloc(1, sizeof * *response), NULL, fail);
 	try(statement = get_prepared_stmt(cms, operation, (char**)&((*response)->error_message)), NULL, fail2);
-	try(send_mysql_stmt_request(cms->operation_data[operation], request_param), 1, fail3);
-	try(recv_mysql_stmt_result(cms->operation_data[operation], response, result_bitmap), 1, fail4);
-	try(mysql_stmt_reset(statement) == 0, false, fail4);
+	try(send_mysql_stmt_request(cms->operation_data[operation], request_param), 1, fail2);
+	try(recv_mysql_stmt_result(cms->operation_data[operation], response, result_bitmap), 1, fail2);
+	try(mysql_stmt_reset(statement) == 0, false, fail2);
 	(*response)->error_message = NULL;
 	return 0;
-fail4:
-	asprintf((char**)&((*response)->error_message), "%s", mysql_stmt_error(statement));
-	return 1;
-fail3:
-	asprintf((char**)&((*response)->error_message), "%s", mysql_stmt_error(statement));
-	return statement->last_errno == MYSQL_USER_DEFINED_ERROR ? 0 : 1;
 fail2:
 	if (!(*response)->error_message) {
-		asprintf((char**)&((*response)->error_message), "%s", cms_get_error_message(cms));
+		asprintf((char**)&((*response)->error_message), "%s", mysql_stmt_error(statement));
 	}
+	return statement->last_errno == MYSQL_USER_DEFINED_ERROR ? 0 : 1;
 fail:
 	return 1;
 }
@@ -325,6 +320,7 @@ static int recv_mysql_stmt_result(struct operation_data operation_data, struct c
 		return 0;
 	}
 	if (!result_bitmap) {
+		asprintf((char**)&((*response)->error_message), "Received result set of %u fields but no fields were expected.", rparam_count);
 		goto fail;
 	}
 	result_offset = result_bitmap[0].offset;

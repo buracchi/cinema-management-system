@@ -67,7 +67,7 @@ BEGIN
            `numero_maschere`
     FROM gruppi_orari
     WHERE `dalle_ore` != `alle_ore`
+      AND `numero_maschere` < 2
     GROUP BY `cinema`, `indirizzo`, `giorno`, `numero_maschere`, `gruppo`
-    HAVING `numero_maschere` < 2
     ORDER BY `cinema`, NUMERO_GIORNO(`giorno`), MIN(`dalle_ore`);
 END

@@ -5,15 +5,19 @@ CREATE PROCEDURE `finalizza_prenotazione`(
     IN _scadenza DATE,
     IN _CVV2 NUMERIC(3))
 BEGIN
-    DECLARE var_tid VARCHAR(256);
+    DECLARE _tid VARCHAR(255);
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
         BEGIN
-            ROLLBACK;
+            GET DIAGNOSTICS CONDITION 1 @var_errno = MYSQL_ERRNO;
+            IF (@var_errno != 45022) THEN
+                SELECT (EFFETTUA_RIMBORSO(_tid));
+                ROLLBACK;
+            END IF;
             RESIGNAL;
         END;
     SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
     START TRANSACTION;
-    SET var_tid = EFFETTUA_PAGAMENTO(
+    SET _tid = EFFETTUA_PAGAMENTO(
             (SELECT `prezzo`
              FROM `Prenotazioni`
                       NATURAL JOIN `Proiezioni`
@@ -22,14 +26,14 @@ BEGIN
             _numero_carta,
             _scadenza,
             _CVV2);
-    IF NOT var_tid THEN
+    IF NOT _tid THEN
         SET @err_msg = MESSAGGIO_ERRORE(45022);
         SIGNAL SQLSTATE '45022'
             SET MESSAGE_TEXT = @err_msg;
     END IF;
     UPDATE `Prenotazioni`
     SET `stato`       = 'Confermata',
-        `transazione` = var_tid
+        `transazione` = _tid
     WHERE `codice` = _codice;
     COMMIT;
 END
