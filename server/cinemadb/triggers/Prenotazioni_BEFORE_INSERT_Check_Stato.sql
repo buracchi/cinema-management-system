@@ -3,9 +3,9 @@ CREATE TRIGGER `cinemadb`.`Prenotazioni_BEFORE_INSERT_Check_Stato`
     ON `Prenotazioni`
     FOR EACH ROW
 BEGIN
+    DECLARE _prenotazione_invalida CONDITION FOR SQLSTATE '45010';
+    DECLARE _err_msg VARCHAR(128) DEFAULT MESSAGGIO_ERRORE(45010);
     IF (NEW.`stato` != 'Attesa') THEN
-        SET @err_msg = MESSAGGIO_ERRORE(45010);
-        SIGNAL SQLSTATE '45010'
-            SET MESSAGE_TEXT = @err_msg;
+        SIGNAL _prenotazione_invalida SET MESSAGE_TEXT = _err_msg;
     END IF;
 END

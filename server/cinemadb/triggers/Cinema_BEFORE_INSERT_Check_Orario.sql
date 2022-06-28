@@ -3,9 +3,9 @@ CREATE TRIGGER `cinemadb`.`Cinema_BEFORE_INSERT_Check_Orario`
     ON `Cinema`
     FOR EACH ROW
 BEGIN
+    DECLARE _chiusura_precede_apertura CONDITION FOR SQLSTATE '45001';
+    DECLARE _err_msg VARCHAR(128) DEFAULT MESSAGGIO_ERRORE(45001);
     IF (NEW.`chiusura` < NEW.`apertura`) THEN
-        SET @err_msg = MESSAGGIO_ERRORE(45001);
-        SIGNAL SQLSTATE '45001'
-            SET MESSAGE_TEXT = @err_msg;
+        SIGNAL _chiusura_precede_apertura SET MESSAGE_TEXT = _err_msg;
     END IF;
 END

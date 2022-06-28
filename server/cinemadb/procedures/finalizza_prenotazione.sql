@@ -5,18 +5,24 @@ CREATE PROCEDURE `finalizza_prenotazione`(
     IN _scadenza DATE,
     IN _CVV2 NUMERIC(3))
 BEGIN
-    DECLARE _tid VARCHAR(255);
+    DECLARE _tid VARCHAR(255) DEFAULT NULL;
+    DECLARE _codice_invalido CONDITION FOR SQLSTATE '45013';
+    DECLARE _codice_invalido_msg VARCHAR(128) DEFAULT MESSAGGIO_ERRORE(45013);
+    DECLARE _pagamento_fallito CONDITION FOR SQLSTATE '45022';
+    DECLARE _pagamento_fallito_msg VARCHAR(128) DEFAULT MESSAGGIO_ERRORE(45022);
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
         BEGIN
-            GET DIAGNOSTICS CONDITION 1 @var_errno = MYSQL_ERRNO;
-            IF (@var_errno != 45022) THEN
-                SELECT (EFFETTUA_RIMBORSO(_tid));
-                ROLLBACK;
+            IF _tid IS NOT NULL THEN
+                SET @esito_rimborso := EFFETTUA_RIMBORSO(_tid);
             END IF;
+            ROLLBACK;
             RESIGNAL;
         END;
     SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
     START TRANSACTION;
+    IF (_codice NOT IN (SELECT `codice` FROM `Prenotazioni`)) THEN
+        SIGNAL _codice_invalido SET MESSAGE_TEXT = _codice_invalido_msg;
+    END IF;
     SET _tid = EFFETTUA_PAGAMENTO(
             (SELECT `prezzo`
              FROM `Prenotazioni`
@@ -27,9 +33,7 @@ BEGIN
             _scadenza,
             _CVV2);
     IF NOT _tid THEN
-        SET @err_msg = MESSAGGIO_ERRORE(45022);
-        SIGNAL SQLSTATE '45022'
-            SET MESSAGE_TEXT = @err_msg;
+        SIGNAL _pagamento_fallito SET MESSAGE_TEXT = _pagamento_fallito_msg;
     END IF;
     UPDATE `Prenotazioni`
     SET `stato`       = 'Confermata',

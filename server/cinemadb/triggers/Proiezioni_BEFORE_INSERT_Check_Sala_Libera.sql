@@ -3,6 +3,8 @@ CREATE TRIGGER `cinemadb`.`Proiezioni_BEFORE_INSERT_Check_Sala_Libera`
     ON `Proiezioni`
     FOR EACH ROW
 BEGIN
+    DECLARE _sala_impegnata CONDITION FOR SQLSTATE '45002';
+    DECLARE _err_msg VARCHAR(128) DEFAULT MESSAGGIO_ERRORE(45002);
     DECLARE inizio_proiezione TIMESTAMP;
     DECLARE fine_proiezione TIMESTAMP;
     DECLARE fine_proiezione_prec TIMESTAMP;
@@ -26,8 +28,6 @@ BEGIN
                                 LIMIT 1);
     IF ((fine_proiezione_prec IS NOT NULL AND fine_proiezione_prec > inizio_proiezione)
         OR (inizio_proiezione_succ IS NOT NULL AND inizio_proiezione_succ < fine_proiezione)) THEN
-        SET @err_msg = MESSAGGIO_ERRORE(45002);
-        SIGNAL SQLSTATE '45002'
-            SET MESSAGE_TEXT = @err_msg;
+        SIGNAL _sala_impegnata SET MESSAGE_TEXT = _err_msg;
     END IF;
 END

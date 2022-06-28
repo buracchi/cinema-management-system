@@ -3,6 +3,8 @@ CREATE TRIGGER `cinemadb`.`Proiezioni_BEFORE_UPDATE_Check_Proiezionista_Occupato
     ON `Proiezioni`
     FOR EACH ROW
 BEGIN
+    DECLARE _proiezionista_occupato CONDITION FOR SQLSTATE '45006';
+    DECLARE _err_msg VARCHAR(128) DEFAULT MESSAGGIO_ERRORE(45006);
     DECLARE _fine TIME;
     DECLARE impegnato BOOL;
     SET _fine = (SELECT SEC_TO_TIME(TIME_TO_SEC(NEW.`ora`) + TIME_TO_SEC(`durata`))
@@ -15,11 +17,9 @@ BEGIN
                        AND `data` = NEW.`data`
                        AND `proiezionista` = NEW.`proiezionista`
                        AND `ora` <= _fine
-                       AND SEC_TO_TIME(TIME_TO_SEC(`ora`) + TIME_TO_SEC(`durata`))
-                         >= NEW.`ora`);
+                       AND SEC_TO_TIME(TIME_TO_SEC(`ora`)
+                         + TIME_TO_SEC(`durata`)) >= NEW.`ora`);
     IF (NEW.`proiezionista` IS NOT NULL AND impegnato = TRUE) THEN
-        SET @err_msg = MESSAGGIO_ERRORE(45006);
-        SIGNAL SQLSTATE '45006'
-            SET MESSAGE_TEXT = @err_msg;
+        SIGNAL _proiezionista_occupato SET MESSAGE_TEXT = _err_msg;
     END IF;
 END

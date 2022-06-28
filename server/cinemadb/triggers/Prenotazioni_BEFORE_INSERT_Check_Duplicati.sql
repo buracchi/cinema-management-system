@@ -3,6 +3,8 @@ CREATE TRIGGER `cinemadb`.`Prenotazioni_BEFORE_INSERT_Check_Duplicati`
     ON `Prenotazioni`
     FOR EACH ROW
 BEGIN
+    DECLARE _posto_occupato CONDITION FOR SQLSTATE '45015';
+    DECLARE _err_msg VARCHAR(128) DEFAULT MESSAGGIO_ERRORE(45015);
     DECLARE esiste_duplicato BOOL;
     SET esiste_duplicato = (SELECT COUNT(*)
                             FROM `Prenotazioni`
@@ -14,8 +16,6 @@ BEGIN
                               AND `ora` = NEW.`ora`
                               AND `stato` != 'Annullata');
     IF (esiste_duplicato) THEN
-        SET @err_msg = MESSAGGIO_ERRORE(45015);
-        SIGNAL SQLSTATE '45015'
-            SET MESSAGE_TEXT = @err_msg;
+        SIGNAL _posto_occupato SET MESSAGE_TEXT = _err_msg;
     END IF;
 END

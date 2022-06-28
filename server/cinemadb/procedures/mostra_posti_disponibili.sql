@@ -4,20 +4,21 @@ CREATE PROCEDURE `mostra_posti_disponibili`(
     IN _data DATE,
     IN _ora TIME)
 BEGIN
+    DECLARE _cinema_inesistente CONDITION FOR SQLSTATE '45014';
+    DECLARE _cinema_inesistente_msg VARCHAR(128) DEFAULT MESSAGGIO_ERRORE(45014);
+    DECLARE _sala_inesistente CONDITION FOR SQLSTATE '45018';
+    DECLARE _sala_inesistente_msg VARCHAR(128) DEFAULT MESSAGGIO_ERRORE(45018);
+    DECLARE _proiezione_inesistente CONDITION FOR SQLSTATE '45017';
+    DECLARE _proiezione_inesistente_msg VARCHAR(128) DEFAULT MESSAGGIO_ERRORE(45017);
     IF (_cinema_id NOT IN (SELECT `id` FROM `Cinema`)) THEN
-        SET @err_msg = MESSAGGIO_ERRORE(45014);
-        SIGNAL SQLSTATE '45014'
-            SET MESSAGE_TEXT = @err_msg;
+        SIGNAL _cinema_inesistente SET MESSAGE_TEXT = _cinema_inesistente_msg;
     END IF;
     IF ((_cinema_id, _sala_id) NOT IN (SELECT `cinema`, `numero` FROM `Sale`)) THEN
-        SET @err_msg = MESSAGGIO_ERRORE(45018);
-        SIGNAL SQLSTATE '45018'
-            SET MESSAGE_TEXT = @err_msg;
+        SIGNAL _sala_inesistente SET MESSAGE_TEXT = _sala_inesistente_msg;
     END IF;
-    IF ((_cinema_id, _sala_id, _data, _ora) NOT IN (SELECT `cinema`, `sala`, `data`, `ora` FROM `Proiezioni`)) THEN
-        SET @err_msg = MESSAGGIO_ERRORE(45017);
-        SIGNAL SQLSTATE '45017'
-            SET MESSAGE_TEXT = @err_msg;
+    IF ((_cinema_id, _sala_id, _data, _ora) NOT IN (SELECT `cinema`, `sala`, `data`, `ora`
+                                                    FROM `Proiezioni`)) THEN
+        SIGNAL _proiezione_inesistente SET MESSAGE_TEXT = _proiezione_inesistente_msg;
     END IF;
     SELECT `fila`, `numero`
     FROM `Posti`

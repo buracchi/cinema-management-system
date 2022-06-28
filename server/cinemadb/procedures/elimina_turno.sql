@@ -3,10 +3,11 @@ CREATE PROCEDURE `elimina_turno`(
     IN _giorno VARCHAR(15),
     IN _inizio TIME)
 BEGIN
-    IF ((_dipendente, _giorno, _inizio) NOT IN (SELECT `dipendente`, `giorno`, `inizio` FROM `Turni`)) THEN
-        SET @err_msg = MESSAGGIO_ERRORE(45019);
-        SIGNAL SQLSTATE '45019'
-            SET MESSAGE_TEXT = @err_msg;
+    DECLARE _turno_inesistente CONDITION FOR SQLSTATE '45019';
+    DECLARE _err_msg VARCHAR(128) DEFAULT MESSAGGIO_ERRORE(45019);
+    IF ((_dipendente, _giorno, _inizio) NOT IN (SELECT `dipendente`, `giorno`, `inizio`
+                                                FROM `Turni`)) THEN
+        SIGNAL _turno_inesistente SET MESSAGE_TEXT = _err_msg;
     END IF;
     DELETE
     FROM `Turni`
