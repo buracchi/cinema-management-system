@@ -12,7 +12,6 @@ extern int select_hall(cms_t cms, int32_t cinema_id, struct cms_hall* hall);
 static char* get_halls_table(struct cms_get_cinema_halls_response* response);
 
 extern int show_halls(cms_t cms) {
-	struct cms_get_cinema_halls_request request = { 0 };
 	struct cms_get_cinema_halls_response* response = NULL;
 	struct cms_cinema cinema;
 	switch (select_cinema(cms, &cinema)) {
@@ -21,10 +20,9 @@ extern int show_halls(cms_t cms) {
 	case 2:
 		return 0;
 	}
-	request.cinema_id = cinema.id;
 	io_clear_screen();
 	puts(title);
-	try(cms_get_cinema_halls(cms, &request, &response), 1, fail);
+	try(cms_get_cinema_halls(cms, cinema.id, &response), 1, fail);
 	if (response->error_message) {
 		printf("%s\n", response->error_message);
 	}
@@ -48,7 +46,6 @@ fail:
 }
 
 extern int select_hall(cms_t cms, int32_t cinema_id, struct cms_hall* hall) {
-	struct cms_get_cinema_halls_request request = { .cinema_id = cinema_id };
 	struct cms_get_cinema_halls_response* response = NULL;
 	char* hall_table;
 	char input[INT32DSTR_LEN];
@@ -58,7 +55,7 @@ extern int select_hall(cms_t cms, int32_t cinema_id, struct cms_hall* hall) {
 		bool valid_input = false;
 		io_clear_screen();
 		puts(title);
-		try(cms_get_cinema_halls(cms, &request, &response), 1, fail);
+		try(cms_get_cinema_halls(cms, cinema_id, &response), 1, fail);
 		if (response->error_message) {
 			printf("%s\n", response->error_message);
 			cms_destroy_response((struct cms_response*)response);

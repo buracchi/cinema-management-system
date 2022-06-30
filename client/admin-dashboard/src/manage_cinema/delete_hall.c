@@ -9,7 +9,6 @@ extern int select_cinema(cms_t cms, struct cms_cinema* cinema);
 extern int select_hall(cms_t cms, int32_t cinema_id, struct cms_hall* hall);
 
 extern int delete_hall(cms_t cms) {
-	struct cms_delete_hall_request request = { 0 };
 	struct cms_delete_hall_response* response = NULL;
 	struct cms_cinema cinema;
 	struct cms_hall hall;
@@ -36,9 +35,7 @@ extern int delete_hall(cms_t cms) {
 		return 0;
 	}
 	puts("");
-	request.cinema_id = cinema.id;
-	request.hall_number = hall.id;
-	try(cms_delete_hall(cms, &request, &response), 1, fail);
+	try(cms_delete_hall(cms, cinema.id, hall.id, &response), 1, fail);
 	if (response->error_message) {
 		printf("%s\n", response->error_message);
 	}

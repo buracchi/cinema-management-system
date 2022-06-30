@@ -9,7 +9,7 @@
 extern int select_cinema(cms_t cms, struct cms_cinema* cinema);
 
 extern int insert_hall(cms_t cms) {
-	struct cms_add_hall_request request = { 0 };
+	struct cms_hall_details hall_details = {0 };
 	struct cms_add_hall_response* response = NULL;
 	struct cms_cinema cinema;
 	char hall_number[INT32DSTR_LEN];
@@ -32,20 +32,20 @@ extern int insert_hall(cms_t cms) {
 		if (multi_choice("Procedere?", ((char[]){ 'S', 'N' })) == 'N') {
 			return 0;
 		}
-		if (cmn_strto_int32(&request.hall_number, hall_number, 10)) {
+		if (cmn_strto_int32(&hall_details.hall_number, hall_number, 10)) {
 			continue;
 		}
-		if (cmn_strto_int32(&request.rows, rows, 10)) {
+		if (cmn_strto_int32(&hall_details.rows, rows, 10)) {
 			continue;
 		}
-		if (cmn_strto_int32(&request.rows_seats, rows_seats, 10)) {
+		if (cmn_strto_int32(&hall_details.rows_seats, rows_seats, 10)) {
 			continue;
 		}
 		break;
 	}
 	puts("");
-	request.cinema_id = cinema.id;
-	try(cms_add_hall(cms, &request, &response), 1, fail);
+	hall_details.cinema_id = cinema.id;
+	try(cms_add_hall(cms, &hall_details, &response), 1, fail);
 	if (response->error_message) {
 		printf("%s\n", response->error_message);
 	}

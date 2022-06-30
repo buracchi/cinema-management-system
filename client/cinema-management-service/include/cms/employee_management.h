@@ -12,26 +12,24 @@ struct cms_employee {
 	char role[CMS_EMPLOYEE_ROLE_LEN];
 };
 
+struct cms_employee_details {
+	char name[CMS_EMPLOYEE_NAME_LEN];
+	char surname[CMS_EMPLOYEE_SURNAME_LEN];
+	char role[CMS_EMPLOYEE_ROLE_LEN];
+};
+
 struct cms_get_employees_response {
 	struct cms_response;
 	struct cms_employee result[];
 };
 extern int cms_get_employees(cms_t cms, struct cms_get_employees_response** response);
 
-struct cms_add_employee_request {
-	const char name[CMS_EMPLOYEE_NAME_LEN];
-	char surname[CMS_EMPLOYEE_SURNAME_LEN];
-	char role[CMS_EMPLOYEE_ROLE_LEN];
-};
 struct cms_add_employee_response {
 	struct cms_response;
 };
-extern int cms_add_employee(cms_t cms, struct cms_add_employee_request* request, struct cms_add_employee_response** response);
+extern int cms_add_employee(cms_t cms, struct cms_employee_details* details, struct cms_add_employee_response** response);
 
-struct cms_delete_employee_request {
-	int32_t id;
-};
 struct cms_delete_employee_response {
 	struct cms_response;
 };
-extern int cms_delete_employee(cms_t cms, struct cms_delete_employee_request* request, struct cms_delete_employee_response** response);
+extern int cms_delete_employee(cms_t cms, int32_t id, struct cms_delete_employee_response** response);

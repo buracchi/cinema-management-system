@@ -7,7 +7,7 @@
 
 #include "../core.h"
 
-extern int select_shift(cms_t cms, struct cms_shift* shift);
+extern int select_shift(cms_t cms, struct cms_shift_details* shift_details);
 static char* get_shift_table(struct cms_get_shifts_response* response);
 
 extern int show_shift(cms_t cms) {
@@ -37,7 +37,7 @@ fail:
 	return 1;
 }
 
-extern int select_shift(cms_t cms, struct cms_shift* shift) {
+extern int select_shift(cms_t cms, struct cms_shift_details* shift_details) {
 	struct cms_get_shifts_response* response = NULL;
 	char* shift_table;
 	char input[INT32DSTR_LEN];
@@ -64,7 +64,7 @@ extern int select_shift(cms_t cms, struct cms_shift* shift) {
 		else if (cmn_strto_int32(&selected_shift, input, 10) == 0
 		         && selected_shift > 0
 		         && (uint64_t)selected_shift <= response->num_elements) {
-			memcpy(shift, &(response->result[selected_shift - 1]), sizeof * shift);
+			memcpy(shift_details, &(response->result[selected_shift - 1]), sizeof * shift_details);
 			break;
 		}
 		cms_destroy_response((struct cms_response*)response);

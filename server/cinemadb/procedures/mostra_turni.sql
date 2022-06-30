@@ -12,5 +12,6 @@ BEGIN
     FROM `Turni`
              JOIN `Dipendenti`
              JOIN `Cinema` ON `cinema` = `id`
-    WHERE `dipendente` = `matricola`;
+    WHERE `dipendente` = `matricola`
+    ORDER BY NUMERO_GIORNO(`giorno`), `cinema`, `matricola`;
 END

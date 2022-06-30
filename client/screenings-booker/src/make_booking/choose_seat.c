@@ -22,12 +22,12 @@ static int get_hall_info(cms_t cms, struct booking_data* booking_data, uint64_t*
 static inline int print_cinema_map(struct cms_get_available_seats_response* response, uint64_t num_rows, uint64_t num_cols);
 
 extern int choose_seat(cms_t cms, struct booking_data* booking_data) {
-	struct cms_get_available_seats_request request = {
+	struct cms_screening screening = {
 		.cinema_id = booking_data->cinema_id,
 		.hall_number = booking_data->hall,
 	};
-	strcpy((char*)request.date, booking_data->date);
-	strcpy((char*)request.start_time, booking_data->time);
+	strcpy((char*)screening.date, booking_data->date);
+	strcpy((char*)screening.start_time, booking_data->time);
 	struct cms_get_available_seats_response* response = NULL;
 	char input[INT32DSTR_LEN + 1];
 	int32_t selected_number;
@@ -44,7 +44,7 @@ extern int choose_seat(cms_t cms, struct booking_data* booking_data) {
 		case 2:
 			return 0;
 		}
-		try(cms_get_available_seats(cms, &request, &response), 1, fail);
+		try(cms_get_available_seats(cms, &screening, &response), 1, fail);
 		if (response->error_message) {
 			printf("%s\n", response->error_message);
 			cms_destroy_response((struct cms_response*)response);
@@ -96,9 +96,8 @@ fail:
 }
 
 static int get_hall_info(cms_t cms, struct booking_data* booking_data, uint64_t* num_rows, uint64_t* num_cols) {
-	struct cms_get_cinema_halls_request request = { .cinema_id = booking_data->cinema_id };
 	struct cms_get_cinema_halls_response* response = NULL;
-	try(cms_get_cinema_halls(cms, &request, &response), 1, fail);
+	try(cms_get_cinema_halls(cms, booking_data->cinema_id, &response), 1, fail);
 	if (response->error_message) {
 		printf("%s\n", response->error_message);
 		cms_destroy_response((struct cms_response*)response);

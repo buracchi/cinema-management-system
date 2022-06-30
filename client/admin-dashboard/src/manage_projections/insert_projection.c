@@ -52,9 +52,9 @@ extern int insert_projection(cms_t cms) {
 	printf("Cinema: %s\n", cinema.address);
 	printf("Sala: %d\n", hall.id);
 	printf("Film: %s\n", movie.name);
-	get_input_len("Data [YYYY-MM-DD]: ", sizeof(request.date), (char*)request.date, false);
-	get_input_len("Ora inizio [hh:mm:ss]: ", sizeof(request.start_time), (char*)request.start_time, false);
-	get_input_len("Prezzo: ", sizeof(request.price), (char*)request.price, false);
+	get_input("Data [YYYY-MM-DD]: ", request.date, false);
+	get_input("Ora inizio [hh:mm:ss]: ", request.start_time, false);
+	get_input("Prezzo: ", request.price, false);
 	puts("");
 	if (multi_choice("Procedere?", ((char[]){ 'S', 'N' })) == 'N') {
 		return 0;

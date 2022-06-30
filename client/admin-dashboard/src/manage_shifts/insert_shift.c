@@ -12,7 +12,7 @@ extern int select_employee(cms_t cms, struct cms_employee* employee);
 static char* get_day(char* day);
 
 extern int insert_shift(cms_t cms) {
-	struct cms_add_shift_request request = { 0 };
+	struct cms_add_shift_details shift_details = {0 };
 	struct cms_add_shift_response* response = NULL;
 	struct cms_cinema cinema;
 	struct cms_employee employee;
@@ -35,16 +35,16 @@ extern int insert_shift(cms_t cms) {
 	puts(title);
 	printf("Cinema: %s\n", cinema.address);
 	printf("Dipendente: %d - %s %s\n", employee.id, employee.name, employee.surname);
-	get_day((char*)request.day);
-	get_input_len("Ora inizio [hh:mm:ss]: ", sizeof(request.start_time), (char*)request.start_time, false);
-	get_input_len("Durata [hh:mm:ss]: ", sizeof(request.duration), (char*)request.duration, false);
+	get_day((char*)shift_details.day);
+	get_input("Ora inizio [hh:mm:ss]: ", shift_details.start_time, false);
+	get_input("Durata [hh:mm:ss]: ", shift_details.duration, false);
 	if (multi_choice("Procedere?", ((char[]){ 'S', 'N' })) == 'N') {
 		return 0;
 	}
 	puts("");
-	request.employee_id = employee.id;
-	request.cinema_id = cinema.id;
-	try(cms_add_shift(cms, &request, &response), 1, fail);
+	shift_details.employee_id = employee.id;
+	shift_details.cinema_id = cinema.id;
+	try(cms_add_shift(cms, &shift_details, &response), 1, fail);
 	if (response->error_message) {
 		printf("%s\n", response->error_message);
 	}

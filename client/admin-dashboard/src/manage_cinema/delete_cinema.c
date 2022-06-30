@@ -8,7 +8,6 @@
 extern int select_cinema(cms_t cms, struct cms_cinema* cinema);
 
 extern int delete_cinema(cms_t cms) {
-	struct cms_delete_cinema_request request = { 0 };
 	struct cms_delete_cinema_response* response = NULL;
 	struct cms_cinema cinema;
 	switch (select_cinema(cms, &cinema)) {
@@ -24,8 +23,7 @@ extern int delete_cinema(cms_t cms) {
 		return 0;
 	}
 	puts("");
-	request.id = cinema.id;
-	try(cms_delete_cinema(cms, &request, &response), 1, fail);
+	try(cms_delete_cinema(cms, cinema.id, &response), 1, fail);
 	if (response->error_message) {
 		printf("%s\n", response->error_message);
 	}

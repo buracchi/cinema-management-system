@@ -15,7 +15,7 @@
 
 //#define RUN_FROM_IDE
 
-static int validate_booking(int32_t booking_code);
+static int validate_booking(char (*booking_code)[CMS_BOOKING_CODE_LEN]);
 
 #ifdef RUN_FROM_IDE
 int main(void) {
@@ -24,7 +24,7 @@ int main(void) {
 }
 #else
 int main(int argc, char** argv) {
-	int32_t booking_code;
+	char booking_code[CMS_BOOKING_CODE_LEN] = { 0 };
 	char* input;
 	cmn_map_t option_map;
 	cmn_argparser_t argparser;
@@ -36,9 +36,12 @@ int main(int argc, char** argv) {
 	option_map = cmn_argparser_parse(argparser, argc, (const char**)argv);
 	try(cmn_map_at(option_map, (void*)"codice", (void**)&input), 1, fail);
 	try(cmn_argparser_destroy(argparser), 1, fail);
-	try(cmn_strto_int32(&booking_code, input, 10), 1, fail2);
+	if ((strlen(input) != sizeof booking_code - 1) || cmn_strto_uint32(&(uint32_t){ 0 }, input, 16)) {
+		goto fail2;
+	}
+	strcpy(booking_code, input);
 	try(env_load(".", false), -1, fail);
-	return validate_booking(booking_code);
+	return validate_booking(&booking_code);
 fail2:
 	fprintf(stderr, "Codice prenotazione non valido.");
 fail:
@@ -46,8 +49,7 @@ fail:
 }
 #endif
 
-static int validate_booking(int32_t booking_code) {
-	struct cms_validate_booking_request request = { .booking_code = booking_code };
+static int validate_booking(char (*booking_code)[CMS_BOOKING_CODE_LEN]) {
 	struct cms_validate_booking_response* response = NULL;
 	struct cms_credentials credentials = {
 			.username = getenv("USHER_USERNAME"),
@@ -58,7 +60,7 @@ static int validate_booking(int32_t booking_code) {
 	cms_t cms;
 	try(cmn_strto_uint16((uint16_t*)&(credentials.port), getenv("PORT"), 10), 1, fail);
 	try(cms = cms_init(&credentials), NULL, fail);
-	try(cms_validate_booking(cms, &request, &response), 1, fail2);
+	try(cms_validate_booking(cms, booking_code, &response), 1, fail2);
 	if (response->error_message) {
 		fprintf(stderr, "%s\n", response->error_message);
 		cms_destroy_response((struct cms_response*)response);

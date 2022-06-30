@@ -14,7 +14,7 @@ static int create_booking(cms_t cms, struct booking_data* booking_data);
 static int abort_booking(cms_t cms, struct booking_data* booking_data);
 
 extern int make_payment(cms_t cms, struct booking_data* booking_data) {
-	struct cms_commit_booking_request request = { 0 };
+	struct cms_payment_details payment_details = {0 };
 	struct cms_commit_booking_response* response = NULL;
 	switch (create_booking(cms, booking_data)) {
 	case 1:
@@ -22,7 +22,7 @@ extern int make_payment(cms_t cms, struct booking_data* booking_data) {
 	case 2:
 		return 0;
 	}
-	strcpy(request.booking_code, booking_data->booking_code);
+	strcpy(payment_details.booking_code, booking_data->booking_code);
 	while (true) {
 		io_clear_screen();
 		puts(title);
@@ -44,20 +44,21 @@ extern int make_payment(cms_t cms, struct booking_data* booking_data) {
 			return choose_seat(cms, booking_data);
 		}
 		puts("");
-		get_input_len("Intestatario carta: ", sizeof(request.name_on_card), (char*)request.name_on_card, false);
-		get_input_len("Numero carta: ", sizeof(request.card_number), (char*)request.card_number, false);
-		get_input_len("Data di scadenza [YYYY-MM]: ", 8, (char*)request.expiry_date, false);
-		get_input_len("Codice di sicurezza (CVV): ", sizeof(request.security_code), (char*)request.security_code, true);
+		get_input("Intestatario carta: ", payment_details.name_on_card, false);
+		get_input("Intestatario carta: ", payment_details.name_on_card, false);
+		get_input("Numero carta: ", payment_details.card_number, false);
+		get_input_len("Data di scadenza [YYYY-MM]: ", 8, payment_details.expiry_date, false);
+		get_input("Codice di sicurezza (CVV): ", payment_details.security_code, true);
 		puts("");
 		if (multi_choice("Confermare dati inseriti?", ((char[]){ 'S', 'N' })) == 'N') {
 			continue;
 		}
 		puts("");
-		((char*)request.expiry_date)[7] = '-';
-		((char*)request.expiry_date)[8] = '0';
-		((char*)request.expiry_date)[9] = '1';
-		((char*)request.expiry_date)[10] = '\0';
-		try(cms_commit_booking(cms, &request, &response), 1, fail);
+		((char*)payment_details.expiry_date)[7] = '-';
+		((char*)payment_details.expiry_date)[8] = '0';
+		((char*)payment_details.expiry_date)[9] = '1';
+		((char*)payment_details.expiry_date)[10] = '\0';
+		try(cms_commit_booking(cms, &payment_details, &response), 1, fail);
 		if (response->error_message) {
 			printf("%s\n", response->error_message);
 			cms_destroy_response((struct cms_response*)response);
@@ -83,16 +84,16 @@ fail:
 }
 
 static int create_booking(cms_t cms, struct booking_data* booking_data) {
-	struct cms_create_booking_request request = {
+	struct cms_booking_details details = {
 		.cinema_id = booking_data->cinema_id,
 		.hall_number = booking_data->hall,
 		.seat_number = (int32_t)booking_data->seat_number
 	};
-	strcpy((char*)request.seat_row, booking_data->seat_row);
-	strcpy((char*)request.date, booking_data->date);
-	strcpy((char*)request.start_time, booking_data->time);
+	strcpy((char*)details.seat_row, booking_data->seat_row);
+	strcpy((char*)details.date, booking_data->date);
+	strcpy((char*)details.start_time, booking_data->time);
 	struct cms_create_booking_response* response = NULL;
-	try(cms_create_booking(cms, &request, &response), 1, fail);
+	try(cms_create_booking(cms, &details, &response), 1, fail);
 	if (response->error_message) {
 		printf("%s\n", response->error_message);
 		cms_destroy_response((struct cms_response*)response);
@@ -113,10 +114,8 @@ fail:
 }
 
 static int abort_booking(cms_t cms, struct booking_data* booking_data) {
-	struct cms_abort_booking_request request = { 0 };
-	strcpy((char*)request.booking_code, booking_data->booking_code);
 	struct cms_abort_booking_response* response = NULL;
-	try(cms_abort_booking(cms, &request, &response), 1, fail);
+	try(cms_abort_booking(cms, &booking_data->booking_code, &response), 1, fail);
 	if (response->error_message) {
 		printf("%s\n", response->error_message);
 		cms_destroy_response((struct cms_response*)response);

@@ -8,7 +8,6 @@
 extern int select_employee(cms_t cms, struct cms_employee* employee);
 
 extern int delete_employee(cms_t cms) {
-	struct cms_delete_employee_request request = { 0 };
 	struct cms_delete_employee_response* response = NULL;
 	struct cms_employee employee;
 	switch (select_employee(cms, &employee)) {
@@ -24,8 +23,7 @@ extern int delete_employee(cms_t cms) {
 		return 0;
 	}
 	puts("");
-	request.id = employee.id;
-	try(cms_delete_employee(cms, &request, &response), 1, fail);
+	try(cms_delete_employee(cms, employee.id, &response), 1, fail);
 	if (response->error_message) {
 		printf("%s\n", response->error_message);
 	}

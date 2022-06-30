@@ -17,7 +17,6 @@
 static char* get_screenings_table(struct cms_get_cinema_screenings_response* response);
 
 extern int choose_screening(cms_t cms, struct booking_data* booking_data) {
-	struct cms_get_cinema_screenings_request request = { .cinema_id = booking_data->cinema_id };
 	struct cms_get_cinema_screenings_response* response = NULL;
 	char* screenings_table;
 	char input[INT32DSTR_LEN];
@@ -26,7 +25,7 @@ extern int choose_screening(cms_t cms, struct booking_data* booking_data) {
 	while (true) {
 		io_clear_screen();
 		puts(title);
-		try(cms_get_cinema_screenings(cms, &request, &response), 1, fail);
+		try(cms_get_cinema_screenings(cms, booking_data->cinema_id, &response), 1, fail);
 		if (response->error_message) {
 			printf("%s\n", response->error_message);
 			cms_destroy_response((struct cms_response*)response);
@@ -47,7 +46,7 @@ extern int choose_screening(cms_t cms, struct booking_data* booking_data) {
 			&& (uint64_t)selected_screening <= response->num_elements) {
 			booking_data->hall = response->result[selected_screening - 1].hall_number;
 			strcpy(booking_data->date, response->result[selected_screening - 1].date);
-			strcpy(booking_data->time, response->result[selected_screening - 1].time);
+			strcpy(booking_data->time, response->result[selected_screening - 1].start_time);
 			strcpy(booking_data->film_name, response->result[selected_screening - 1].film_name);
 			strcpy(booking_data->price, response->result[selected_screening - 1].price);
 			break;
@@ -77,7 +76,7 @@ static char* get_screenings_table(struct cms_get_cinema_screenings_response* res
 		char screening_id[UINT64DSTR_LEN] = { 0 };
 		char hall_number[INT32DSTR_LEN] = { 0 };
 		char* date = response->result[i].date;
-		char* time = response->result[i].time;
+		char* time = response->result[i].start_time;
 		char* film_name = response->result[i].film_name;
 		char* running_time = response->result[i].running_time;
 		char* price = response->result[i].price;

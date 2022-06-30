@@ -5,13 +5,13 @@
 
 #include "../core.h"
 
-extern int select_shift(cms_t cms, struct cms_shift* shift);
+extern int select_shift(cms_t cms, struct cms_shift_details* shift_details);
 
 extern int delete_shift(cms_t cms) {
-	struct cms_delete_shift_request request = { 0 };
+	struct cms_shift shift = {0 };
 	struct cms_delete_shift_response* response = NULL;
-	struct cms_shift shift;
-	switch (select_shift(cms, &shift)) {
+	struct cms_shift_details shift_details;
+	switch (select_shift(cms, &shift_details)) {
 	case 1:
 		goto fail;
 	case 2:
@@ -19,19 +19,19 @@ extern int delete_shift(cms_t cms) {
 	}
 	io_clear_screen();
 	puts(title);
-	printf("Cinema: %s\n", shift.cinema_address);
-	printf("Dipendente: %d - %s %s\n", shift.employee_id, shift.employee_name, shift.employee_surname);
-	printf("Giorno: %s\n", shift.day);
-	printf("Ora inizio: %s\n", shift.start_time);
-	printf("Durata: %s\n\n", shift.duration);
+	printf("Cinema: %s\n", shift_details.cinema_address);
+	printf("Dipendente: %d - %s %s\n", shift_details.employee_id, shift_details.employee_name, shift_details.employee_surname);
+	printf("Giorno: %s\n", shift_details.day);
+	printf("Ora inizio: %s\n", shift_details.start_time);
+	printf("Durata: %s\n\n", shift_details.duration);
 	if (multi_choice("Il turno selezionato verra' rimosso, procedere?", ((char[]){ 'S', 'N' })) == 'N') {
 		return 0;
 	}
 	puts("");
-	request.employee_id = shift.employee_id;
-	memcpy(request.day, shift.day, sizeof(request.day));
-	memcpy(request.start_time, shift.start_time, sizeof(request.start_time));
-	try(cms_delete_shift(cms, &request, &response), 1, fail);
+	shift.employee_id = shift_details.employee_id;
+	strcpy(shift.day, shift_details.day);
+	strcpy(shift.start_time, shift_details.start_time);
+	try(cms_delete_shift(cms, &shift, &response), 1, fail);
 	if (response->error_message) {
 		printf("%s\n", response->error_message);
 	}

@@ -12,25 +12,24 @@
 #include "../core.h"
 
 extern int cancel_booking(cms_t cms) {
-	struct cms_cancel_booking_request request = { 0 };
+	char booking_code[CMS_BOOKING_CODE_LEN] = { 0 };
 	struct cms_cancel_booking_response* response = NULL;
 	char input[CMS_BOOKING_CODE_LEN] = { 0 };
 	while (true) {
 		while (true) {
-			uint32_t tmp;
 			io_clear_screen();
 			puts(title);
 			get_input("Inserire il codice di prenotazione da annullare o Q per tornare indietro: ", input, false);
 			if (input[0] == 'Q' && input[1] == '\0') {
 				return 0;
 			}
-			if ((strlen(input) == sizeof input - 1) && cmn_strto_uint32(&tmp, input, 16) == 0) {
-				strcpy(request.booking_code, input);
+			if ((strlen(input) == sizeof booking_code - 1) && cmn_strto_uint32(&(uint32_t){ 0 }, input, 16) == 0) {
+				strcpy(booking_code, input);
 				break;
 			}
 		}
 		puts("");
-		try(cms_cancel_booking(cms, &request, &response), 1, fail);
+		try(cms_cancel_booking(cms, &booking_code, &response), 1, fail);
 		if (response->error_message) {
 			printf("%s\n", response->error_message);
 			cms_destroy_response((struct cms_response*)response);
