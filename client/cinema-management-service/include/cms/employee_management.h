@@ -5,14 +5,16 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+struct cms_employee {
+	int32_t id;
+	char name[CMS_EMPLOYEE_NAME_LEN];
+	char surname[CMS_EMPLOYEE_SURNAME_LEN];
+	char role[CMS_EMPLOYEE_ROLE_LEN];
+};
+
 struct cms_get_employees_response {
 	struct cms_response;
-	struct cms_employee {
-		int32_t id;
-		char name[CMS_EMPLOYEE_NAME_LEN];
-		char surname[CMS_EMPLOYEE_SURNAME_LEN];
-		char role[CMS_EMPLOYEE_ROLE_LEN];
-	} result[];
+	struct cms_employee result[];
 };
 extern int cms_get_employees(cms_t cms, struct cms_get_employees_response** response);
 

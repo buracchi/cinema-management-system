@@ -5,14 +5,22 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+struct cms_cinema {
+	int32_t id;
+	char address[CMS_CINEMA_ADDRESS_LEN];
+	char opening_time[CMS_TIME_LEN];
+	char closing_time[CMS_TIME_LEN];
+};
+
+struct cms_hall {
+	int32_t id;
+	uint64_t num_rows;
+	uint64_t num_cols;
+};
+
 struct cms_get_all_cinema_response {
 	struct cms_response;
-	struct cms_cinema {
-		int32_t id;
-		char address[CMS_CINEMA_ADDRESS_LEN];
-		char opening_time[CMS_TIME_LEN];
-		char closing_time[CMS_TIME_LEN];
-	} result[];
+	struct cms_cinema result[];
 };
 extern int cms_get_all_cinema(cms_t cms, struct cms_get_all_cinema_response** response);
 
@@ -39,11 +47,7 @@ struct cms_get_cinema_halls_request {
 };
 struct cms_get_cinema_halls_response {
 	struct cms_response;
-	struct cms_hall {
-		int32_t id;
-		uint64_t num_rows;
-		uint64_t num_cols;
-	} result[];
+	struct cms_hall result[];
 };
 extern int cms_get_cinema_halls(cms_t cms, struct cms_get_cinema_halls_request* request, struct cms_get_cinema_halls_response** response);
 

@@ -5,14 +5,43 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+struct cms_cinema {
+	int32_t id;
+	char address[CMS_CINEMA_ADDRESS_LEN];
+	char opening_time[CMS_TIME_LEN];
+	char closing_time[CMS_TIME_LEN];
+};
+
+struct cms_hall {
+	int32_t id;
+	uint64_t num_rows;
+	uint64_t num_cols;
+};
+
+struct cms_seat {
+	char row[CMS_HALL_ROW_LEN];
+	uint32_t number;
+};
+
+struct cms_screening {
+	int32_t cinema_id;
+	int32_t hall_number;
+	char date[CMS_DATE_LEN];
+	char time[CMS_TIME_LEN];
+	char price[CMS_DECIMAL_LEN];
+	char film_name[CMS_FILM_NAME_LEN];
+	char running_time[CMS_TIME_LEN];
+	char film_studio[CMS_FILM_STUDIO_LEN];
+	char cast[CMS_FILM_CAST_LEN];
+};
+
+struct cms_booking {
+	char booking_code[CMS_BOOKING_CODE_LEN];
+};
+
 struct cms_get_all_cinema_response {
 	struct cms_response;
-	struct cms_cinema {
-		int32_t id;
-		char address[CMS_CINEMA_ADDRESS_LEN];
-		char opening_time[CMS_TIME_LEN];
-		char closing_time[CMS_TIME_LEN];
-	} result[];
+	struct cms_cinema result[];
 };
 extern int cms_get_all_cinema(cms_t cms, struct cms_get_all_cinema_response** response);
 
@@ -21,17 +50,7 @@ struct cms_get_cinema_screenings_request {
 };
 struct cms_get_cinema_screenings_response {
 	struct cms_response;
-	struct cms_screening {
-		int32_t cinema_id;
-		int32_t hall_number;
-		char date[CMS_DATE_LEN];
-		char time[CMS_TIME_LEN];
-		char price[CMS_DECIMAL_LEN];
-		char film_name[CMS_FILM_NAME_LEN];
-		char running_time[CMS_TIME_LEN];
-		char film_studio[CMS_FILM_STUDIO_LEN];
-		char cast[CMS_FILM_CAST_LEN];
-	} result[];
+	struct cms_screening result[];
 };
 extern int cms_get_cinema_screenings(cms_t cms, struct cms_get_cinema_screenings_request* request, struct cms_get_cinema_screenings_response** response);
 
@@ -40,11 +59,7 @@ struct cms_get_cinema_halls_request {
 };
 struct cms_get_cinema_halls_response {
 	struct cms_response;
-	struct cms_hall {
-		int32_t id;
-		uint64_t num_rows;
-		uint64_t num_cols;
-	} result[];
+	struct cms_hall result[];
 };
 extern int cms_get_cinema_halls(cms_t cms, struct cms_get_cinema_halls_request* request, struct cms_get_cinema_halls_response** response);
 
@@ -56,10 +71,7 @@ struct cms_get_available_seats_request {
 };
 struct cms_get_available_seats_response {
 	struct cms_response;
-	struct cms_seat {
-		char row[CMS_HALL_ROW_LEN];
-		uint32_t number;
-	} result[];
+	struct cms_seat result[];
 };
 extern int cms_get_available_seats(cms_t cms, struct cms_get_available_seats_request* request, struct cms_get_available_seats_response** response);
 
@@ -73,9 +85,7 @@ struct cms_create_booking_request {
 };
 struct cms_create_booking_response {
 	struct cms_response;
-	struct cms_booking {
-		char booking_code[CMS_BOOKING_CODE_LEN];
-	} result[];
+	struct cms_booking result[];
 };
 extern int cms_create_booking(cms_t cms, struct cms_create_booking_request* request, struct cms_create_booking_response** response);
 

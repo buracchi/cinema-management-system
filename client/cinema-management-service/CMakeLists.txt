@@ -2,16 +2,16 @@
 find_package(unofficial-libmariadb CONFIG REQUIRED)
 
 add_library(cinema-management-service STATIC
-    "src/cms.c"
-    "src/cms_operation.h"
-    "src/booking.c"
-    "src/cinema_management.c"
-    "src/employee_management.c"
-    "src/projections_scheduling.c"
-    "src/shift_scheduling.c"
-    "src/report.c"
-    "src/utilities/dbutil.c"
-    "src/utilities/dbutil.h")
+            "src/cms.c"
+            "src/cms_operation.h"
+            "src/booking.c"
+            "src/cinema_management.c"
+            "src/employee_management.c"
+            "src/projections_scheduling.c"
+            "src/shift_scheduling.c"
+            "src/report.c"
+            "src/utilities/dbutil.c"
+            "src/utilities/dbutil.h")
 target_include_directories(cinema-management-service PUBLIC
                            "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
                            "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
