@@ -4,6 +4,7 @@ CREATE PROCEDURE `inserisci_sala`(
     IN _file INT,
     IN _posti_per_fila INT)
 BEGIN
+    START TRANSACTION;
     INSERT INTO `Sale` (`cinema`, `numero`)
     VALUES (_cinema, _numero);
     INSERT INTO `Posti` (`cinema`, `sala`, `fila`, `numero`)
@@ -21,4 +22,5 @@ BEGIN
     SELECT _cinema, _numero, lettera, numeri.numero
     FROM lettere
              CROSS JOIN numeri;
+    COMMIT;
 END

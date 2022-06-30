@@ -7,7 +7,7 @@ add_library(cinema-management-service STATIC
     "src/booking.c"
     "src/cinema_management.c"
     "src/employee_management.c"
-    "src/screenings_scheduling.c"
+    "src/projections_scheduling.c"
     "src/shift_scheduling.c"
     "src/report.c"
     "src/utilities/dbutil.c"

@@ -8,6 +8,8 @@ BEGIN
     DECLARE _cinema_inesistente_msg VARCHAR(128) DEFAULT MESSAGGIO_ERRORE(45014);
     DECLARE _sala_inesistente CONDITION FOR SQLSTATE '45018';
     DECLARE _sala_inesistente_msg VARCHAR(128) DEFAULT MESSAGGIO_ERRORE(45018);
+    SET TRANSACTION ISOLATION LEVEL REPEATABLE READ;
+    START TRANSACTION;
     IF (_cinema NOT IN (SELECT `id` FROM `Cinema`)) THEN
         SIGNAL _cinema_inesistente SET MESSAGE_TEXT = _cinema_inesistente_msg;
     END IF;
@@ -36,4 +38,5 @@ BEGIN
                        AND `ora` <= SEC_TO_TIME(TIME_TO_SEC(P.`ora`) + TIME_TO_SEC(F.`durata`))
                        AND SEC_TO_TIME(TIME_TO_SEC(`ora`) + TIME_TO_SEC(`durata`)) >= _ora
                        AND `proiezionista` = `matricola`);
+    COMMIT;
 END

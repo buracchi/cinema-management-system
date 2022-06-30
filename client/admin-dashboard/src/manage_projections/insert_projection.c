@@ -1,6 +1,6 @@
 #include <buracchi/common/utilities/try.h>
 #include <cms/cms.h>
-#include <cms/screenings_scheduling.h.>
+#include <cms/projections_scheduling.h.>
 #include <cms/cinema_management.h>
 #include <cliutils/io.h>
 
@@ -10,9 +10,9 @@ extern int select_cinema(cms_t cms, struct cms_cinema* cinema);
 extern int select_hall(cms_t cms, int32_t cinema_id, struct cms_hall* hall);
 extern int select_movie(cms_t cms, struct cms_movie* movie);
 
-extern int insert_screening(cms_t cms) {
-	struct cms_add_screening_request request = { 0 };
-	struct cms_add_screening_response* response = NULL;
+extern int insert_projection(cms_t cms) {
+	struct cms_add_projection_request request = { 0 };
+	struct cms_add_projection_response* response = NULL;
 	struct cms_cinema cinema;
 	struct cms_hall hall;
 	struct cms_movie movie;
@@ -63,7 +63,7 @@ extern int insert_screening(cms_t cms) {
 	request.film_id = movie.film_id;
 	request.cinema_id = cinema.id;
 	request.hall_number = hall.id;
-	try(cms_add_screening(cms, &request, &response), 1, fail);
+	try(cms_add_projection(cms, &request, &response), 1, fail);
 	if (response->error_message) {
 		printf("%s\n", response->error_message);
 	}

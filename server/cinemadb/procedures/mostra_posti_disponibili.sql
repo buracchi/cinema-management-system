@@ -10,6 +10,8 @@ BEGIN
     DECLARE _sala_inesistente_msg VARCHAR(128) DEFAULT MESSAGGIO_ERRORE(45018);
     DECLARE _proiezione_inesistente CONDITION FOR SQLSTATE '45017';
     DECLARE _proiezione_inesistente_msg VARCHAR(128) DEFAULT MESSAGGIO_ERRORE(45017);
+    SET TRANSACTION ISOLATION LEVEL REPEATABLE READ;
+    START TRANSACTION;
     IF (_cinema_id NOT IN (SELECT `id` FROM `Cinema`)) THEN
         SIGNAL _cinema_inesistente SET MESSAGE_TEXT = _cinema_inesistente_msg;
     END IF;
@@ -31,4 +33,5 @@ BEGIN
                                        AND `Prenotazioni`.`data` = _data
                                        AND `Prenotazioni`.`ora` = _ora
                                        AND `Prenotazioni`.`stato` != 'Annullata');
+    COMMIT;
 END

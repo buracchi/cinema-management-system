@@ -5,13 +5,13 @@ CREATE PROCEDURE `elimina_turno`(
 BEGIN
     DECLARE _turno_inesistente CONDITION FOR SQLSTATE '45019';
     DECLARE _err_msg VARCHAR(128) DEFAULT MESSAGGIO_ERRORE(45019);
-    IF ((_dipendente, _giorno, _inizio) NOT IN (SELECT `dipendente`, `giorno`, `inizio`
-                                                FROM `Turni`)) THEN
-        SIGNAL _turno_inesistente SET MESSAGE_TEXT = _err_msg;
-    END IF;
+    DECLARE _affected_rows INT;
     DELETE
     FROM `Turni`
     WHERE `dipendente` = _dipendente
       AND `giorno` = _giorno
       AND `inizio` = _inizio;
+    IF (_affected_rows = 0) THEN
+        SIGNAL _turno_inesistente SET MESSAGE_TEXT = _err_msg;
+    END IF;
 END

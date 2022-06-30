@@ -42,7 +42,7 @@ static const struct operation_data {
 		.query = "call elimina_prenotazione(?)",
 		.params_type = (FIELD_TYPE[1]) { FIELD_TYPE_STRING }
 	},
-	[DELETE_SCREENING] = {
+	[DELETE_PROJECTION] = {
 		.statement = NULL,
 		.query = "call elimina_proiezione(?, ?, ?, ?)",
 		.params_type = (FIELD_TYPE[4]) { FIELD_TYPE_LONG, FIELD_TYPE_LONG, FIELD_TYPE_DATE, FIELD_TYPE_TIME }
@@ -77,7 +77,7 @@ static const struct operation_data {
 		.query = "call inserisci_dipendente(?, ?, ?)",
 		.params_type = (FIELD_TYPE[3]) { FIELD_TYPE_STRING, FIELD_TYPE_STRING, FIELD_TYPE_STRING }
 	},
-	[ADD_SCREENING] = {
+	[ADD_PROJECTION] = {
 		.statement = NULL,
 		.query = "call inserisci_proiezione(?, ?, ?, ?, ?, ?)",
 		.params_type = (FIELD_TYPE[6]) { FIELD_TYPE_LONG, FIELD_TYPE_LONG, FIELD_TYPE_DATE, FIELD_TYPE_TIME, FIELD_TYPE_DECIMAL, FIELD_TYPE_LONG }
@@ -122,7 +122,7 @@ static const struct operation_data {
 		.query = "call mostra_posti_disponibili(?, ?, ?, ?)",
 		.params_type = (FIELD_TYPE[4]) { FIELD_TYPE_LONG, FIELD_TYPE_LONG, FIELD_TYPE_DATE, FIELD_TYPE_TIME }
 	},
-	[GET_SCREENINGS] = {
+	[GET_PROJECTION] = {
 		.statement = NULL,
 		.query = "call mostra_proiezioni()",
 		.params_type = NULL

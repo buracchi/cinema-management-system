@@ -1,15 +1,15 @@
-#include <cms/screenings_scheduling.h>
+#include <cms/projections_scheduling.h>
 
 #include "cms_operation.h"
 
-extern int cms_get_screenings(cms_t cms, struct cms_get_screenings_response** response) {
+extern int cms_get_projections(cms_t cms, struct cms_get_projections_response** response) {
 	struct cms_result_bitmap result_bitmap[] = {
-			CMS_RESULT_BITMAP_INFO(struct cms_get_screenings_response, result[0]),
-			CMS_RESULT_BITMAP_INFO(struct cms_screening, date, cinema_id, cinema_address, hall_number),
-			CMS_RESULT_BITMAP_INFO(struct cms_screening, film_id, film_name, price, start_time, duration),
-			CMS_RESULT_BITMAP_INFO(struct cms_screening, projectionist_id, projectionist_name, projectionist_surname)
+			CMS_RESULT_BITMAP_INFO(struct cms_get_projections_response, result[0]),
+			CMS_RESULT_BITMAP_INFO(struct cms_projection, date, cinema_id, cinema_address, hall_number),
+			CMS_RESULT_BITMAP_INFO(struct cms_projection, film_id, film_name, price, start_time, duration),
+			CMS_RESULT_BITMAP_INFO(struct cms_projection, projectionist_id, projectionist_name, projectionist_surname)
 	};
-	return cms_operation_execute(cms, GET_SCREENINGS, NULL, (struct cms_response**)response, result_bitmap);
+	return cms_operation_execute(cms, GET_PROJECTION, NULL, (struct cms_response**)response, result_bitmap);
 }
 
 extern int cms_get_movies(cms_t cms, struct cms_get_movies_response** response) {
@@ -20,7 +20,7 @@ extern int cms_get_movies(cms_t cms, struct cms_get_movies_response** response) 
 	return cms_operation_execute(cms, GET_MOVIES, NULL, (struct cms_response**)response, result_bitmap);
 }
 
-extern int cms_add_screening(cms_t cms, struct cms_add_screening_request* request, struct cms_add_screening_response** response) {
+extern int cms_add_projection(cms_t cms, struct cms_add_projection_request* request, struct cms_add_projection_response** response) {
 	struct cms_request_param request_params[] = {
 			CMS_REQUEST_PARAM_INFO(request->cinema_id),
 			CMS_REQUEST_PARAM_INFO(request->hall_number),
@@ -29,17 +29,17 @@ extern int cms_add_screening(cms_t cms, struct cms_add_screening_request* reques
 			CMS_REQUEST_PARAM_INFO(request->price),
 			CMS_REQUEST_PARAM_INFO(request->film_id)
 	};
-	return cms_operation_execute(cms, ADD_SCREENING, request_params, (struct cms_response**)response, NULL);
+	return cms_operation_execute(cms, ADD_PROJECTION, request_params, (struct cms_response**)response, NULL);
 }
 
-extern int cms_delete_screening(cms_t cms, struct cms_delete_screening_request* request, struct cms_delete_screening_response** response) {
+extern int cms_delete_projection(cms_t cms, struct cms_delete_projection_request* request, struct cms_delete_projection_response** response) {
 	struct cms_request_param request_params[] = {
 			CMS_REQUEST_PARAM_INFO(request->cinema_id),
 			CMS_REQUEST_PARAM_INFO(request->hall_number),
 			CMS_REQUEST_PARAM_INFO(request->date),
 			CMS_REQUEST_PARAM_INFO(request->start_time)
 	};
-	return cms_operation_execute(cms, DELETE_SCREENING, request_params, (struct cms_response**)response, NULL);
+	return cms_operation_execute(cms, DELETE_PROJECTION, request_params, (struct cms_response**)response, NULL);
 }
 
 extern int cms_get_available_projectionists(cms_t cms, struct cms_get_available_projectionists_request* request, struct cms_get_available_projectionists_response** response) {

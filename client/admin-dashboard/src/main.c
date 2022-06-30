@@ -11,13 +11,13 @@
 #include "generate_report/generate_report.h"
 #include "manage_cinema/manage_cinema.h"
 #include "manage_employees/manage_employees.h"
-#include "manage_screenings/manage_screenings.h"
+#include "manage_projections/manage_projections.h"
 #include "manage_shifts/manage_shifts.h"
 #include "core.h"
 
 enum actions {
 	MANAGE_CINEMA = '1',
-	MANAGE_SCREENINGS = '2',
+	MANAGE_PROJECTIONS = '2',
 	MANAGE_SHIFTS = '3',
 	MANAGE_EMPLOYEES = '4',
 	GENERATE_REPORT = '5',
@@ -53,8 +53,8 @@ int main(void) {
 		case MANAGE_CINEMA:
 			try(choose_manage_cinema_action(cms), 1, fail2);
 			break;
-		case MANAGE_SCREENINGS:
-			try(choose_manage_screenings_action(cms), 1, fail2);
+		case MANAGE_PROJECTIONS:
+			try(choose_manage_projections_action(cms), 1, fail2);
 			break;
 		case MANAGE_SHIFTS:
 			try(choose_manage_shifts_action(cms), 1, fail2);
