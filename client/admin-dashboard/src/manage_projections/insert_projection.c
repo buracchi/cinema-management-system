@@ -11,7 +11,7 @@ extern int select_hall(cms_t cms, int32_t cinema_id, struct cms_hall* hall);
 extern int select_movie(cms_t cms, struct cms_movie* movie);
 
 extern int insert_projection(cms_t cms) {
-	struct cms_add_projection_request request = { 0 };
+	struct cms_add_projection_details add_projection_details = {0 };
 	struct cms_add_projection_response* response = NULL;
 	struct cms_cinema cinema;
 	struct cms_hall hall;
@@ -52,18 +52,18 @@ extern int insert_projection(cms_t cms) {
 	printf("Cinema: %s\n", cinema.address);
 	printf("Sala: %d\n", hall.id);
 	printf("Film: %s\n", movie.name);
-	get_input("Data [YYYY-MM-DD]: ", request.date, false);
-	get_input("Ora inizio [hh:mm:ss]: ", request.start_time, false);
-	get_input("Prezzo: ", request.price, false);
+	get_input("Data [YYYY-MM-DD]: ", add_projection_details.date, false);
+	get_input("Ora inizio [hh:mm:ss]: ", add_projection_details.start_time, false);
+	get_input("Prezzo: ", add_projection_details.price, false);
 	puts("");
 	if (multi_choice("Procedere?", ((char[]){ 'S', 'N' })) == 'N') {
 		return 0;
 	}
 	puts("");
-	request.film_id = movie.film_id;
-	request.cinema_id = cinema.id;
-	request.hall_number = hall.id;
-	try(cms_add_projection(cms, &request, &response), 1, fail);
+	add_projection_details.film_id = movie.film_id;
+	add_projection_details.cinema_id = cinema.id;
+	add_projection_details.hall_number = hall.id;
+	try(cms_add_projection(cms, &add_projection_details, &response), 1, fail);
 	if (response->error_message) {
 		printf("%s\n", response->error_message);
 	}

@@ -5,13 +5,13 @@
 
 #include "../core.h"
 
-extern int select_projection(cms_t cms, struct cms_projection *projection);
+extern int select_projection(cms_t cms, struct cms_projection_details *projection_details);
 
 extern int delete_projection(cms_t cms) {
-	struct cms_delete_projection_request request = {0 };
+	struct cms_projection projection = { 0 };
 	struct cms_delete_projection_response* response = NULL;
-	struct cms_projection projection;
-	switch (select_projection(cms, &projection)) {
+	struct cms_projection_details projection_details;
+	switch (select_projection(cms, &projection_details)) {
 	case 1:
 		goto fail;
 	case 2:
@@ -19,20 +19,20 @@ extern int delete_projection(cms_t cms) {
 	}
 	io_clear_screen();
 	puts(title);
-	printf("Cinema: %s\n", projection.cinema_address);
-	printf("Sala: %d\n", projection.hall_number);
-	printf("Film: %s\n", projection.film_name);
-	printf("Data: %s\n", projection.date);
-	printf("Ora: %s\n\n", projection.start_time);
+	printf("Cinema: %s\n", projection_details.cinema_address);
+	printf("Sala: %d\n", projection_details.hall_number);
+	printf("Film: %s\n", projection_details.film_name);
+	printf("Data: %s\n", projection_details.date);
+	printf("Ora: %s\n\n", projection_details.start_time);
 	if (multi_choice("La proiezione selezionata verra' rimossa, procedere?", ((char[]){ 'S', 'N' })) == 'N') {
 		return 0;
 	}
 	puts("");
-	request.cinema_id = projection.cinema_id;
-	request.hall_number = projection.hall_number;
-	memcpy(request.date, projection.date, sizeof(request.date));
-	memcpy(request.start_time, projection.start_time, sizeof(request.start_time));
-	try(cms_delete_projection(cms, &request, &response), 1, fail);
+	projection.cinema_id = projection_details.cinema_id;
+	projection.hall_number = projection_details.hall_number;
+	memcpy(projection.date, projection_details.date, sizeof(projection.date));
+	memcpy(projection.start_time, projection_details.start_time, sizeof(projection.start_time));
+	try(cms_delete_projection(cms, &projection, &response), 1, fail);
 	if (response->error_message) {
 		printf("%s\n", response->error_message);
 	}

@@ -7,7 +7,7 @@
 
 #include "../core.h"
 
-extern int select_projection(cms_t cms, struct cms_projection *projection);
+extern int select_projection(cms_t cms, struct cms_projection_details *projection_details);
 static char* get_projections_table(struct cms_get_projections_response* response);
 
 extern int show_projections(cms_t cms) {
@@ -37,7 +37,7 @@ fail:
 	return 1;
 }
 
-extern int select_projection(cms_t cms, struct cms_projection *projection) {
+extern int select_projection(cms_t cms, struct cms_projection_details *projection_details) {
 	struct cms_get_projections_response* response = NULL;
 	char* projection_table;
 	char input[INT32DSTR_LEN];
@@ -64,7 +64,7 @@ extern int select_projection(cms_t cms, struct cms_projection *projection) {
 		else if (cmn_strto_int32(&selected_projection, input, 10) == 0
 		         && selected_projection > 0
 		         && (uint64_t)selected_projection <= response->num_elements) {
-			memcpy(projection, &(response->result[selected_projection - 1]), sizeof * projection);
+			memcpy(projection_details, &(response->result[selected_projection - 1]), sizeof * projection_details);
 			break;
 		}
 		cms_destroy_response((struct cms_response*)response);

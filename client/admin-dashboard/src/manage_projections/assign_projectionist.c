@@ -5,27 +5,27 @@
 
 #include "../core.h"
 
-extern int select_projection(cms_t cms, struct cms_projection* projection);
-extern int select_projectionist(cms_t cms, struct cms_get_available_projectionists_request* request, struct cms_available_projectionist* projectionist);
+extern int select_projection(cms_t cms, struct cms_projection_details* projection_details);
+extern int select_projectionist(cms_t cms, struct cms_projection* projection, struct cms_available_projectionist* projectionist);
 
 extern int assign_projectionist(cms_t cms) {
-	struct cms_assign_projectionist_request request = { 0 };
+	struct cms_assign_projectionist_details assign_projectionist_details = {0 };
 	struct cms_assign_projectionist_response* response = NULL;
-	struct cms_projection projection;
+	struct cms_projection_details projection_details;
 	struct cms_available_projectionist projectionist;
 	while (true) {
-		switch (select_projection(cms, &projection)) {
+		switch (select_projection(cms, &projection_details)) {
 			case 1:
 				goto fail;
 			case 2:
 				return 0;
 		}
-		struct cms_get_available_projectionists_request projectionists_request;
-		projectionists_request.cinema_id = projection.cinema_id;
-		projectionists_request.hall_number = projection.hall_number;
-		memcpy(projectionists_request.date, projection.date, sizeof(projectionists_request.date));
-		memcpy(projectionists_request.start_time, projection.start_time, sizeof(projectionists_request.start_time));
-		switch (select_projectionist(cms, &projectionists_request, &projectionist)) {
+		struct cms_projection projection;
+		projection.cinema_id = projection_details.cinema_id;
+		projection.hall_number = projection_details.hall_number;
+		memcpy(projection.date, projection_details.date, sizeof(projection.date));
+		memcpy(projection.start_time, projection_details.start_time, sizeof(projection.start_time));
+		switch (select_projectionist(cms, &projection, &projectionist)) {
 			case 1:
 				goto fail;
 			case 2:
@@ -36,21 +36,21 @@ extern int assign_projectionist(cms_t cms) {
 	io_clear_screen();
 	puts(title);
 	printf("Proiezionista: %d - %s %s\n", projectionist.id, projectionist.name, projectionist.surname);
-	printf("Cinema: %s\n", projection.cinema_address);
-	printf("Sala: %d\n", projection.hall_number);
-	printf("Film: %s\n", projection.film_name);
-	printf("Data: %s\n", projection.date);
-	printf("Ora: %s\n\n", projection.start_time);
+	printf("Cinema: %s\n", projection_details.cinema_address);
+	printf("Sala: %d\n", projection_details.hall_number);
+	printf("Film: %s\n", projection_details.film_name);
+	printf("Data: %s\n", projection_details.date);
+	printf("Ora: %s\n\n", projection_details.start_time);
 	if (multi_choice("Procedere?", ((char[]){ 'S', 'N' })) == 'N') {
 		return 0;
 	}
 	puts("");
-	request.projectionist_id = projectionist.id;
-	request.cinema_id = projection.cinema_id;
-	request.hall_number = projection.hall_number;
-	memcpy(request.date, projection.date, sizeof(request.date));
-	memcpy(request.start_time, projection.start_time, sizeof(request.start_time));
-	try(cms_assign_projectionist(cms, &request, &response), 1, fail);
+	assign_projectionist_details.projectionist_id = projectionist.id;
+	assign_projectionist_details.cinema_id = projection_details.cinema_id;
+	assign_projectionist_details.hall_number = projection_details.hall_number;
+	memcpy(assign_projectionist_details.date, projection_details.date, sizeof(assign_projectionist_details.date));
+	memcpy(assign_projectionist_details.start_time, projection_details.start_time, sizeof(assign_projectionist_details.start_time));
+	try(cms_assign_projectionist(cms, &assign_projectionist_details, &response), 1, fail);
 	if (response->error_message) {
 		printf("%s\n", response->error_message);
 	}

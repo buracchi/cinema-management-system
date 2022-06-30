@@ -9,7 +9,7 @@
 
 static char* get_projectionists_table(struct cms_get_available_projectionists_response* response);
 
-extern int select_projectionist(cms_t cms, struct cms_get_available_projectionists_request* request, struct cms_available_projectionist* projectionist) {
+extern int select_projectionist(cms_t cms, struct cms_projection* projection, struct cms_available_projectionist* projectionist) {
 	struct cms_get_available_projectionists_response* response = NULL;
 	char* projectionists_table;
 	char input[INT32DSTR_LEN];
@@ -18,7 +18,7 @@ extern int select_projectionist(cms_t cms, struct cms_get_available_projectionis
 	while (true) {
 		io_clear_screen();
 		puts(title);
-		try(cms_get_available_projectionists(cms, request, &response), 1, fail);
+		try(cms_get_available_projectionists(cms, projection, &response), 1, fail);
 		if (response->error_message) {
 			printf("%s\n", response->error_message);
 			cms_destroy_response((struct cms_response*)response);
