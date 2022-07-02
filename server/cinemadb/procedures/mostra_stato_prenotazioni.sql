@@ -3,7 +3,8 @@ BEGIN
     SELECT `Sale`.`cinema`,
            `indirizzo`,
            `Sale`.`numero`                                                           AS sala,
-           IFNULL(SUM(`stato` RLIKE '^(Confermata|Annullata|Scaduta|Validata)$'), 0) AS confermate,
+           IFNULL(SUM(`stato` RLIKE '^(Confermata|Annullata|Scaduta|Validata)$'), 0) AS totale,
+           IFNULL(SUM(`stato` = 'Confermata'), 0)                                    AS confermate,
            IFNULL(SUM(`stato` = 'Annullata'), 0)                                     AS annullate,
            IFNULL(SUM(`stato` = 'Validata'), 0)                                      AS validate,
            IFNULL(SUM(`stato` = 'Scaduta'), 0)                                       AS scadute

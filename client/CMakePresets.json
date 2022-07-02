@@ -50,7 +50,7 @@
       },
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
-        "CMAKE_C_FLAGS_RELEASE": "/std:c17",
+        "CMAKE_C_FLAGS_RELEASE": "/std:c17 /O2",
         "CMAKE_CXX_FLAGS_RELEASE": "/std:c++20"
       }
     },

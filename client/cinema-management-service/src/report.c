@@ -21,7 +21,7 @@ extern int cms_get_cinema_without_ushers(cms_t cms, struct cms_get_cinema_withou
 extern int cms_get_reservations_status(cms_t cms, struct cms_get_reservations_status_response** response) {
 	struct cms_result_bitmap result_bitmap[] = {
 			CMS_RESULT_BITMAP_INFO(struct cms_get_reservations_status_response, result[0]),
-			CMS_RESULT_BITMAP_INFO(struct cms_reservations_status, cinema, address, hall, confirmed, cancelled, validated, expired)
+			CMS_RESULT_BITMAP_INFO(struct cms_reservations_status, cinema, address, hall, total, confirmed, cancelled, validated, expired)
 	};
 	return cms_operation_execute(cms, GET_MONTHLY_RESERVATIONS_STATUS, NULL, (struct cms_response**)response, result_bitmap);
 }

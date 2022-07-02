@@ -9,7 +9,10 @@ BEGIN
             ROLLBACK;
             RESIGNAL;
         END;
-    SET TRANSACTION ISOLATION LEVEL REPEATABLE READ;
+    -- Qualunque livello di isolamento effettua la medesima strategia di
+    -- locking per questa transazione.
+    -- Non e' pertanto necessario specificare un livello di isolamento diverso
+    -- da quello di default.
     START TRANSACTION;
     INSERT INTO `Sale` (`cinema`, `numero`)
     VALUES (_cinema, _numero);

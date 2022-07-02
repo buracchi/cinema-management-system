@@ -20,7 +20,7 @@ static int validate_booking(char (*booking_code)[CMS_BOOKING_CODE_LEN]);
 #ifdef RUN_FROM_IDE
 int main(void) {
 	try(env_load(".", false), -1, fail);
-	return validate_booking(1);
+	return validate_booking("123456");
 }
 #else
 int main(int argc, char** argv) {

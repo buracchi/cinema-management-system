@@ -27,6 +27,7 @@ struct cms_reservations_status {
 	int32_t cinema;
 	char address[CMS_CINEMA_ADDRESS_LEN];
 	int32_t hall;
+	char total[CMS_DECIMAL_LEN];
 	char confirmed[CMS_DECIMAL_LEN];
 	char cancelled[CMS_DECIMAL_LEN];
 	char validated[CMS_DECIMAL_LEN];
