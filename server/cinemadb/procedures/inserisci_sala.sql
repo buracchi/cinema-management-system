@@ -4,6 +4,12 @@ CREATE PROCEDURE `inserisci_sala`(
     IN _file INT,
     IN _posti_per_fila INT)
 BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+        BEGIN
+            ROLLBACK;
+            RESIGNAL;
+        END;
+    SET TRANSACTION ISOLATION LEVEL REPEATABLE READ;
     START TRANSACTION;
     INSERT INTO `Sale` (`cinema`, `numero`)
     VALUES (_cinema, _numero);

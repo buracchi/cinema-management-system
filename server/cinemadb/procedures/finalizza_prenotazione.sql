@@ -18,7 +18,7 @@ BEGIN
             ROLLBACK;
             RESIGNAL;
         END;
-    SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
+    SET TRANSACTION ISOLATION LEVEL REPEATABLE READ;
     START TRANSACTION;
     IF (_codice NOT IN (SELECT `codice` FROM `Prenotazioni`)) THEN
         SIGNAL _codice_invalido SET MESSAGE_TEXT = _codice_invalido_msg;

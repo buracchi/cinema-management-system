@@ -9,6 +9,13 @@ BEGIN
     DECLARE _codice CHAR(6);
     DECLARE _fine BOOL DEFAULT TRUE;
     DECLARE _codice_doppione CONDITION FOR 1062;
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+        BEGIN
+            ROLLBACK;
+            RESIGNAL;
+        END;
+    SET TRANSACTION ISOLATION LEVEL REPEATABLE READ;
+    START TRANSACTION;
     retry:
     REPEAT
         BEGIN
@@ -23,4 +30,5 @@ BEGIN
         END;
     UNTIL _fine END REPEAT;
     SELECT _codice;
+    COMMIT;
 END

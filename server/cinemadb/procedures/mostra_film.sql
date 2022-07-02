@@ -1,5 +1,4 @@
 CREATE PROCEDURE `mostra_film`()
 BEGIN
-    SELECT *
-    FROM `FILM`;
+    SELECT * FROM `FILM`;
 END
