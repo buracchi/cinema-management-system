@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS `cinemadb`.`Turni`
         FOREIGN KEY (`giorno`)
             REFERENCES `cinemadb`.`Giorni` (`nome`)
             ON DELETE NO ACTION
-            ON UPDATE NO ACTION
+            ON UPDATE NO ACTION,
+    CONSTRAINT `chk_Turni_Durata` CHECK (`durata` <= TIME('08:00:00'))
 )
     ENGINE = InnoDB;

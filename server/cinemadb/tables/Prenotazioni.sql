@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS `cinemadb`.`Prenotazioni`
     UNIQUE INDEX `transazione_UNIQUE` (`transazione` ASC) VISIBLE,
     INDEX `fk_Prenotazioni_Posti1_idx` (`cinema` ASC, `sala` ASC, `fila` ASC, `numero` ASC) VISIBLE,
     INDEX `fk_Prenotazioni_Proiezioni1_idx` (`cinema` ASC, `sala` ASC, `data` ASC, `ora` ASC) VISIBLE,
-    INDEX `fk_Prenotazioni_StatiPrenotazione1_idx` (`stato` ASC) VISIBLE,
+    INDEX `fk_Prenotazioni_Stati_Prenotazione1_idx` (`stato` ASC) VISIBLE,
     CONSTRAINT `fk_Prenotazioni_Posti1`
         FOREIGN KEY (`cinema`, `sala`, `fila`, `numero`)
             REFERENCES `cinemadb`.`Posti` (`cinema`, `sala`, `fila`, `numero`)
@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS `cinemadb`.`Prenotazioni`
             ON UPDATE CASCADE,
     CONSTRAINT `fk_Prenotazioni_StatoPrenotazione1`
         FOREIGN KEY (`stato`)
-            REFERENCES `cinemadb`.`StatiPrenotazione` (`nome`)
+            REFERENCES `cinemadb`.`Stati_Prenotazione` (`nome`)
             ON DELETE NO ACTION
             ON UPDATE NO ACTION
 )

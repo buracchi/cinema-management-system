@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS `cinemadb`.`Proiezioni`
     PRIMARY KEY (`cinema`, `sala`, `data`, `ora`),
     INDEX `fk_Proiezioni_Film1_idx` (`film` ASC) VISIBLE,
     INDEX `fk_Proiezioni_Dipendenti1_idx` (`proiezionista` ASC) VISIBLE,
-    INDEX `order_idx` USING BTREE (`data`, `ora`, `cinema`, `sala`) VISIBLE,
+    INDEX `idx_Proiezioni_Chrono` USING BTREE (`data`, `ora`, `cinema`, `sala`) VISIBLE,
     CONSTRAINT `fk_Proiezioni_Sale1`
         FOREIGN KEY (`cinema`, `sala`)
             REFERENCES `cinemadb`.`Sale` (`cinema`, `numero`)

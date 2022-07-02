@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS `cinemadb`.`Cinema`
     `apertura`  TIME         NOT NULL,
     `chiusura`  TIME         NOT NULL,
     PRIMARY KEY (`id`),
-    UNIQUE INDEX `indirizzo_UNIQUE` (`indirizzo` ASC) VISIBLE
+    UNIQUE INDEX `indirizzo_UNIQUE` (`indirizzo` ASC) VISIBLE,
+    CONSTRAINT `chk_Cinema_Apertura_Precede_Chiusura` CHECK (`apertura` < `chiusura`)
 )
     ENGINE = InnoDB;

@@ -54,7 +54,7 @@ class SqlScriptGenerator:
     def _get_tables_section(self):
         result = ''
         for table_name in ['Cinema', 'Sale', 'Posti', 'Ruoli', 'Dipendenti', 'Giorni', 'Turni', 'Film',
-                           'Proiezioni', 'StatiPrenotazione', 'Prenotazioni']:
+                           'Proiezioni', 'Stati_Prenotazione', 'Prenotazioni']:
             result += self._get_comment_header('Table `' + self.dbname + '`.`' + table_name + '`')
             result += '\n'
             with open(self._absolute_path_of('tables/' + table_name + '.sql'), 'r') as source:
@@ -126,7 +126,7 @@ class SqlScriptGenerator:
 
     def _get_data_section(self):
         result = ''
-        for table_name in ['Cinema', 'Ruoli', 'Giorni', 'Film', 'StatiPrenotazione', 'Sale', 'Posti',
+        for table_name in ['Cinema', 'Ruoli', 'Giorni', 'Film', 'Stati_Prenotazione', 'Sale', 'Posti',
                            'Dipendenti', 'Proiezioni', 'Turni']:
             result += self._get_comment_header('Data for table `' + self.dbname + '`.`' + table_name + '`')
             result += '\n'
