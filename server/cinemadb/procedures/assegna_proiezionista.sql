@@ -13,7 +13,10 @@ BEGIN
             ROLLBACK;
             RESIGNAL;
         END;
-    SET TRANSACTION ISOLATION LEVEL REPEATABLE READ;
+    -- Proiezioni_BEFORE_UPDATE_Check_Proiezionista_Occupato e
+    -- e Proiezioni_BEFORE_UPDATE_Check_Sala_Libera necessitano di
+    -- impedire inserimenti fantasma.
+    SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
     START TRANSACTION;
     UPDATE `Proiezioni`
     SET `proiezionista` = _proiezionista

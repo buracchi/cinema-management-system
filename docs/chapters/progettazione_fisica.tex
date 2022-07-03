@@ -491,6 +491,7 @@ L'indice risulta particolarmente vantaggioso in quanto:
 \inputsqlfile{../server/cinemadb/triggers/Prenotazioni_BEFORE_UPDATE_Check_Duplicati.sql}
 \inputsqlfile{../server/cinemadb/triggers/Prenotazioni_BEFORE_UPDATE_Check_Ora_Proiezione.sql}
 \inputsqlfile{../server/cinemadb/triggers/Prenotazioni_BEFORE_UPDATE_Check_Stato.sql}
+\inputsqlfile{../server/cinemadb/triggers/Prenotazioni_BEFORE_UPDATE_Prevent_Cambio_Codice.sql}
 \inputsqlfile{../server/cinemadb/triggers/Proiezioni_BEFORE_INSERT_Check_Cinema_Aperto.sql}
 \inputsqlfile{../server/cinemadb/triggers/Proiezioni_BEFORE_INSERT_Check_Proiezionista.sql}
 \inputsqlfile{../server/cinemadb/triggers/Proiezioni_BEFORE_INSERT_Check_Proiezionista_Occupato.sql}
@@ -525,7 +526,6 @@ Gli eventi sono istanziati unicamente in fase di configurazione del sistema
 \inputsqlfile{../server/cinemadb/events/pulizia_prenotazioni.sql}
 \inputsqlfile{../server/cinemadb/events/pulizia_prenotazioni_in_attesa.sql}
 \inputsqlfile{../server/cinemadb/events/pulizia_proiezioni.sql}
-
 \pagebreak
 \inputsqlfile{../server/cinemadb/events/scadenza_prenotazioni.sql}
 
@@ -548,7 +548,6 @@ implementare alcuna vista.
 % quando (e perché) sono state realizzate operazioni transazionali complesse.
 %
 
-\inputsqlfile{../server/cinemadb/procedures/annulla_prenotazione.sql}
 \inputsqlfile{../server/cinemadb/procedures/annulla_prenotazione.sql}
 \inputsqlfile{../server/cinemadb/procedures/assegna_proiezionista.sql}
 \inputsqlfile{../server/cinemadb/procedures/elimina_cinema.sql}

@@ -13,12 +13,16 @@ BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
         BEGIN
             IF _tid IS NOT NULL THEN
-                SET @esito_rimborso := EFFETTUA_RIMBORSO(_tid);
+                DO EFFETTUA_RIMBORSO(_tid);
             END IF;
             ROLLBACK;
             RESIGNAL;
         END;
-    SET TRANSACTION ISOLATION LEVEL REPEATABLE READ;
+    -- Prenotazioni_BEFORE_UPDATE_Check_Duplicati necessita di impedire
+    -- inserimenti fantasma, utilizzando il livello di serilizzabilita'
+    -- SERIALIZABLE viene mantenuto un lock gap S sull'indice
+    -- fk_Prenotazioni_Posti1_idx.
+    SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
     START TRANSACTION;
     IF (_codice NOT IN (SELECT `codice` FROM `Prenotazioni`)) THEN
         SIGNAL _codice_invalido SET MESSAGE_TEXT = _codice_invalido_msg;

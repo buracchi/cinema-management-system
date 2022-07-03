@@ -8,7 +8,11 @@ BEGIN
             ROLLBACK;
             RESIGNAL;
         END;
-    SET TRANSACTION ISOLATION LEVEL REPEATABLE READ;
+    -- Prenotazioni_BEFORE_UPDATE_Check_Duplicati necessita di impedire
+    -- inserimenti fantasma, utilizzando il livello di serilizzabilita'
+    -- SERIALIZABLE viene mantenuto un lock gap S sull'indice
+    -- fk_Prenotazioni_Posti1_idx.
+    SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
     START TRANSACTION;
     UPDATE `Prenotazioni`
     SET `stato` = 'Validata'

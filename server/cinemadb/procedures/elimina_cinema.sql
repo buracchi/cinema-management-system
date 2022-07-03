@@ -10,7 +10,7 @@ BEGIN
         END;
     -- Con il livello di isolamento REPEATABLE READ, per operazioni di DELETE
     -- che coinvolgono un indice univoco con una condizione di ricerca univoca,
-    -- InnoDB effettua il lock solo del record trovato e non sul gap che lo precede.
+    -- InnoDB effettua il lock solo del record trovato e non un gap lock.
     -- Questa strategia di locking e' equivalente a quella adotta nell'analogo
     -- caso utilizzando il livello di isolamento READ COMMITTED.
     -- Non e' pertanto necessario specificare un livello di isolamento diverso

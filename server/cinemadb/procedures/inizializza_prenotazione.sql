@@ -14,7 +14,13 @@ BEGIN
             ROLLBACK;
             RESIGNAL;
         END;
-    SET TRANSACTION ISOLATION LEVEL REPEATABLE READ;
+    -- Prenotazioni_BEFORE_INSERT_Check_Duplicati necessita di impedire
+    -- inserimenti fantasma, utilizzando il livello di serilizzabilita'
+    -- SERIALIZABLE viene mantenuto un lock gap S sull'indice
+    -- fk_Prenotazioni_Posti1_idx. Questo garantisce la corretteza del
+    -- vincolo ma puo' causare sporadici deadlock con il locks gap IX
+    -- preso durante l'inserimento della prenotazione.
+    SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
     START TRANSACTION;
     retry:
     REPEAT

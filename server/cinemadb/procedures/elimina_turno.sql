@@ -11,7 +11,9 @@ BEGIN
             ROLLBACK;
             RESIGNAL;
         END;
-    SET TRANSACTION ISOLATION LEVEL REPEATABLE READ;
+    -- Turni_AFTER_DELETE_Reset_Proiezionista_Proiezione necessita di
+    -- impedire inserimenti fantasma.
+    SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
     START TRANSACTION;
     DELETE
     FROM `Turni`
