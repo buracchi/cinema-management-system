@@ -407,11 +407,11 @@
             \item il sistema permette al cliente di verificare
                   i posti disponibili
             \item il cliente seleziona un posto disponibile
+            \item il sistema genera la prenotazione e la registra
+                  come prenotazione in attesa
             \item il cliente inserisce i dati relativi alla carta
                   di credito (numero, intestatario, data di scadenza,
                   codice CVV)
-            \item il sistema genera la prenotazione e la registra
-                  come prenotazione in attesa
             \item il sistema richiede al servizio di pagamento di
                   generare la relativa transazione
             \item il servizio di pagamento restituisce al sistema
@@ -876,10 +876,20 @@
             \item il sistema permette al cliente di verificare
                   il palinsesto del cinema selezionato
             \item il cliente seleziona una proiezione
+            \item il sistema permette al cliente di verificare
+                  i posti disponibili
             \item il cliente seleziona un posto disponibile
-            \item il cliente inserire i dati relativi alla carta
+            \item il sistema genera la prenotazione e la registra
+                  come prenotazione in attesa
+            \item il cliente inserisce i dati relativi alla carta
                   di credito (numero, intestatario, data di scadenza,
                   codice CVV)
+            \item il sistema richiede al servizio di pagamento di
+                  generare la relativa transazione
+            \item il servizio di pagamento restituisce al sistema
+                  il codice della transazione generata
+            \item il sistema aggiorna la prenotazione e la registra
+                  come prenotazione confermata
             \item il sistema restituisce al cliente un codice di
                   prenotazione
       \end{enumerate}

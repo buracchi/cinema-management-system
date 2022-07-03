@@ -25,5 +25,4 @@ FROM Sale
                      SELECT '18:00:00'
                      UNION ALL
                      SELECT '21:00:00') AS orari;
-
 COMMIT;

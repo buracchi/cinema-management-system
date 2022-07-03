@@ -16,35 +16,39 @@
                    & \multicolumn{1}{|c|}{\textbf{Privilegi}}
     \\\hline
     Cliente        &
+    annulla\_prenotazione(EXECUTE) \linebreak
+    elimina\_prenotazione(EXECUTE) \linebreak
+    finalizza\_prenotazione(EXECUTE) \linebreak
+    inizializza\_prenotazione(EXECUTE) \linebreak
     mostra\_cinema(EXECUTE) \linebreak
     mostra\_palinsesto(EXECUTE) \linebreak
     mostra\_posti\_disponibili(EXECUTE) \linebreak
-    effettua\_prenotazione(EXECUTE) \linebreak
-    annulla\_prenotazione(EXECUTE)
+    mostra\_sale(EXECUTE)
     \\\hline
     Maschera       &
     valida\_prenotazione(EXECUTE)
     \\\hline
     Amministratore &
-    mostra\_cinema(EXECUTE) \linebreak
-    inserisci\_cinema(EXECUTE) \linebreak
-    elimina\_cinema(EXECUTE) \linebreak
-    mostra\_sale(EXECUTE) \linebreak
-    inserisci\_sala(EXECUTE) \linebreak
-    elimina\_sala(EXECUTE) \linebreak
-    mostra\_proiezioni(EXECUTE) \linebreak
-    inserisci\_proiezione(EXECUTE) \linebreak
-    elimina\_proiezionisti\_disponibili(EXECUTE) \linebreak
     assegna\_proiezionista(EXECUTE) \linebreak
-    elimina\_proiezione(EXECUTE) \linebreak
-    mostra\_dipendenti(EXECUTE) \linebreak
-    inserisci\_dipendente(EXECUTE) \linebreak
+    elimina\_cinema(EXECUTE) \linebreak
     elimina\_dipendente(EXECUTE) \linebreak
-    mostra\_turni(EXECUTE) \linebreak
-    inserisci\_turno(EXECUTE) \linebreak
+    elimina\_proiezione(EXECUTE) \linebreak
+    elimina\_sala(EXECUTE) \linebreak
     elimina\_turno(EXECUTE) \linebreak
-    mostra\_proiezioni\_senza\_proiezionista(EXECUTE) \linebreak
+    inserisci\_cinema(EXECUTE) \linebreak
+    inserisci\_dipendente(EXECUTE) \linebreak
+    inserisci\_proiezione(EXECUTE) \linebreak
+    inserisci\_sala(EXECUTE) \linebreak
+    inserisci\_turno(EXECUTE) \linebreak
+    mostra\_cinema(EXECUTE) \linebreak
     mostra\_cinema\_senza\_maschere(EXECUTE) \linebreak
+    mostra\_dipendenti(EXECUTE) \linebreak
+    mostra\_film(EXECUTE) \linebreak
+    mostra\_proiezioni(EXECUTE) \linebreak
+    mostra\_proiezioni\_senza\_proiezionista(EXECUTE) \linebreak
+    mostra\_proiezionisti\_disponibili(EXECUTE) \linebreak
+    mostra\_sale(EXECUTE) \linebreak
+    mostra\_stato\_prenotazioni(EXECUTE) \linebreak
     mostra\_turni(EXECUTE)
     \\\hline
 \end{tabularx}
@@ -488,25 +492,37 @@ L'indice risulta particolarmente vantaggioso in quanto:
 
 \inputsqlfile{../server/cinemadb/triggers/Prenotazioni_BEFORE_INSERT_Check_Duplicati.sql}
 \inputsqlfile{../server/cinemadb/triggers/Prenotazioni_BEFORE_INSERT_Check_Stato.sql}
+\pagebreak
 \inputsqlfile{../server/cinemadb/triggers/Prenotazioni_BEFORE_UPDATE_Check_Duplicati.sql}
 \inputsqlfile{../server/cinemadb/triggers/Prenotazioni_BEFORE_UPDATE_Check_Ora_Proiezione.sql}
+\pagebreak
 \inputsqlfile{../server/cinemadb/triggers/Prenotazioni_BEFORE_UPDATE_Check_Stato.sql}
 \inputsqlfile{../server/cinemadb/triggers/Prenotazioni_BEFORE_UPDATE_Prevent_Cambio_Codice.sql}
+\pagebreak
 \inputsqlfile{../server/cinemadb/triggers/Proiezioni_BEFORE_INSERT_Check_Cinema_Aperto.sql}
 \inputsqlfile{../server/cinemadb/triggers/Proiezioni_BEFORE_INSERT_Check_Proiezionista.sql}
+\pagebreak
 \inputsqlfile{../server/cinemadb/triggers/Proiezioni_BEFORE_INSERT_Check_Proiezionista_Occupato.sql}
+\pagebreak
 \inputsqlfile{../server/cinemadb/triggers/Proiezioni_BEFORE_INSERT_Check_Sala_Libera.sql}
+\pagebreak
 \inputsqlfile{../server/cinemadb/triggers/Proiezioni_BEFORE_INSERT_Check_Turno.sql}
 \inputsqlfile{../server/cinemadb/triggers/Proiezioni_BEFORE_UPDATE_Check_Cinema_Aperto.sql}
+\pagebreak
 \inputsqlfile{../server/cinemadb/triggers/Proiezioni_BEFORE_UPDATE_Check_Proiezionista.sql}
 \inputsqlfile{../server/cinemadb/triggers/Proiezioni_BEFORE_UPDATE_Check_Proiezionista_Occupato.sql}
+\pagebreak
 \inputsqlfile{../server/cinemadb/triggers/Proiezioni_BEFORE_UPDATE_Check_Sala_Libera.sql}
+\pagebreak
 \inputsqlfile{../server/cinemadb/triggers/Proiezioni_BEFORE_UPDATE_Check_Turno.sql}
 \inputsqlfile{../server/cinemadb/triggers/Turni_AFTER_DELETE_Reset_Proiezionista_Proiezione.sql}
+\pagebreak
 \inputsqlfile{../server/cinemadb/triggers/Turni_BEFORE_INSERT_Check_Cinema_Aperto.sql}
 \inputsqlfile{../server/cinemadb/triggers/Turni_BEFORE_INSERT_Check_Somma_Durate.sql}
+\pagebreak
 \inputsqlfile{../server/cinemadb/triggers/Turni_BEFORE_INSERT_Check_Sovrapposizioni.sql}
 \inputsqlfile{../server/cinemadb/triggers/Turni_BEFORE_UPDATE_Check_Cinema_Aperto.sql}
+\pagebreak
 \inputsqlfile{../server/cinemadb/triggers/Turni_BEFORE_UPDATE_Check_Somma_Durate.sql}
 \inputsqlfile{../server/cinemadb/triggers/Turni_BEFORE_UPDATE_Check_Sovrapposizioni.sql}
 
@@ -549,30 +565,49 @@ implementare alcuna vista.
 %
 
 \inputsqlfile{../server/cinemadb/procedures/annulla_prenotazione.sql}
+\pagebreak
 \inputsqlfile{../server/cinemadb/procedures/assegna_proiezionista.sql}
+\pagebreak
 \inputsqlfile{../server/cinemadb/procedures/elimina_cinema.sql}
+\pagebreak
 \inputsqlfile{../server/cinemadb/procedures/elimina_dipendente.sql}
+\pagebreak
 \inputsqlfile{../server/cinemadb/procedures/elimina_prenotazione.sql}
+\pagebreak
 \inputsqlfile{../server/cinemadb/procedures/elimina_proiezione.sql}
+\pagebreak
 \inputsqlfile{../server/cinemadb/procedures/elimina_sala.sql}
+\pagebreak
 \inputsqlfile{../server/cinemadb/procedures/elimina_turno.sql}
+\pagebreak
 \inputsqlfile{../server/cinemadb/procedures/finalizza_prenotazione.sql}
+\pagebreak
 \inputsqlfile{../server/cinemadb/procedures/inizializza_prenotazione.sql}
+\pagebreak
 \inputsqlfile{../server/cinemadb/procedures/inserisci_cinema.sql}
 \inputsqlfile{../server/cinemadb/procedures/inserisci_dipendente.sql}
 \inputsqlfile{../server/cinemadb/procedures/inserisci_proiezione.sql}
+\pagebreak
 \inputsqlfile{../server/cinemadb/procedures/inserisci_sala.sql}
 \inputsqlfile{../server/cinemadb/procedures/inserisci_turno.sql}
+\pagebreak
 \inputsqlfile{../server/cinemadb/procedures/mostra_cinema.sql}
 \inputsqlfile{../server/cinemadb/procedures/mostra_cinema_senza_maschere.sql}
 \inputsqlfile{../server/cinemadb/procedures/mostra_dipendenti.sql}
 \inputsqlfile{../server/cinemadb/procedures/mostra_film.sql}
+\pagebreak
 \inputsqlfile{../server/cinemadb/procedures/mostra_palinsesto.sql}
+\pagebreak
 \inputsqlfile{../server/cinemadb/procedures/mostra_posti_disponibili.sql}
+\pagebreak
 \inputsqlfile{../server/cinemadb/procedures/mostra_proiezioni.sql}
+\pagebreak
 \inputsqlfile{../server/cinemadb/procedures/mostra_proiezionisti_disponibili.sql}
+\pagebreak
 \inputsqlfile{../server/cinemadb/procedures/mostra_proiezioni_senza_proiezionista.sql}
 \inputsqlfile{../server/cinemadb/procedures/mostra_sale.sql}
+\pagebreak
 \inputsqlfile{../server/cinemadb/procedures/mostra_stato_prenotazioni.sql}
 \inputsqlfile{../server/cinemadb/procedures/mostra_turni.sql}
+\pagebreak
 \inputsqlfile{../server/cinemadb/procedures/valida_prenotazione.sql}

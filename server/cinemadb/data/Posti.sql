@@ -16,5 +16,4 @@ SELECT cinema, Sale.numero, lettera, numeri.numero
 FROM Sale
          CROSS JOIN lettere
          CROSS JOIN numeri;
-
 COMMIT;

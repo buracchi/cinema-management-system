@@ -19,5 +19,4 @@ INSERT INTO `cinemadb`.`Film` (`id`, `nome`, `durata`, `casa_cinematografica`, `
 VALUES (DEFAULT, 'Matrix', '02:16:00', 'Warner Bros., ALTRO', NULL);
 INSERT INTO `cinemadb`.`Film` (`id`, `nome`, `durata`, `casa_cinematografica`, `cast`)
 VALUES (DEFAULT, 'Amici miei', '02:20:00', 'Rizzoli Film, ALTRO', NULL);
-
 COMMIT;

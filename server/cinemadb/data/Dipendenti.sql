@@ -11,5 +11,4 @@ SELECT matricola,
        'Rossi',
        IF(matricola <= 50, 'Maschera', 'Proiezionista')
 FROM matricole;
-
 COMMIT;

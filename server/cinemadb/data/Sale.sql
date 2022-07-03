@@ -9,5 +9,4 @@ WITH RECURSIVE numeri AS (SELECT 1 AS numero
 SELECT id, numero
 FROM cinema
          CROSS JOIN numeri;
-
 COMMIT;

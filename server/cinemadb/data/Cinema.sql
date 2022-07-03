@@ -20,5 +20,4 @@ INSERT INTO `cinemadb`.`Cinema` (`id`, `indirizzo`, `apertura`, `chiusura`)
 VALUES (9, 'Via dei Tulipani 37100 VR Verona', '10:00:00', '23:00:00');
 INSERT INTO `cinemadb`.`Cinema` (`id`, `indirizzo`, `apertura`, `chiusura`)
 VALUES (10, 'Via dei Frati 92100 AO Aosta', '10:00:00', '23:00:00');
-
 COMMIT;

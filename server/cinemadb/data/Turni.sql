@@ -24,5 +24,4 @@ FROM (SELECT matricola FROM Dipendenti WHERE Dipendenti.ruolo = 'Proiezionista' 
          CROSS JOIN (SELECT '15:00:00' AS inizio, '08:00:00' AS durata) AS Orari
          JOIN Cinema ON MOD(matricola, (SELECT COUNT(*) FROM Cinema)) = Cinema.id
 ORDER BY matricola, cinema;
-
 COMMIT;

@@ -14,5 +14,4 @@ INSERT INTO `cinemadb`.`Giorni` (`nome`, `numero`)
 VALUES ("Sabato", 6);
 INSERT INTO `cinemadb`.`Giorni` (`nome`, `numero`)
 VALUES ("Domenica", 7);
-
 COMMIT;

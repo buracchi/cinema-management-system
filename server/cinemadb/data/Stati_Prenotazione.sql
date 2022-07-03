@@ -10,5 +10,4 @@ INSERT INTO `cinemadb`.`Stati_Prenotazione` (`nome`)
 VALUES ('Annullata');
 INSERT INTO `cinemadb`.`Stati_Prenotazione` (`nome`)
 VALUES ('Attesa');
-
 COMMIT;
