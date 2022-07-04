@@ -9,8 +9,8 @@
 extern int select_cinema(cms_t cms, struct cms_cinema* cinema);
 
 extern int insert_hall(cms_t cms) {
-	struct cms_response response;
-	struct cms_cinema cinema;
+	struct cms_response response = { 0 };
+	struct cms_cinema cinema = { 0 };
 	struct cms_hall_details hall_details = { 0 };
 	char hall_number[INT32DSTR_LEN];
 	char rows[INT32DSTR_LEN];
@@ -38,7 +38,7 @@ extern int insert_hall(cms_t cms) {
 		if (cmn_strto_int32(&hall_details.rows, rows, 10)) {
 			continue;
 		}
-		if (cmn_strto_int32(&hall_details.rows_seats, rows_seats, 10)) {
+		if (cmn_strto_int32(&hall_details.rows_seats, rows_seats, 10) || hall_details.rows_seats > 100) {
 			continue;
 		}
 		break;

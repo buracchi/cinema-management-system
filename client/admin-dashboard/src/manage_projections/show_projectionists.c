@@ -11,14 +11,15 @@
 
 static char* get_projectionists_table(struct cms_available_projectionist* projectionists, uint64_t num_elements);
 
-extern int select_projectionist(cms_t cms, struct cms_projection* projection, struct cms_available_projectionist* projectionist) {
+extern int select_projectionist(cms_t cms, struct cms_projection* projection, struct cms_available_projectionist* selected_projectionist) {
 	struct cms_response response;
 	struct cms_available_projectionist* projectionists;
 	char* projectionists_table;
 	char input[INT32DSTR_LEN];
-	int32_t selected_projectionist;
+	int32_t selected_projectionist_index;
 	bool back = false;
 	while (true) {
+		bool valid_input = false;
 		io_clear_screen();
 		puts(title);
 		response = cms_get_available_projectionists(cms, projection, &projectionists);
@@ -41,11 +42,17 @@ extern int select_projectionist(cms_t cms, struct cms_projection* projection, st
 			back = true;
 			break;
 		}
-		else if (cmn_strto_int32(&selected_projectionist, input, 10) == 0
-			&& selected_projectionist > 0
-			&& (uint64_t)selected_projectionist <= response.num_elements) {
-			memcpy(projectionist, &(projectionists[selected_projectionist - 1]), sizeof * projectionist);
-			break;
+		else if (cmn_strto_int32(&selected_projectionist_index, input, 10) == 0) {
+			for (uint64_t i = 0; i < response.num_elements; i++) {
+				if (selected_projectionist_index == projectionists[i].id) {
+					memcpy(selected_projectionist, &(projectionists[i]), sizeof * selected_projectionist);
+					valid_input = true;
+					break;
+				}
+			}
+			if (valid_input) {
+				break;
+			}
 		}
 		cms_destroy_response(&response);
 	}
@@ -61,13 +68,13 @@ static char* get_projectionists_table(struct cms_available_projectionist* projec
 	const char* str_table;
 	try(table = ft_create_table(), NULL, fail);
 	try(ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER) < 0, true, fail2);
-	try(ft_write_ln(table, "PROIEZIONISTA", "NOME", "COGNOME") < 0, true, fail2);
+	try(ft_write_ln(table, "MATRICOLA", "NOME", "COGNOME") < 0, true, fail2);
 	for (uint64_t i = 0; i < num_elements; i++) {
-		char index[INT32DSTR_LEN] = { 0 };
+		char id[INT32DSTR_LEN] = { 0 };
 		char* name = projectionists[i].name;
 		char* surname = projectionists[i].surname;
-		try(snprintf(index, INT32DSTR_LEN, "%" PRIu64, i + 1) < 0, true, fail2);
-		try(ft_write_ln(table, index, name, surname) < 0, true, fail2);
+		try(snprintf(id, INT32DSTR_LEN, "%d", projectionists[i].id) < 0, true, fail2);
+		try(ft_write_ln(table, id, name, surname) < 0, true, fail2);
 	}
 	try(str_table = ft_to_string((const ft_table_t*)table), NULL, fail2);
 	try(result = malloc(strlen(str_table) + 1), NULL, fail2);

@@ -41,10 +41,10 @@ int main(int argc, char** argv) {
 		goto fail2;
 	}
 	strcpy(booking_code, input);
-	try(env_load(".", false), -1, fail);
+	env_load(".", false);
 	return validate_booking(&booking_code);
 fail2:
-	fprintf(stderr, "Codice prenotazione non valido.");
+	fprintf(stderr, "Codice prenotazione non valido.\n");
 fail:
 	return EXIT_FAILURE;
 }
@@ -68,11 +68,11 @@ static int validate_booking(char(*booking_code)[CMS_BOOKING_CODE_LEN]) {
 		cms_destroy(cms);
 		return EXIT_FAILURE;
 	}
-	printf("Prenotazione validata con successo.");
+	printf("Prenotazione validata con successo.\n");
 	cms_destroy_response(&response);
 	cms_destroy(cms);
 	return EXIT_SUCCESS;
 fail:
-	fprintf(stderr, "Impossibile connettersi al server, controllare le credenziali e riprovare in seguito.");
+	fprintf(stderr, "Impossibile connettersi al server, controllare le credenziali e riprovare in seguito.\n");
 	return EXIT_FAILURE;
 }

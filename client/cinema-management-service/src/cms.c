@@ -11,6 +11,9 @@
 
 #define FIELD_TYPE enum enum_field_types
 #define MYSQL_USER_DEFINED_ERROR 1644
+#define MYSQL_DUPLICATE_ENTRY_FOR_KEY_ERROR 1062
+#define MYSQL_CANNOT_DELETE_OR_UPDATE_PARENT_ROW_FOREIGN_KEY_CONSTRAINT_FAILS 1451
+#define MYSQL_CHECK_CONSTRAINTIS_VIOLATED_ERROR 3819
 
 static const struct operation_data {
 	MYSQL_STMT* statement;
@@ -288,14 +291,10 @@ static int send_mysql_stmt_request(struct operation_data operation_data, struct 
 			else {
 				(bparams)[i].buffer = (*request_param)[i].ptr;
 				assert((*request_param)[i].size <= ULONG_MAX && "MYSQL C API doesn't support the size of the type chosen");
-				if ((*request_param)[i].size > ULONG_MAX) { // If the application was debugged this should be dead code
-					goto fail3;
-				}
+				if ((*request_param)[i].size > ULONG_MAX) goto fail3; // If the application was debugged this should be dead code
+				(bparams)[i].buffer_length = (unsigned long)(*request_param)[i].size;
 				if ((bparams)[i].buffer_type == MYSQL_TYPE_STRING) {
-					(bparams)[i].buffer_length = (unsigned long)(*request_param)[i].size - 1;
-				}
-				else {
-					(bparams)[i].buffer_length = (unsigned long)(*request_param)[i].size;
+					(bparams)[i].buffer_length--;
 				}
 			}
 		}
@@ -403,9 +402,13 @@ out_of_memory:
 	return 0;
 }
 
+//TODO: Complete the fallthrough list of non fatal errors
 static bool is_fatal_error(unsigned int mysql_errno) {
 	switch (mysql_errno) {
-	case MYSQL_USER_DEFINED_ERROR:	//TODO: Add a fallthrough list of non fatal errors
+	case MYSQL_USER_DEFINED_ERROR:
+	case MYSQL_DUPLICATE_ENTRY_FOR_KEY_ERROR:
+	case MYSQL_CANNOT_DELETE_OR_UPDATE_PARENT_ROW_FOREIGN_KEY_CONSTRAINT_FAILS:
+	case MYSQL_CHECK_CONSTRAINTIS_VIOLATED_ERROR:
 		return false;
 	default:
 		return true;

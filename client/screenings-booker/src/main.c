@@ -21,7 +21,7 @@ enum actions {
 int main(void) {
 	cms_t cms;
 	bool end = false;
-	try(env_load(".", false), -1, fail);
+	env_load(".", false);
 	struct cms_credentials credentials = {
 		.username = getenv("CUSTOMER_USERNAME"),
 		.password = getenv("CUSTOMER_PASSWORD"),
@@ -63,6 +63,6 @@ fail2:
 	cms_destroy(cms);
 	return EXIT_FAILURE;
 fail:
-	fprintf(stderr, "Errore: impossibile connettersi al server, controllare le credenziali e riprovare in seguito.");
+	fprintf(stderr, "Errore: impossibile connettersi al server, controllare le credenziali e riprovare in seguito.\n");
 	return EXIT_FAILURE;
 }

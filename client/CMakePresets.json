@@ -118,7 +118,8 @@
       "displayName": "x64 Release",
       "inherits": [ "linux-default", "x64-release" ],
       "cacheVariables": {
-        "CMAKE_CXX_FLAGS_DEBUG": "-std=c++20"
+        "CMAKE_C_FLAGS_RELEASE": "-Wall -Wextra -pedantic -O3",
+        "CMAKE_CXX_FLAGS_RELEASE": "-std=c++20"
       }
     }
   ],

@@ -5,7 +5,7 @@
 extern struct cms_response cms_get_shifts(cms_t cms, CMS_OUT struct cms_shift_details** shifts) {
 	struct cms_result_metadata result_metadata = {
 		.ptr = (void**)shifts,
-		.size = sizeof(struct cms_result_bitmap),
+		.size = sizeof(struct cms_shift_details),
 		.offset_size_bitmap = (struct cms_result_bitmap[]) {
 			CMS_RESULT_BITMAP_INFO(struct cms_shift_details, day, start_time, duration, cinema_id, cinema_address),
 			CMS_RESULT_BITMAP_INFO(struct cms_shift_details, employee_id, employee_name, employee_surname, employee_role)
