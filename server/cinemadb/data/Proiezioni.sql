@@ -20,9 +20,9 @@ FROM Sale
          CROSS JOIN giornate
          CROSS JOIN (SELECT '10:00:00' AS ora
                      UNION ALL
-                     SELECT '15:00:00'
+                     SELECT '14:00:00'
                      UNION ALL
-                     SELECT '18:00:00'
+                     SELECT '17:00:00'
                      UNION ALL
-                     SELECT '21:00:00') AS orari;
+                     SELECT '20:00:00') AS orari;
 COMMIT;

@@ -24,7 +24,7 @@ BEGIN
     IF (_affected_rows = 0) THEN
         SIGNAL _codice_invalido SET MESSAGE_TEXT = _codice_invalido_msg;
     END IF;
-    SET _tid = (SELECT `transazione` FROM `Prenotazioni` WHERE `codice`);
+    SET _tid = (SELECT `transazione` FROM `Prenotazioni` WHERE `codice` = _codice);
     IF (EFFETTUA_RIMBORSO(_tid) != 0) THEN
         SIGNAL _rimborso_fallito SET MESSAGE_TEXT = _rimborso_fallito_msg;
     END IF;
