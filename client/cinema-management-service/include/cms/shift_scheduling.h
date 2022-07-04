@@ -31,18 +31,17 @@ struct cms_add_shift_details {
 	int32_t cinema_id;
 };
 
-struct cms_get_shifts_response {
-	struct cms_response;
-	struct cms_shift_details result[];
-};
-extern int cms_get_shifts(cms_t cms, struct cms_get_shifts_response** response);
+extern struct cms_response cms_get_shifts(
+	cms_t cms,
+	CMS_OUT struct cms_shift_details** shifts
+);
 
-struct cms_add_shift_response {
-	struct cms_response;
-};
-extern int cms_add_shift(cms_t cms, struct cms_add_shift_details* shift_details, struct cms_add_shift_response** response);
+extern struct cms_response cms_add_shift(
+	cms_t cms, 
+	CMS_IN const struct cms_add_shift_details* shift_details
+);
 
-struct cms_delete_shift_response {
-	struct cms_response;
-};
-extern int cms_delete_shift(cms_t cms, struct cms_shift* shift, struct cms_delete_shift_response** response);
+extern struct cms_response cms_delete_shift(
+	cms_t cms, 
+	CMS_IN const struct cms_shift* shift
+);

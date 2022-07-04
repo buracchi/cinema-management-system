@@ -5,10 +5,10 @@
 
 #include "../core.h"
 
-extern int select_employee(cms_t cms, struct cms_employee* employee);
+extern int select_employee(cms_t cms, struct cms_employee* selected_employee);
 
 extern int delete_employee(cms_t cms) {
-	struct cms_delete_employee_response* response = NULL;
+	struct cms_response response;
 	struct cms_employee employee;
 	switch (select_employee(cms, &employee)) {
 	case 1:
@@ -23,22 +23,22 @@ extern int delete_employee(cms_t cms) {
 		return 0;
 	}
 	puts("");
-	try(cms_delete_employee(cms, employee.id, &response), 1, fail);
-	if (response->error_message) {
-		printf("%s\n", response->error_message);
+	response = cms_delete_employee(cms, employee.id);
+	if (response.fatal_error) {
+		fprintf(stderr, "%s\n", response.error_message ? response.error_message : cms_get_error_message(cms));
+		cms_destroy_response(&response);
+		return 1;
 	}
-	else {
-		puts("Dipendente rimosso con successo");
+	if (response.error_message) {
+		printf("%s\n", response.error_message);
+		cms_destroy_response(&response);
+		press_anykey();
+		return 0;
 	}
-	cms_destroy_response((struct cms_response*)response);
+	puts("Dipendente rimosso con successo");
+	cms_destroy_response(&response);
 	press_anykey();
 	return 0;
 fail:
-	if (response) {
-		if (response->error_message) {
-			fprintf(stderr, "%s\n", response->error_message);
-		}
-		cms_destroy_response((struct cms_response*)response);
-	}
 	return 1;
 }

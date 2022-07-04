@@ -165,10 +165,11 @@ struct cms {
 };
 
 static MYSQL_STMT* get_prepared_stmt(cms_t cms, enum cms_operation operation, char** error_message);
-static int send_mysql_stmt_request(struct operation_data operation_data, struct cms_request_param* request_param);
-static int recv_mysql_stmt_result(struct operation_data operation_data, struct cms_response** response, struct cms_result_bitmap* result_bitmap);
+static int send_mysql_stmt_request(struct operation_data operation_data, struct cms_request_param(*request_param)[]);
+static int recv_mysql_stmt_result(struct operation_data operation_data, struct cms_response* response, struct cms_result_metadata* result_metdata);
+static bool is_fatal_error(unsigned int mysql_errno);
 
-extern cms_t cms_init(struct cms_credentials* credentials) {
+extern cms_t cms_init(const struct cms_credentials* credentials) {
 	cms_t this;
 	unsigned int timeout = 30;
 	bool reconnect = true;
@@ -177,14 +178,14 @@ extern cms_t cms_init(struct cms_credentials* credentials) {
 	mysql_options(this->db_connection, MYSQL_OPT_CONNECT_TIMEOUT, &timeout);
 	mysql_options(this->db_connection, MYSQL_OPT_RECONNECT, &reconnect);
 	try(mysql_real_connect(
-			this->db_connection, 
-			credentials->host, 
-			credentials->username, 
-			credentials->password, 
-			credentials->db, 
-			credentials->port, 
-			NULL, 
-			CLIENT_MULTI_STATEMENTS | CLIENT_MULTI_RESULTS | CLIENT_COMPRESS | CLIENT_INTERACTIVE | CLIENT_REMEMBER_OPTIONS),
+		this->db_connection,
+		credentials->host,
+		credentials->username,
+		credentials->password,
+		credentials->db,
+		credentials->port,
+		NULL,
+		CLIENT_MULTI_STATEMENTS | CLIENT_MULTI_RESULTS | CLIENT_COMPRESS | CLIENT_INTERACTIVE | CLIENT_REMEMBER_OPTIONS),
 		NULL, fail3);
 	memcpy(this->operation_data, statements_read_only_data, sizeof(statements_read_only_data));
 	return this;
@@ -210,33 +211,36 @@ extern void cms_destroy(cms_t cms) {
 
 extern inline void cms_destroy_response(struct cms_response* response) {
 	free((void*)response->error_message);
-	free(response);
+	free(response->response_ptr);
 }
 
 extern inline const char* cms_get_error_message(cms_t cms) {
 	return mysql_error(cms->db_connection);
 }
 
-extern int cms_operation_execute(cms_t cms,
-	enum cms_operation operation,
-	struct cms_request_param* request_param,
-	struct cms_response** response,
-	struct cms_result_bitmap* result_bitmap) {
+extern struct cms_response cms_operation_execute(cms_t cms, enum cms_operation operation, struct cms_request_param(*request_param)[], struct cms_result_metadata* result_metdata) {
+	struct cms_response response = {
+			.fatal_error = false,
+			.error_message = NULL,
+			.num_elements = 0,
+			.response_ptr = NULL
+	};
 	MYSQL_STMT* statement;
-	try(*response = calloc(1, sizeof * *response), NULL, fail);
-	try(statement = get_prepared_stmt(cms, operation, (char**)&((*response)->error_message)), NULL, fail2);
+	try(statement = get_prepared_stmt(cms, operation, (char**)&(response.error_message)), NULL, fail);
 	try(send_mysql_stmt_request(cms->operation_data[operation], request_param), 1, fail2);
-	try(recv_mysql_stmt_result(cms->operation_data[operation], response, result_bitmap), 1, fail2);
+	try(recv_mysql_stmt_result(cms->operation_data[operation], &response, result_metdata), 1, fail2);
 	try(mysql_stmt_reset(statement) == 0, false, fail2);
-	(*response)->error_message = NULL;
-	return 0;
+	return response;
 fail2:
-	if (!(*response)->error_message) {
-		asprintf((char**)&((*response)->error_message), "%s", mysql_stmt_error(statement));
+	if (!response.error_message) {
+		asprintf((char**)&(response.error_message), "%s", mysql_stmt_error(statement));
 	}
-	return statement->last_errno == MYSQL_USER_DEFINED_ERROR ? 0 : 1;
+	response.fatal_error = is_fatal_error(statement->last_errno);
+	return response;
 fail:
-	return 1;
+	asprintf((char**)&(response.error_message), "%s", cms_get_error_message(cms));
+	response.fatal_error = true;
+	return response;
 }
 
 static MYSQL_STMT* get_prepared_stmt(cms_t cms, enum cms_operation operation, char** error_message) {
@@ -257,37 +261,41 @@ fail:
 	return *stmt;
 }
 
-static int send_mysql_stmt_request(struct operation_data operation_data, struct cms_request_param* request_param) {
+static int send_mysql_stmt_request(struct operation_data operation_data, struct cms_request_param(*request_param)[]) {
 	unsigned long param_count;
 	MYSQL_BIND* bparams = NULL;
 	MYSQL_TIME* tbparams = NULL;
 	param_count = mysql_stmt_param_count(operation_data.statement);
 	if (param_count) {
+		assert(request_param != NULL && "Prepared statement requires parameters but no one was provided.");
+		if (!request_param) {
+			goto fail;
+		}
 		try(bparams = calloc(param_count, sizeof * bparams), NULL, fail);
 		try(tbparams = calloc(param_count, sizeof * tbparams), NULL, fail2);
 		for (unsigned long i = 0; i < param_count; i++) {
 			(bparams)[i].buffer_type = operation_data.params_type[i];
 			if ((bparams)[i].buffer_type == MYSQL_TYPE_DATE) {
-				date_to_mysql_time(request_param[i].ptr, &(tbparams[i]));
+				date_to_mysql_time((*request_param)[i].ptr, &(tbparams[i]));
 				(bparams)[i].buffer = &(tbparams[i]);
 				(bparams)[i].buffer_length = sizeof(*tbparams);
 			}
 			else if ((bparams)[i].buffer_type == MYSQL_TYPE_TIME) {
-				time_to_mysql_time(request_param[i].ptr, &(tbparams[i]));
+				time_to_mysql_time((*request_param)[i].ptr, &(tbparams[i]));
 				(bparams)[i].buffer = &(tbparams[i]);
 				(bparams)[i].buffer_length = sizeof(*tbparams);
 			}
 			else {
-				(bparams)[i].buffer = request_param[i].ptr;
-				assert(request_param[i].size <= ULONG_MAX && "MYSQL C API sucks and doesn't support the length of the type chosen");
-				if (request_param[i].size > ULONG_MAX) {
+				(bparams)[i].buffer = (*request_param)[i].ptr;
+				assert((*request_param)[i].size <= ULONG_MAX && "MYSQL C API doesn't support the size of the type chosen");
+				if ((*request_param)[i].size > ULONG_MAX) { // If the application was debugged this should be dead code
 					goto fail3;
 				}
 				if ((bparams)[i].buffer_type == MYSQL_TYPE_STRING) {
-					(bparams)[i].buffer_length = (unsigned long)request_param[i].size - 1;
+					(bparams)[i].buffer_length = (unsigned long)(*request_param)[i].size - 1;
 				}
 				else {
-					(bparams)[i].buffer_length = (unsigned long)request_param[i].size;
+					(bparams)[i].buffer_length = (unsigned long)(*request_param)[i].size;
 				}
 			}
 		}
@@ -305,30 +313,24 @@ fail:
 	return 1;
 }
 
-static int recv_mysql_stmt_result(struct operation_data operation_data, struct cms_response** response, struct cms_result_bitmap* result_bitmap) {
+static int recv_mysql_stmt_result(struct operation_data operation_data, struct cms_response* response, struct cms_result_metadata* result_metdata) {
 	unsigned int rparam_count;
 	MYSQL_TIME* trparams;
 	MYSQL_BIND* rparams;
-	uint8_t* result;
-	size_t result_offset;
-	size_t result_length;
-	unsigned long long rset_num_rows;
 	uint8_t* rset_current_row_buffer;
 	rparam_count = operation_data.statement->field_count;
 	if (!rparam_count) {
-		(*response)->num_elements = mysql_stmt_affected_rows(operation_data.statement);
+		response->num_elements = mysql_stmt_affected_rows(operation_data.statement);
 		return 0;
 	}
-	if (!result_bitmap) {
-		asprintf((char**)&((*response)->error_message), "Received result set of %u fields but no fields were expected.", rparam_count);
-		goto fail;
+	if (!result_metdata->offset_size_bitmap) {
+		asprintf((char**)&(response->error_message), "Received result set of %u fields but no fields were expected.", rparam_count);
+		response->fatal_error = true;
+		return 0;
 	}
-	result_offset = result_bitmap[0].offset;
-	result_length = result_bitmap[0].size;
-	result_bitmap++;
-	try(rparams = calloc(rparam_count, sizeof * rparams), NULL, fail);
-	try(trparams = calloc(rparam_count, sizeof * trparams), NULL, fail2);
-	try(rset_current_row_buffer = calloc(1, result_length), NULL, fail3);
+	try(rparams = calloc(rparam_count, sizeof * rparams), NULL, out_of_memory);
+	try(trparams = calloc(rparam_count, sizeof * trparams), NULL, out_of_memory2);
+	try(rset_current_row_buffer = calloc(1, result_metdata->size), NULL, out_of_memory3);
 	for (unsigned int i = 0; i < rparam_count; i++) {
 		rparams[i].buffer_type = operation_data.statement->fields[i].type;
 		if (rparams[i].buffer_type == MYSQL_TYPE_DATE || rparams[i].buffer_type == MYSQL_TYPE_TIME) {
@@ -336,15 +338,13 @@ static int recv_mysql_stmt_result(struct operation_data operation_data, struct c
 			rparams[i].buffer_length = sizeof(*trparams);
 		}
 		else {
-			rparams[i].buffer = rset_current_row_buffer + result_bitmap[i].offset;
-			assert(result_bitmap[i].size <= ULONG_MAX && "MYSQL C API sucks and doesn't support the length of the type chosen");
-			if (result_bitmap[i].size > ULONG_MAX) {
-				goto fail4;
-			}
-			rparams[i].buffer_length = (unsigned long)result_bitmap[i].size;
+			rparams[i].buffer = rset_current_row_buffer + result_metdata->offset_size_bitmap[i].offset;
+			assert(result_metdata->offset_size_bitmap[i].size <= ULONG_MAX && "MYSQL C API doesn't support the size of the type chosen");
+			if (result_metdata->offset_size_bitmap[i].size > ULONG_MAX) goto fail; // If the application was debugged this should be dead code
+			rparams[i].buffer_length = (unsigned long)result_metdata->offset_size_bitmap[i].size;
 		}
 	}
-	try(mysql_stmt_bind_result(operation_data.statement, rparams) == 0, false, fail4);
+	try(mysql_stmt_bind_result(operation_data.statement, rparams) == 0, false, fail);
 	for (unsigned int i = 0; i < rparam_count; i++) {
 		unsigned long required_length = operation_data.statement->bind[i].length_value;
 		unsigned long buffer_length = operation_data.statement->bind[i].buffer_length;
@@ -352,45 +352,62 @@ static int recv_mysql_stmt_result(struct operation_data operation_data, struct c
 			&& operation_data.statement->bind[i].buffer_type != MYSQL_TYPE_STRING
 			&& operation_data.statement->bind[i].buffer_type != MYSQL_TYPE_NEWDECIMAL) {
 			assert(required_length == buffer_length
-				&& "The type representation chosen for a result field has a byte length \
-different from the one required by the server, this crappy API knows it but it will corrupt the memory instead of fail");
+				&& "The type representation chosen for a result field has a byte size \
+different from the one required by the server,\
+MySQL C API knows it but it is so bad that will corrupt the memory instead of fail");
 		}
 	}
-	try(mysql_stmt_store_result(operation_data.statement) == 0, false, fail4);
-	rset_num_rows = mysql_stmt_num_rows(operation_data.statement);
-	void* realloc_response_ptr = NULL;
-	try(realloc_response_ptr = realloc(*response, sizeof * *response + result_length * rset_num_rows), NULL, fail4);
-	*response = realloc_response_ptr;
-	(*response)->num_elements = rset_num_rows;
-	result = (uint8_t*)*response + result_offset;
-	for (unsigned long long i = 0; i < rset_num_rows; i++) {
-		try(mysql_stmt_fetch(operation_data.statement) == 0, false, fail4);
+	try(mysql_stmt_store_result(operation_data.statement) == 0, false, fail);
+	response->num_elements = mysql_stmt_num_rows(operation_data.statement);
+	try(*result_metdata->ptr = malloc(result_metdata->size * response->num_elements), NULL, out_of_memory4);
+	response->response_ptr = *result_metdata->ptr;
+	for (uint64_t i = 0; i < response->num_elements; i++) {
+		try(mysql_stmt_fetch(operation_data.statement) == 0, false, fail2);
 		for (unsigned int j = 0; j < rparam_count; j++) {
 			if (rparams[j].buffer_type == MYSQL_TYPE_DATE) {
-				mysql_date_to_string(&(trparams[j]), (char*)(rset_current_row_buffer + result_bitmap[j].offset));
+				mysql_date_to_string(&(trparams[j]), (char*)(rset_current_row_buffer + result_metdata->offset_size_bitmap[j].offset));
 			}
 			if (rparams[j].buffer_type == MYSQL_TYPE_TIME) {
-				mysql_time_to_string(&(trparams[j]), (char*)(rset_current_row_buffer + result_bitmap[j].offset));
+				mysql_time_to_string(&(trparams[j]), (char*)(rset_current_row_buffer + result_metdata->offset_size_bitmap[j].offset));
 			}
 		}
-		memcpy(result + (result_length * i), rset_current_row_buffer, result_length);
-		memset(rset_current_row_buffer, 0, result_length);
+		memcpy(*((uint8_t**)result_metdata->ptr) + (result_metdata->size * i), rset_current_row_buffer, result_metdata->size);
+		memset(rset_current_row_buffer, 0, result_metdata->size);
 	}
 	int ret = 0;
 	while (ret != -1) {
-		try((ret = mysql_stmt_next_result(operation_data.statement)) < 1, false, fail4);
+		try((ret = mysql_stmt_next_result(operation_data.statement)) < 1, false, fail2);
 	}
-	try(mysql_stmt_free_result(operation_data.statement) == 0, false, fail4);
+	try(mysql_stmt_free_result(operation_data.statement) == 0, false, fail);
 	free(rparams);
 	free(trparams);
 	free(rset_current_row_buffer);
 	return 0;
-fail4:
-	free(rset_current_row_buffer);
-fail3:
-	free(trparams);
 fail2:
-	free(rparams);
+	mysql_stmt_free_result(operation_data.statement);
 fail:
+	free(rset_current_row_buffer);
+	free(trparams);
+	free(rparams);
 	return 1;
+out_of_memory4:
+	mysql_stmt_free_result(operation_data.statement);
+out_of_memory3:
+	free(trparams);
+out_of_memory2:
+	free(rparams);
+out_of_memory:
+	asprintf((char**)&(response->error_message),
+		"There is not enough memory to complete this operation. Try closing other application to free more memory.");
+	response->fatal_error = true;
+	return 0;
+}
+
+static bool is_fatal_error(unsigned int mysql_errno) {
+	switch (mysql_errno) {
+	case MYSQL_USER_DEFINED_ERROR:	//TODO: Add a fallthrough list of non fatal errors
+		return false;
+	default:
+		return true;
+	}
 }

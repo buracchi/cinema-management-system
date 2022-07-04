@@ -1,3 +1,5 @@
+#include <inttypes.h>
+
 #include <buracchi/common/utilities/strto.h>
 #include <buracchi/common/utilities/try.h>
 #include <cms/cms.h>
@@ -7,53 +9,60 @@
 
 #include "../core.h"
 
-extern int select_shift(cms_t cms, struct cms_shift_details* shift_details);
-static char* get_shift_table(struct cms_get_shifts_response* response);
+extern int select_shift(cms_t cms, struct cms_shift_details* selected_shift);
+static char* get_shift_table(struct cms_shift_details* shifts, uint64_t num_elements);
 
 extern int show_shift(cms_t cms) {
-	struct cms_get_shifts_response* response = NULL;
+	struct cms_response response;
+	struct cms_shift_details* shifts;
+	char* shift_table;
 	io_clear_screen();
-	try(cms_get_shifts(cms, &response), 1, fail);
-	if (response->error_message) {
-		printf("%s\n", response->error_message);
+	response = cms_get_shifts(cms, &shifts);
+	if (response.fatal_error) {
+		fprintf(stderr, "%s\n", response.error_message ? response.error_message : cms_get_error_message(cms));
+		cms_destroy_response(&response);
+		return 1;
 	}
-	else {
-		char* shift_table;
-		try(shift_table = get_shift_table(response), NULL, fail);
-		puts(title);
-		puts(shift_table);
-		free(shift_table);
+	if (response.error_message) {
+		printf("%s\n", response.error_message);
+		cms_destroy_response(&response);
+		press_anykey();
+		return 0;
 	}
-	cms_destroy_response((struct cms_response*)response);
+	try(shift_table = get_shift_table(shifts, response.num_elements), NULL, fail);
+	puts(title);
+	puts(shift_table);
+	free(shift_table);
+	cms_destroy_response(&response);
 	press_anykey();
 	return 0;
 fail:
-	if (response) {
-		if (response->error_message) {
-			fprintf(stderr, "%s\n", response->error_message);
-		}
-		cms_destroy_response((struct cms_response*)response);
-	}
 	return 1;
 }
 
-extern int select_shift(cms_t cms, struct cms_shift_details* shift_details) {
-	struct cms_get_shifts_response* response = NULL;
+extern int select_shift(cms_t cms, struct cms_shift_details* selected_shift) {
+	struct cms_response response;
+	struct cms_shift_details* shifts;
 	char* shift_table;
 	char input[INT32DSTR_LEN];
-	int32_t selected_shift;
+	int32_t selected_shift_index;
 	bool back = false;
 	while (true) {
 		io_clear_screen();
 		puts(title);
-		try(cms_get_shifts(cms, &response), 1, fail);
-		if (response->error_message) {
-			printf("%s\n", response->error_message);
-			cms_destroy_response((struct cms_response*)response);
+		response = cms_get_shifts(cms, &shifts);
+		if (response.fatal_error) {
+			fprintf(stderr, "%s\n", response.error_message ? response.error_message : cms_get_error_message(cms));
+			cms_destroy_response(&response);
+			return 1;
+		}
+		if (response.error_message) {
+			printf("%s\n", response.error_message);
+			cms_destroy_response(&response);
 			press_anykey();
 			return 2;
 		}
-		try(shift_table = get_shift_table(response), NULL, fail);
+		try(shift_table = get_shift_table(shifts, response.num_elements), NULL, fail);
 		puts(shift_table);
 		free(shift_table);
 		get_input("Inserire il numero della proiezione scelta o Q per tornare indietro: ", input, false);
@@ -61,45 +70,39 @@ extern int select_shift(cms_t cms, struct cms_shift_details* shift_details) {
 			back = true;
 			break;
 		}
-		else if (cmn_strto_int32(&selected_shift, input, 10) == 0
-		         && selected_shift > 0
-		         && (uint64_t)selected_shift <= response->num_elements) {
-			memcpy(shift_details, &(response->result[selected_shift - 1]), sizeof * shift_details);
+		else if (cmn_strto_int32(&selected_shift_index, input, 10) == 0
+			&& selected_shift_index > 0
+			&& (uint64_t)selected_shift_index <= response.num_elements) {
+			memcpy(selected_shift, &(shifts[selected_shift_index - 1]), sizeof * selected_shift);
 			break;
 		}
-		cms_destroy_response((struct cms_response*)response);
+		cms_destroy_response(&response);
 	}
-	cms_destroy_response((struct cms_response*)response);
+	cms_destroy_response(&response);
 	return back ? 2 : 0;
 fail:
-	if (response) {
-		if (response->error_message) {
-			fprintf(stderr, "%s\n", response->error_message);
-		}
-		cms_destroy_response((struct cms_response*)response);
-	}
 	return 1;
 }
 
-static char* get_shift_table(struct cms_get_shifts_response* response) {
+static char* get_shift_table(struct cms_shift_details* shifts, uint64_t num_elements) {
 	char* result;
 	ft_table_t* table;
 	const char* str_table;
 	try(table = ft_create_table(), NULL, fail);
 	try(ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER) < 0, true, fail2);
 	try(ft_write_ln(table, "TURNO", "GIORNO", "ORA INIZIO", "DURATA", "CINEMA", "MATRICOLA", "NOME", "COGNOME", "RUOLO") < 0, true, fail2);
-	for (uint64_t i = 0; i < response->num_elements; i++) {
-		char shift[INT32DSTR_LEN] = {0 };
-		char employee_id[INT32DSTR_LEN] = {0 };
-		char* day = response->result[i].day;
-		char* start_time = response->result[i].start_time;
-		char* duration = response->result[i].duration;
-		char* address = response->result[i].cinema_address;
-		char* name = response->result[i].employee_name;
-		char* surname = response->result[i].employee_surname;
-		char* role = response->result[i].employee_role;
-		try(snprintf(shift, INT32DSTR_LEN, "%llu", i + 1) < 0, true, fail2);
-		try(snprintf(employee_id, INT32DSTR_LEN, "%d", response->result[i].employee_id) < 0, true, fail2);
+	for (uint64_t i = 0; i < num_elements; i++) {
+		char shift[INT32DSTR_LEN] = { 0 };
+		char employee_id[INT32DSTR_LEN] = { 0 };
+		char* day = shifts[i].day;
+		char* start_time = shifts[i].start_time;
+		char* duration = shifts[i].duration;
+		char* address = shifts[i].cinema_address;
+		char* name = shifts[i].employee_name;
+		char* surname = shifts[i].employee_surname;
+		char* role = shifts[i].employee_role;
+		try(snprintf(shift, INT32DSTR_LEN, "%" PRIu64, i + 1) < 0, true, fail2);
+		try(snprintf(employee_id, INT32DSTR_LEN, "%d", shifts[i].employee_id) < 0, true, fail2);
 		try(ft_write_ln(table, shift, day, start_time, duration, address, employee_id, name, surname, role) < 0, true, fail2);
 	}
 	try(str_table = ft_to_string((const ft_table_t*)table), NULL, fail2);

@@ -42,10 +42,6 @@ struct cms_screening_details {
 	char cast[CMS_FILM_CAST_LEN];
 };
 
-struct cms_booking {
-	char booking_code[CMS_BOOKING_CODE_LEN];
-};
-
 struct cms_booking_details {
 	int32_t cinema_id;
 	int32_t hall_number;
@@ -63,52 +59,51 @@ struct cms_payment_details {
 	char security_code[4];
 };
 
-struct cms_get_all_cinema_response {
-	struct cms_response;
-	struct cms_cinema result[];
-};
-extern int cms_get_all_cinema(cms_t cms, struct cms_get_all_cinema_response** response);
+extern struct cms_response cms_get_all_cinema(
+	cms_t cms,
+	CMS_OUT struct cms_cinema** cinema
+);
 
-struct cms_get_cinema_screenings_response {
-	struct cms_response;
-	struct cms_screening_details result[];
-};
-extern int cms_get_cinema_screenings(cms_t cms, int32_t cinema_id, struct cms_get_cinema_screenings_response** response);
+extern struct cms_response cms_get_cinema_screenings(
+	cms_t cms,
+	CMS_IN int32_t cinema_id,
+	CMS_OUT struct cms_screening_details** screening_details
+);
 
-struct cms_get_cinema_halls_response {
-	struct cms_response;
-	struct cms_hall result[];
-};
-extern int cms_get_cinema_halls(cms_t cms, int32_t cinema_id, struct cms_get_cinema_halls_response** response);
+extern struct cms_response cms_get_cinema_halls(
+	cms_t cms,
+	CMS_IN int32_t cinema_id,
+	CMS_OUT struct cms_hall** halls
+);
 
-struct cms_get_available_seats_response {
-	struct cms_response;
-	struct cms_seat result[];
-};
-extern int cms_get_available_seats(cms_t cms, struct cms_screening* screening, struct cms_get_available_seats_response** response);
+extern struct cms_response cms_get_available_seats(
+	cms_t cms,
+	CMS_IN const struct cms_screening* screening,
+	CMS_OUT struct cms_seat** seats
+);
 
-struct cms_create_booking_response {
-	struct cms_response;
-	struct cms_booking result[];
-};
-extern int cms_create_booking(cms_t cms, struct cms_booking_details* details, struct cms_create_booking_response** response);
+extern struct cms_response cms_create_booking(
+	cms_t cms,
+	CMS_IN const struct cms_booking_details* details,
+	CMS_OUT char(**booking_code)[CMS_BOOKING_CODE_LEN]
+);
 
-struct cms_commit_booking_response {
-	struct cms_response;
-};
-extern int cms_commit_booking(cms_t cms, struct cms_payment_details* payment_details, struct cms_commit_booking_response** response);
+extern struct cms_response cms_commit_booking(
+	cms_t cms,
+	CMS_IN const struct cms_payment_details* payment_details
+);
 
-struct cms_abort_booking_response {
-	struct cms_response;
-};
-extern int cms_abort_booking(cms_t cms, char (*booking_code)[CMS_BOOKING_CODE_LEN], struct cms_abort_booking_response** response);
+extern struct cms_response cms_abort_booking(
+	cms_t cms,
+	CMS_IN const char(*booking_code)[CMS_BOOKING_CODE_LEN]
+);
 
-struct cms_cancel_booking_response {
-	struct cms_response;
-};
-extern int cms_cancel_booking(cms_t cms, char (*booking_code)[CMS_BOOKING_CODE_LEN], struct cms_cancel_booking_response** response);
+extern struct cms_response cms_cancel_booking(
+	cms_t cms,
+	CMS_IN const char(*booking_code)[CMS_BOOKING_CODE_LEN]
+);
 
-struct cms_validate_booking_response {
-	struct cms_response;
-};
-extern int cms_validate_booking(cms_t cms, char (*booking_code)[CMS_BOOKING_CODE_LEN], struct cms_validate_booking_response** response);
+extern struct cms_response cms_validate_booking(
+	cms_t cms,
+	CMS_IN const char(*booking_code)[CMS_BOOKING_CODE_LEN]
+);

@@ -31,34 +31,34 @@ struct cms_cinema_details {
 	char closing_time[CMS_TIME_LEN];
 };
 
-struct cms_get_all_cinema_response {
-	struct cms_response;
-	struct cms_cinema result[];
-};
-extern int cms_get_all_cinema(cms_t cms, struct cms_get_all_cinema_response** response);
+extern struct cms_response cms_get_all_cinema(
+	cms_t cms,
+	CMS_OUT struct cms_cinema** cinema
+);
 
-struct cms_add_cinema_response {
-	struct cms_response;
-};
-extern int cms_add_cinema(cms_t cms, struct cms_cinema_details* details, struct cms_add_cinema_response** response);
+extern struct cms_response cms_add_cinema(
+	cms_t cms,
+	CMS_IN const struct cms_cinema_details* details
+);
 
-struct cms_delete_cinema_response {
-	struct cms_response;
-};
-extern int cms_delete_cinema(cms_t cms, int32_t cinema_id, struct cms_delete_cinema_response** response);
+extern struct cms_response cms_delete_cinema(
+	cms_t cms,
+	CMS_IN int32_t cinema_id
+);
 
-struct cms_get_cinema_halls_response {
-	struct cms_response;
-	struct cms_hall result[];
-};
-extern int cms_get_cinema_halls(cms_t cms, int32_t cinema_id, struct cms_get_cinema_halls_response** response);
+extern struct cms_response cms_get_cinema_halls(
+	cms_t cms,
+	CMS_IN int32_t cinema_id,
+	CMS_OUT struct cms_hall** halls
+);
 
-struct cms_add_hall_response {
-	struct cms_response;
-};
-extern int cms_add_hall(cms_t cms, struct cms_hall_details* details, struct cms_add_hall_response** response);
+extern struct cms_response cms_add_hall(
+	cms_t cms,
+	CMS_IN const struct cms_hall_details* details
+);
 
-struct cms_delete_hall_response {
-	struct cms_response;
-};
-extern int cms_delete_hall(cms_t cms, int32_t cinema_id, int32_t hall_number, struct cms_delete_hall_response** response);
+extern struct cms_response cms_delete_hall(
+	cms_t cms,
+	CMS_IN int32_t cinema_id,
+	CMS_IN int32_t hall_number
+);

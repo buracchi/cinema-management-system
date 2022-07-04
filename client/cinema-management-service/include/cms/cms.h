@@ -3,8 +3,11 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#define CMS_IN
+#define CMS_OUT
+
 // MySQL doesn't NULL terminate strings, add +1 to the
-// string type based columns length (CHAR, VARCHAR, ecc...)
+// string type based columns size (CHAR, VARCHAR, ecc...)
 #define CMS_DECIMAL_LEN 18
 #define CMS_DATE_LEN 11	// "YYYY-MM-DD" format
 #define CMS_TIME_LEN 9	// "hh:mm:ss" format
@@ -30,11 +33,13 @@ struct cms_credentials {
 };
 
 struct cms_response {
+	bool fatal_error;
 	const char* error_message;
 	uint64_t num_elements;
+	void* response_ptr;
 };
 
-extern cms_t cms_init(struct cms_credentials* credentials);
+extern cms_t cms_init(const struct cms_credentials* credentials);
 
 extern void cms_destroy(cms_t cms);
 

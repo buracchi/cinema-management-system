@@ -11,13 +11,13 @@
 enum actions {
 	SHOW_SHIFTS_WITHOUT_PROJECTIONIST = '1',
 	SHOW_CINEMA_WITHOUT_ENOUGH_USHERS = '2',
-	SHOW_MONTHLY_BOOKING_STATE = '3',
+	SHOW_MONTHLY_RESERVATIONS_STATE = '3',
 	BACK_TO_MENU = 'Q'
 };
 
 extern int show_cinema_without_enough_ushers(cms_t cms);
 extern int show_screenings_without_projectionist(cms_t cms);
-extern int show_monthly_booking_state(cms_t cms);
+extern int show_monthly_reservations_state(cms_t cms);
 
 extern int choose_generate_report_action(cms_t cms) {
 	bool end = false;
@@ -39,8 +39,8 @@ extern int choose_generate_report_action(cms_t cms) {
 		case SHOW_CINEMA_WITHOUT_ENOUGH_USHERS:
 			try(show_cinema_without_enough_ushers(cms), 1, fail);
 			break;
-		case SHOW_MONTHLY_BOOKING_STATE:
-			try(show_monthly_booking_state(cms), 1, fail);
+		case SHOW_MONTHLY_RESERVATIONS_STATE:
+			try(show_monthly_reservations_state(cms), 1, fail);
 			break;
 		case BACK_TO_MENU:
 			end = true;

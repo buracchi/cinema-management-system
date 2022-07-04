@@ -18,18 +18,17 @@ struct cms_employee_details {
 	char role[CMS_EMPLOYEE_ROLE_LEN];
 };
 
-struct cms_get_employees_response {
-	struct cms_response;
-	struct cms_employee result[];
-};
-extern int cms_get_employees(cms_t cms, struct cms_get_employees_response** response);
+extern struct cms_response cms_get_employees(
+	cms_t cms,
+	CMS_OUT struct cms_employee** employees
+);
 
-struct cms_add_employee_response {
-	struct cms_response;
-};
-extern int cms_add_employee(cms_t cms, struct cms_employee_details* details, struct cms_add_employee_response** response);
+extern struct cms_response cms_add_employee(
+	cms_t cms,
+	CMS_IN const struct cms_employee_details* details
+);
 
-struct cms_delete_employee_response {
-	struct cms_response;
-};
-extern int cms_delete_employee(cms_t cms, int32_t id, struct cms_delete_employee_response** response);
+extern struct cms_response cms_delete_employee(
+	cms_t cms,
+	CMS_IN int32_t id
+);

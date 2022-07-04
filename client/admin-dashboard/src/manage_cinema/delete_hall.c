@@ -6,24 +6,24 @@
 #include "../core.h"
 
 extern int select_cinema(cms_t cms, struct cms_cinema* cinema);
-extern int select_hall(cms_t cms, int32_t cinema_id, struct cms_hall* hall);
+extern int select_hall(cms_t cms, int32_t cinema_id, struct cms_hall* selected_hall);
 
 extern int delete_hall(cms_t cms) {
-	struct cms_delete_hall_response* response = NULL;
+	struct cms_response response;
 	struct cms_cinema cinema;
 	struct cms_hall hall;
 	while (true) {
 		switch (select_cinema(cms, &cinema)) {
-			case 1:
-				goto fail;
-			case 2:
-				return 0;
+		case 1:
+			return 1;
+		case 2:
+			return 0;
 		}
 		switch (select_hall(cms, cinema.id, &hall)) {
-			case 1:
-				goto fail;
-			case 2:
-				continue;
+		case 1:
+			return 1;
+		case 2:
+			continue;
 		}
 		break;
 	}
@@ -35,22 +35,20 @@ extern int delete_hall(cms_t cms) {
 		return 0;
 	}
 	puts("");
-	try(cms_delete_hall(cms, cinema.id, hall.id, &response), 1, fail);
-	if (response->error_message) {
-		printf("%s\n", response->error_message);
+	response = cms_delete_hall(cms, cinema.id, hall.id);
+	if (response.fatal_error) {
+		fprintf(stderr, "%s\n", response.error_message ? response.error_message : cms_get_error_message(cms));
+		cms_destroy_response(&response);
+		return 1;
 	}
-	else {
-		puts("Sala rimossa con successo");
+	if (response.error_message) {
+		printf("%s\n", response.error_message);
+		cms_destroy_response(&response);
+		press_anykey();
+		return 0;
 	}
-	cms_destroy_response((struct cms_response*)response);
+	puts("Sala rimossa con successo");
+	cms_destroy_response(&response);
 	press_anykey();
 	return 0;
-fail:
-	if (response) {
-		if (response->error_message) {
-			fprintf(stderr, "%s\n", response->error_message);
-		}
-		cms_destroy_response((struct cms_response*)response);
-	}
-	return 1;
 }

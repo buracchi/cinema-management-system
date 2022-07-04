@@ -76,7 +76,6 @@ int main(void) {
 	cms_destroy(cms);
 	return EXIT_SUCCESS;
 fail2:
-	fprintf(stderr, "%s\n", cms_get_error_message(cms));
 	cms_destroy(cms);
 	return EXIT_FAILURE;
 fail:

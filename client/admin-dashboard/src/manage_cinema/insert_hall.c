@@ -9,15 +9,15 @@
 extern int select_cinema(cms_t cms, struct cms_cinema* cinema);
 
 extern int insert_hall(cms_t cms) {
-	struct cms_hall_details hall_details = {0 };
-	struct cms_add_hall_response* response = NULL;
+	struct cms_response response;
 	struct cms_cinema cinema;
+	struct cms_hall_details hall_details = { 0 };
 	char hall_number[INT32DSTR_LEN];
 	char rows[INT32DSTR_LEN];
 	char rows_seats[INT32DSTR_LEN];
 	switch (select_cinema(cms, &cinema)) {
 	case 1:
-		goto fail;
+		return 1;
 	case 2:
 		return 0;
 	}
@@ -45,22 +45,20 @@ extern int insert_hall(cms_t cms) {
 	}
 	puts("");
 	hall_details.cinema_id = cinema.id;
-	try(cms_add_hall(cms, &hall_details, &response), 1, fail);
-	if (response->error_message) {
-		printf("%s\n", response->error_message);
+	response = cms_add_hall(cms, &hall_details);
+	if (response.fatal_error) {
+		fprintf(stderr, "%s\n", response.error_message ? response.error_message : cms_get_error_message(cms));
+		cms_destroy_response(&response);
+		return 1;
 	}
-	else {
-		puts("Sala aggiunta con successo");
+	if (response.error_message) {
+		printf("%s\n", response.error_message);
+		cms_destroy_response(&response);
+		press_anykey();
+		return 0;
 	}
-	cms_destroy_response((struct cms_response*)response);
+	puts("Sala aggiunta con successo");
+	cms_destroy_response(&response);
 	press_anykey();
 	return 0;
-fail:
-	if (response) {
-		if (response->error_message) {
-			fprintf(stderr, "%s\n", response->error_message);
-		}
-		cms_destroy_response((struct cms_response*)response);
-	}
-	return 1;
 }

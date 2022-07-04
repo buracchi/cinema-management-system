@@ -1,3 +1,4 @@
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
@@ -15,7 +16,7 @@
 
 //#define RUN_FROM_IDE
 
-static int validate_booking(char (*booking_code)[CMS_BOOKING_CODE_LEN]);
+static int validate_booking(char(*booking_code)[CMS_BOOKING_CODE_LEN]);
 
 #ifdef RUN_FROM_IDE
 int main(void) {
@@ -25,7 +26,7 @@ int main(void) {
 #else
 int main(int argc, char** argv) {
 	char booking_code[CMS_BOOKING_CODE_LEN] = { 0 };
-	char* input;
+	char* input = NULL;
 	cmn_map_t option_map;
 	cmn_argparser_t argparser;
 	struct cmn_argparser_argument args[] = {
@@ -36,7 +37,7 @@ int main(int argc, char** argv) {
 	option_map = cmn_argparser_parse(argparser, argc, (const char**)argv);
 	try(cmn_map_at(option_map, (void*)"codice", (void**)&input), 1, fail);
 	try(cmn_argparser_destroy(argparser), 1, fail);
-	if ((strlen(input) != sizeof booking_code - 1) || cmn_strto_uint32(&(uint32_t){ 0 }, input, 16)) {
+	if ((strlen(input) != sizeof booking_code - 1) || cmn_strto_uint32(&(uint32_t) { 0 }, input, 16)) {
 		goto fail2;
 	}
 	strcpy(booking_code, input);
@@ -49,8 +50,8 @@ fail:
 }
 #endif
 
-static int validate_booking(char (*booking_code)[CMS_BOOKING_CODE_LEN]) {
-	struct cms_validate_booking_response* response = NULL;
+static int validate_booking(char(*booking_code)[CMS_BOOKING_CODE_LEN]) {
+	struct cms_response response;
 	struct cms_credentials credentials = {
 			.username = getenv("USHER_USERNAME"),
 			.password = getenv("USHER_PASSWORD"),
@@ -60,26 +61,17 @@ static int validate_booking(char (*booking_code)[CMS_BOOKING_CODE_LEN]) {
 	cms_t cms;
 	try(cmn_strto_uint16((uint16_t*)&(credentials.port), getenv("PORT"), 10), 1, fail);
 	try(cms = cms_init(&credentials), NULL, fail);
-	try(cms_validate_booking(cms, booking_code, &response), 1, fail2);
-	if (response->error_message) {
-		fprintf(stderr, "%s\n", response->error_message);
-		cms_destroy_response((struct cms_response*)response);
+	response = cms_validate_booking(cms, booking_code);
+	if (response.fatal_error || response.error_message) {
+		fprintf(stderr, "%s\n", response.error_message ? response.error_message : cms_get_error_message(cms));
+		cms_destroy_response(&response);
 		cms_destroy(cms);
 		return EXIT_FAILURE;
 	}
 	printf("Prenotazione validata con successo.");
-	cms_destroy_response((struct cms_response*)response);
+	cms_destroy_response(&response);
 	cms_destroy(cms);
 	return EXIT_SUCCESS;
-fail2:
-	if (response) {
-		if (response->error_message) {
-			fprintf(stderr, "%s\n", response->error_message);
-		}
-		cms_destroy_response((struct cms_response*)response);
-	}
-	fprintf(stderr, "%s\n", cms_get_error_message(cms));
-	cms_destroy(cms);
 fail:
 	fprintf(stderr, "Impossibile connettersi al server, controllare le credenziali e riprovare in seguito.");
 	return EXIT_FAILURE;

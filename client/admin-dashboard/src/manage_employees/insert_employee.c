@@ -8,8 +8,8 @@
 static char* get_role(char* role);
 
 extern int insert_employee(cms_t cms) {
-	struct cms_employee_details employee_details = {0 };
-	struct cms_add_employee_response* response = NULL;
+	struct cms_response response;
+	struct cms_employee_details employee_details = { 0 };
 	io_clear_screen();
 	puts(title);
 	get_input("Nome: ", employee_details.name, false);
@@ -19,24 +19,22 @@ extern int insert_employee(cms_t cms) {
 		return 0;
 	}
 	puts("");
-	try(cms_add_employee(cms, &employee_details, &response), 1, fail);
-	if (response->error_message) {
-		printf("%s\n", response->error_message);
+	response = cms_add_employee(cms, &employee_details);
+	if (response.fatal_error) {
+		fprintf(stderr, "%s\n", response.error_message ? response.error_message : cms_get_error_message(cms));
+		cms_destroy_response(&response);
+		return 1;
 	}
-	else {
-		puts("Dipendente aggiunto con successo");
+	if (response.error_message) {
+		printf("%s\n", response.error_message);
+		cms_destroy_response(&response);
+		press_anykey();
+		return 0;
 	}
-	cms_destroy_response((struct cms_response*)response);
+	puts("Dipendente aggiunto con successo");
+	cms_destroy_response(&response);
 	press_anykey();
 	return 0;
-fail:
-	if (response) {
-		if (response->error_message) {
-			fprintf(stderr, "%s\n", response->error_message);
-		}
-		cms_destroy_response((struct cms_response*)response);
-	}
-	return 1;
 }
 static char* get_role(char* role) {
 	const char* roles[] = { "Maschera", "Proiezionista" };

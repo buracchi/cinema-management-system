@@ -41,10 +41,11 @@ int main(void) {
 		puts("\n");
 		action = multi_choice("Selezionare un opzione", ((char[]){ '1', '2', 'Q' }));
 		switch (action) {
-		case MAKE_BOOKING:
+		case MAKE_BOOKING: {
 			struct booking_data booking_data = { 0 };
 			try(choose_cinema(cms, &booking_data), 1, fail2);
 			break;
+		}
 		case CANCEL_BOOKING:
 			try(cancel_booking(cms), 1, fail2);
 			break;
@@ -59,7 +60,6 @@ int main(void) {
 	cms_destroy(cms);
 	return EXIT_SUCCESS;
 fail2:
-	fprintf(stderr, "%s\n", cms_get_error_message(cms));
 	cms_destroy(cms);
 	return EXIT_FAILURE;
 fail:

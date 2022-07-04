@@ -91,17 +91,21 @@
       },
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
-        "CMAKE_C_FLAGS_DEBUG": "-Wall -Wextra -pedantic -fms-extensions -fsanitize=address",
-        "CMAKE_CXX_FLAGS_DEBUG": "-std=c++20 -Wall -Wextra -pedantic -fsanitize=address"
+        "CMAKE_C_FLAGS_DEBUG": "-Wall -Wextra -pedantic",
+        "CMAKE_CXX_FLAGS_DEBUG": "-std=c++20 -Wall -Wextra -pedantic"
       }
     },
     {
       "name": "x64-linux-release",
       "displayName": "x64 Release",
-      "inherits": "x64-linux-debug",
+      "inherits": "linux-base",
+      "architecture": {
+        "value": "x64",
+        "strategy": "external"
+      },
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
-        "CMAKE_C_FLAGS_RELEASE": "-fms-extensions"
+        "CMAKE_CXX_FLAGS_DEBUG": "-std=c++20"
       }
     }
   ]

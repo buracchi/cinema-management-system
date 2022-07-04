@@ -7,65 +7,72 @@
 
 #include "../core.h"
 
-extern int select_employee(cms_t cms, struct cms_employee* employee);
-static char* get_employees_table(struct cms_get_employees_response* response);
+extern int select_employee(cms_t cms, struct cms_employee* selected_employee);
+static char* get_employees_table(struct cms_employee* employees, uint64_t num_elements);
 
 extern int show_employees(cms_t cms) {
-	struct cms_get_employees_response* response = NULL;
+	struct cms_response response;
+	struct cms_employee* employees;
 	io_clear_screen();
-	try(cms_get_employees(cms, &response), 1, fail);
-	if (response->error_message) {
-		printf("%s\n", response->error_message);
+	response = cms_get_employees(cms, &employees);
+	if (response.fatal_error) {
+		fprintf(stderr, "%s\n", response.error_message ? response.error_message : cms_get_error_message(cms));
+		cms_destroy_response(&response);
+		return 1;
 	}
-	else {
-		char* cinema_table;
-		try(cinema_table = get_employees_table(response), NULL, fail);
-		puts(title);
-		puts(cinema_table);
-		free(cinema_table);
+	if (response.error_message) {
+		printf("%s\n", response.error_message);
+		cms_destroy_response(&response);
+		press_anykey();
+		return 0;
 	}
-	cms_destroy_response((struct cms_response*)response);
+	char* cinema_table;
+	try(cinema_table = get_employees_table(employees, response.num_elements), NULL, fail);
+	puts(title);
+	puts(cinema_table);
+	free(cinema_table);
+	cms_destroy_response(&response);
 	press_anykey();
 	return 0;
 fail:
-	if (response) {
-		if (response->error_message) {
-			fprintf(stderr, "%s\n", response->error_message);
-		}
-		cms_destroy_response((struct cms_response*)response);
-	}
 	return 1;
 }
 
-extern int select_employee(cms_t cms, struct cms_employee* employee) {
-	struct cms_get_employees_response* response = NULL;
+extern int select_employee(cms_t cms, struct cms_employee* selected_employee) {
+	struct cms_response response;
+	struct cms_employee* employees;
 	char* employees_table;
 	char input[INT32DSTR_LEN];
-	int32_t selected_employee;
+	int32_t selected_employee_index;
 	bool back = false;
 	while (true) {
 		bool valid_input = false;
 		io_clear_screen();
 		puts(title);
-		try(cms_get_employees(cms, &response), 1, fail);
-		if (response->error_message) {
-			printf("%s\n", response->error_message);
-			cms_destroy_response((struct cms_response*)response);
+		response = cms_get_employees(cms, &employees);
+		if (response.fatal_error) {
+			fprintf(stderr, "%s\n", response.error_message ? response.error_message : cms_get_error_message(cms));
+			cms_destroy_response(&response);
+			return 1;
+		}
+		if (response.error_message) {
+			printf("%s\n", response.error_message);
+			cms_destroy_response(&response);
 			press_anykey();
 			return 2;
 		}
-		try(employees_table = get_employees_table(response), NULL, fail);
+		try(employees_table = get_employees_table(employees, response.num_elements), NULL, fail);
 		puts(employees_table);
 		free(employees_table);
-		get_input("Inserire il numero del employee scelto o Q per tornare indietro: ", input, false);
+		get_input("Inserire il numero del selected_employee scelto o Q per tornare indietro: ", input, false);
 		if (input[0] == 'Q' && input[1] == '\0') {
 			back = true;
 			break;
 		}
-		else if (cmn_strto_int32(&selected_employee, input, 10) == 0) {
-			for (uint64_t i = 0; i < response->num_elements; i++) {
-				if (selected_employee == response->result[i].id) {
-					memcpy(employee, &(response->result[i]), sizeof * employee);
+		else if (cmn_strto_int32(&selected_employee_index, input, 10) == 0) {
+			for (uint64_t i = 0; i < response.num_elements; i++) {
+				if (selected_employee_index == employees[i].id) {
+					memcpy(selected_employee, &(employees[i]), sizeof * selected_employee);
 					valid_input = true;
 					break;
 				}
@@ -74,33 +81,27 @@ extern int select_employee(cms_t cms, struct cms_employee* employee) {
 				break;
 			}
 		}
-		cms_destroy_response((struct cms_response*)response);
+		cms_destroy_response(&response);
 	}
-	cms_destroy_response((struct cms_response*)response);
+	cms_destroy_response(&response);
 	return back ? 2 : 0;
 fail:
-	if (response) {
-		if (response->error_message) {
-			fprintf(stderr, "%s\n", response->error_message);
-		}
-		cms_destroy_response((struct cms_response*)response);
-	}
 	return 1;
 }
 
-static char* get_employees_table(struct cms_get_employees_response* response) {
+static char* get_employees_table(struct cms_employee* employees, uint64_t num_elements) {
 	char* result;
 	ft_table_t* table;
 	const char* str_table;
 	try(table = ft_create_table(), NULL, fail);
 	try(ft_set_cell_prop(table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER) < 0, true, fail2);
 	try(ft_write_ln(table, "MATRICOLA", "NOME", "COGNOME", "RUOLO") < 0, true, fail2);
-	for (uint64_t i = 0; i < response->num_elements; i++) {
+	for (uint64_t i = 0; i < num_elements; i++) {
 		char id[INT32DSTR_LEN] = { 0 };
-		char* address = response->result[i].name;
-		char* opening = response->result[i].surname;
-		char* closing = response->result[i].role;
-		try(snprintf(id, INT32DSTR_LEN, "%d", response->result[i].id) < 0, true, fail2);
+		char* address = employees[i].name;
+		char* opening = employees[i].surname;
+		char* closing = employees[i].role;
+		try(snprintf(id, INT32DSTR_LEN, "%d", employees[i].id) < 0, true, fail2);
 		try(ft_write_ln(table, id, address, opening, closing) < 0, true, fail2);
 	}
 	try(str_table = ft_to_string((const ft_table_t*)table), NULL, fail2);

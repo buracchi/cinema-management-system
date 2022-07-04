@@ -43,6 +43,12 @@ struct cms_result_bitmap {
 	size_t size;
 };
 
+struct cms_result_metadata {
+	void** ptr;
+	size_t size;
+	struct cms_result_bitmap* offset_size_bitmap;
+};
+
 enum cms_operation {
 	ABORT_BOOKING,
 	ADD_CINEMA,
@@ -75,4 +81,4 @@ enum cms_operation {
 	OPERATIONS_NUMBER
 };
 
-extern int cms_operation_execute(cms_t, enum cms_operation, struct cms_request_param*, struct cms_response**, struct cms_result_bitmap*);
+extern struct cms_response cms_operation_execute(cms_t, enum cms_operation, struct cms_request_param(*)[], struct cms_result_metadata*);

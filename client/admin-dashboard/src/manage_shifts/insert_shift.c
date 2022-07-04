@@ -8,26 +8,26 @@
 #include "../core.h"
 
 extern int select_cinema(cms_t cms, struct cms_cinema* cinema);
-extern int select_employee(cms_t cms, struct cms_employee* employee);
+extern int select_employee(cms_t cms, struct cms_employee* selected_employee);
 static char* get_day(char* day);
 
 extern int insert_shift(cms_t cms) {
-	struct cms_add_shift_details shift_details = {0 };
-	struct cms_add_shift_response* response = NULL;
+	struct cms_response response;
+	struct cms_add_shift_details shift_details = { 0 };
 	struct cms_cinema cinema;
 	struct cms_employee employee;
 	while (true) {
 		switch (select_employee(cms, &employee)) {
-			case 1:
-				goto fail;
-			case 2:
-				return 0;
+		case 1:
+			return 1;
+		case 2:
+			return 0;
 		}
 		switch (select_cinema(cms, &cinema)) {
-			case 1:
-				goto fail;
-			case 2:
-				continue;
+		case 1:
+			return 1;
+		case 2:
+			continue;
 		}
 		break;
 	}
@@ -44,31 +44,29 @@ extern int insert_shift(cms_t cms) {
 	puts("");
 	shift_details.employee_id = employee.id;
 	shift_details.cinema_id = cinema.id;
-	try(cms_add_shift(cms, &shift_details, &response), 1, fail);
-	if (response->error_message) {
-		printf("%s\n", response->error_message);
+	response = cms_add_shift(cms, &shift_details);
+	if (response.fatal_error) {
+		fprintf(stderr, "%s\n", response.error_message ? response.error_message : cms_get_error_message(cms));
+		cms_destroy_response(&response);
+		return 1;
 	}
-	else {
-		puts("Proiezione aggiunta con successo");
+	if (response.error_message) {
+		printf("%s\n", response.error_message);
+		cms_destroy_response(&response);
+		press_anykey();
+		return 0;
 	}
-	cms_destroy_response((struct cms_response*)response);
+	puts("Proiezione aggiunta con successo");
+	cms_destroy_response(&response);
 	press_anykey();
 	return 0;
-fail:
-	if (response) {
-		if (response->error_message) {
-			fprintf(stderr, "%s\n", response->error_message);
-		}
-		cms_destroy_response((struct cms_response*)response);
-	}
-	return 1;
 }
 
 static char* get_day(char* day) {
 	const char* days[] = { "Lunedi'", "Martedi'", "Mercoledi'", "Giovedi'", "Venerdi'", "Sabato", "Domenica" };
 	size_t selection = multi_choice(
-			"Giorno <1=Lunedi' | 2=Martedi' | 3=Mercoledi' | 4=Giovedi' | 5=Venerdi' | 6=Sabato | 7=Domenica> ",
-			((char[]){ '1', '2', '3', '4', '5', '6', '7' })) - '1';
+		"Giorno <1=Lunedi' | 2=Martedi' | 3=Mercoledi' | 4=Giovedi' | 5=Venerdi' | 6=Sabato | 7=Domenica> ",
+		((char[]){ '1', '2', '3', '4', '5', '6', '7' })) - '1';
 	strcpy(day, days[selection]);
 	return day;
 }

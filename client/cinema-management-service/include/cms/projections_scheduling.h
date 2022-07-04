@@ -58,35 +58,33 @@ struct cms_assign_projectionist_details {
 	char start_time[CMS_TIME_LEN];
 };
 
-struct cms_get_projections_response {
-	struct cms_response;
-	struct cms_projection_details result[];
-};
-extern int cms_get_projections(cms_t cms, struct cms_get_projections_response** response);
+extern struct cms_response cms_get_projections(
+	cms_t cms,
+	CMS_OUT struct cms_projection_details** projections
+);
 
-struct cms_get_movies_response {
-	struct cms_response;
-	struct cms_movie result[];
-};
-extern int cms_get_movies(cms_t cms, struct cms_get_movies_response** response);
+extern struct cms_response cms_get_movies(
+	cms_t cms,
+	CMS_OUT struct cms_movie** movies
+);
 
-struct cms_add_projection_response {
-	struct cms_response;
-};
-extern int cms_add_projection(cms_t cms, struct cms_add_projection_details* details, struct cms_add_projection_response** response);
+extern struct cms_response cms_add_projection(
+	cms_t cms,
+	CMS_IN const struct cms_add_projection_details* details
+);
 
-struct cms_delete_projection_response {
-	struct cms_response;
-};
-extern int cms_delete_projection(cms_t cms, struct cms_projection* projection, struct cms_delete_projection_response** response);
+extern struct cms_response cms_delete_projection(
+	cms_t cms,
+	CMS_IN const struct cms_projection* projection
+);
 
-struct cms_get_available_projectionists_response {
-	struct cms_response;
-	struct cms_available_projectionist result[];
-};
-extern int cms_get_available_projectionists(cms_t cms, struct cms_projection* projection, struct cms_get_available_projectionists_response** response);
+extern struct cms_response cms_get_available_projectionists(
+	cms_t cms,
+	CMS_IN const struct cms_projection* projection,
+	CMS_OUT struct cms_available_projectionist** projectionists
+);
 
-struct cms_assign_projectionist_response {
-	struct cms_response;
-};
-extern int cms_assign_projectionist(cms_t cms, struct cms_assign_projectionist_details* details, struct cms_assign_projectionist_response** response);
+extern struct cms_response cms_assign_projectionist(
+	cms_t cms,
+	CMS_IN const struct cms_assign_projectionist_details* details
+);
