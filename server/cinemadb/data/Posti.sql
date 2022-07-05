@@ -11,7 +11,7 @@ WITH RECURSIVE
                 UNION ALL
                 SELECT CHAR(ASCII(lettera) + 1 USING ASCII)
                 FROM lettere
-                WHERE ASCII(lettera) + 1 <= ASCII('A') + 8)
+                WHERE ASCII(lettera) + 1 <= ASCII('A') + 9)
 SELECT cinema, Sale.numero, lettera, numeri.numero
 FROM Sale
          CROSS JOIN lettere

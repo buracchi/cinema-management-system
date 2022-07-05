@@ -7,16 +7,57 @@
   },
   "configurePresets": [
     {
-      "name": "windows-base",
+      "name": "ninja",
       "hidden": true,
-      "generator": "Ninja",
-      "binaryDir": "${sourceDir}/out/build/${presetName}",
-      "installDir": "${sourceDir}/out/install/${presetName}",
+      "description": "Generate Ninja project files",
+      "generator": "Ninja"
+    },
+    {
+      "name": "vcpkg",
+      "hidden": true,
+      "description": "Configure with vcpkg toolchain",
       "cacheVariables": {
         "CMAKE_TOOLCHAIN_FILE": {
           "value": "${sourceDir}/vcpkg/scripts/buildsystems/vcpkg.cmake",
           "type": "FILEPATH"
-        },
+        }
+      }
+    },
+    {
+      "name": "x64-debug",
+      "hidden": true,
+      "architecture": {
+        "value": "x64",
+        "strategy": "external"
+      },
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "x64-release",
+      "hidden": true,
+      "architecture": {
+        "value": "x64",
+        "strategy": "external"
+      },
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+    {
+      "name": "default",
+      "hidden": true,
+      "description": "Default configuration presets",
+      "inherits": [ "ninja", "vcpkg" ],
+      "binaryDir": "${sourceDir}/out/build/${presetName}",
+      "installDir": "${sourceDir}/out/install/${presetName}"
+    },
+    {
+      "name": "windows-default",
+      "hidden": true,
+      "inherits": "default",
+      "cacheVariables": {
         "CMAKE_C_COMPILER": "cl.exe",
         "CMAKE_CXX_COMPILER": "cl.exe"
       },
@@ -27,39 +68,9 @@
       }
     },
     {
-      "name": "x64-windows-debug",
-      "displayName": "x64 Debug",
-      "inherits": "windows-base",
-      "architecture": {
-        "value": "x64",
-        "strategy": "external"
-      },
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug",
-        "CMAKE_CXX_FLAGS_DEBUG": "/std:c++20 /Wall /Zi"
-      }
-    },
-    {
-      "name": "x64-windows-release",
-      "displayName": "x64 Release",
-      "inherits": "windows-base",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release",
-        "CMAKE_CXX_FLAGS_DEBUG": "/std:c++20"
-      }
-    },
-    {
-      "name": "linux-base",
+      "name": "linux-default",
       "hidden": true,
-      "generator": "Ninja",
-      "binaryDir": "${sourceDir}/out/build/${presetName}",
-      "installDir": "${sourceDir}/out/install/${presetName}",
-      "cacheVariables": {
-        "CMAKE_TOOLCHAIN_FILE": {
-          "value": "${sourceDir}/vcpkg/scripts/buildsystems/vcpkg.cmake",
-          "type": "FILEPATH"
-        }
-      },
+      "inherits": "default",
       "condition": {
         "type": "equals",
         "lhs": "${hostSystemName}",
@@ -76,26 +87,85 @@
       }
     },
     {
+      "name": "x64-windows-debug",
+      "displayName": "x64 Debug",
+      "inherits": [ "windows-default", "x64-debug" ],
+      "cacheVariables": {
+        "CMAKE_CXX_FLAGS_DEBUG": "/std:c++20 /Wall /Zi"
+      }
+    },
+    {
+      "name": "x64-windows-release",
+      "displayName": "x64 Release",
+      "inherits": [ "windows-default", "x64-release" ],
+      "cacheVariables": {
+        "CMAKE_CXX_FLAGS_RELEASE": "/std:c++20 /O2"
+      }
+    },
+    {
       "name": "x64-linux-debug",
       "displayName": "x64 Debug",
-      "inherits": "linux-base",
-      "architecture": {
-        "value": "x64",
-        "strategy": "external"
-      },
+      "inherits": [ "linux-default", "x64-debug" ],
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug",
         "CMAKE_CXX_FLAGS_DEBUG": "-std=c++20 -Wall -Wextra -pedantic"
       }
     },
     {
       "name": "x64-linux-release",
       "displayName": "x64 Release",
-      "inherits": "x64-linux-debug",
+      "inherits": [ "linux-default", "x64-release" ],
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release",
-        "CMAKE_CXX_FLAGS_DEBUG": "-std=c++20"
+        "CMAKE_CXX_FLAGS_RELEASE": "-std=c++20 -O3"
       }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "x64-windows-debug",
+      "configurePreset": "x64-windows-debug"
+    },
+    {
+      "name": "x64-windows-release",
+      "configurePreset": "x64-windows-release"
+    },
+    {
+      "name": "x64-linux-debug",
+      "configurePreset": "x64-linux-debug"
+    },
+    {
+      "name": "x64-linux-release",
+      "configurePreset": "x64-linux-release"
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "default",
+      "hidden": true,
+      "output": { "outputOnFailure": true },
+      "execution": {
+        "noTestsAction": "ignore",
+        "stopOnFailure": false
+      }
+    },
+    {
+      "name": "x64-windows-debug",
+      "inherits": "default",
+      "configurePreset": "x64-windows-debug"
+    },
+    {
+      "name": "x64-windows-release",
+      "inherits": "default",
+      "configurePreset": "x64-windows-release"
+    },
+    {
+      "name": "x64-linux-debug",
+      "inherits": "default",
+      "configurePreset": "x64-linux-debug"
+    },
+    {
+      "name": "x64-linux-release",
+      "inherits": "default",
+      "configurePreset": "x64-linux-release"
     }
   ]
 }

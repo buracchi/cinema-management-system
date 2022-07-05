@@ -4,6 +4,8 @@ CREATE PROCEDURE `inserisci_sala`(
     IN _file INT,
     IN _posti_per_fila INT)
 BEGIN
+    DECLARE _troppe_file CONDITION FOR SQLSTATE '45024';
+    DECLARE _err_msg VARCHAR(128) DEFAULT MESSAGGIO_ERRORE(45024);
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
         BEGIN
             ROLLBACK;
@@ -13,6 +15,9 @@ BEGIN
     -- locking per questa transazione.
     -- Non e' pertanto necessario specificare un livello di isolamento diverso
     -- da quello di default.
+    IF (_file > 26) THEN
+        SIGNAL _troppe_file SET MESSAGE_TEXT = _err_msg;
+    END IF;
     START TRANSACTION;
     INSERT INTO `Sale` (`cinema`, `numero`)
     VALUES (_cinema, _numero);
@@ -27,7 +32,7 @@ BEGIN
                     UNION ALL
                     SELECT CHAR(ASCII(lettera) + 1 USING ASCII)
                     FROM lettere
-                    WHERE ASCII(lettera) + 1 <= ASCII('A') + _file)
+                    WHERE ASCII(lettera) + 2 <= ASCII('A') + _file)
     SELECT _cinema, _numero, lettera, numeri.numero
     FROM lettere
              CROSS JOIN numeri;

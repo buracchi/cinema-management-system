@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS `cinemadb`.`Posti`
         FOREIGN KEY (`cinema`, `sala`)
             REFERENCES `cinemadb`.`Sale` (`cinema`, `numero`)
             ON DELETE CASCADE
-            ON UPDATE CASCADE
+            ON UPDATE CASCADE,
+    CONSTRAINT `chk_Posti_Fila_Alfabetica` CHECK (`fila` RLIKE '[A-Z]')
 )
     ENGINE = InnoDB;

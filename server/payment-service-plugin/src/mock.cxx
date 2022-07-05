@@ -1,6 +1,7 @@
 ﻿#include <payment-service.h>
 
 #include <cstdlib>
+#include <cstring>
 #include <chrono>
 #include <mutex>
 
@@ -19,7 +20,7 @@ extern bool EFFETTUA_PAGAMENTO_init(UDF_INIT* initid, const UDF_ARGS* args, char
 		|| args->arg_type[2] != DECIMAL_RESULT
 		|| args->arg_type[3] != STRING_RESULT
 		|| args->arg_type[4] != DECIMAL_RESULT) {
-		strcpy(message, "Segnatura richiesta: EFFETTUA_PAGAMENTO(decimal, string, decimal, data, decimal).");
+		std::strcpy(message, "Segnatura richiesta: EFFETTUA_PAGAMENTO(decimal, string, decimal, data, decimal).");
 		return true;
 	}
 	initid->const_item = false;
@@ -27,7 +28,7 @@ extern bool EFFETTUA_PAGAMENTO_init(UDF_INIT* initid, const UDF_ARGS* args, char
 	initid->max_length = 256;
 	initid->ptr = (char*)malloc(initid->max_length);
 	if (!initid->ptr) {
-		strcpy(message, "Memoria insufficiente per eseguire EFFETTUA_PAGAMENTO().");
+		std::strcpy(message, "Memoria insufficiente per eseguire EFFETTUA_PAGAMENTO().");
 		return true;
 	}
 	return false;
@@ -43,7 +44,7 @@ extern char* EFFETTUA_PAGAMENTO(UDF_INIT* initid, const UDF_ARGS* args, const ch
 	*length = (unsigned long)transaction_id.length();
 	*is_null = false;
 	*error = false;
-	memcpy(initid->ptr, transaction_id.c_str(), transaction_id.length());
+	std::memcpy(initid->ptr, transaction_id.c_str(), transaction_id.length());
 	return initid->ptr;
 }
 
@@ -53,7 +54,7 @@ extern void EFFETTUA_PAGAMENTO_deinit(UDF_INIT* initid) {
 
 extern bool EFFETTUA_RIMBORSO_init(UDF_INIT* initid, const UDF_ARGS* args, char* message) {
 	if (args->arg_count != 1 || args->arg_type[0] != STRING_RESULT) {
-		strcpy(message, "EFFETTUA_RIMBORSO() richiede 1 parametro stringa.");
+		std::strcpy(message, "EFFETTUA_RIMBORSO() richiede 1 parametro stringa.");
 		return true;
 	}
 	initid->const_item = true;

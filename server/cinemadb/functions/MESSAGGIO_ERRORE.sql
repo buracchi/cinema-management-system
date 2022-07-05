@@ -49,5 +49,7 @@ BEGIN
                            THEN "Impossibile completare l'operazione, riprovare in un secondo momento."
                        WHEN _codice = 45023
                            THEN "Impossibile modificare il codice di prenotazione."
+                       WHEN _codice = 45024
+                           THEN "Una sala puo' contenere un massimo di 26 file."
                        END);
 END

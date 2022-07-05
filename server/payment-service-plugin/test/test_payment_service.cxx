@@ -5,8 +5,8 @@ TEST(EFFETTUA_PAGAMENTO, return_buffer_pointer) {
 	char buffer[256] = { };
 	char* args[5] = { buffer, buffer, buffer, buffer, buffer };
 	unsigned long lengths[5] = { };
-	UDF_INIT initid = { .ptr = buffer};
-	UDF_ARGS udf_args = { .args = args, .lengths = lengths};
+	UDF_INIT initid = { .ptr = buffer };
+	UDF_ARGS udf_args = { .args = args, .lengths = lengths };
 	unsigned long length;
 	char is_null;
 	char error;
