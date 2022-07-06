@@ -73,7 +73,7 @@
 È necessario effettuare alcune considerazioni sulla natura del codice di
 prenotazione e sulla sua rappresentazione in memoria.
 
-L'iterazione tra un cliente e la sua personale prenotazione avviene attraverso
+L'interazione tra un cliente e la sua personale prenotazione avviene attraverso
 l'uso del codice di prenotazione, è dunque desiderabile che un utente terzo non
 possa interagire con essa intenzionalmente o per errore. Essendo inoltre
 il codice utilizzato direttamente dall'utente per interagire con il sistema
@@ -88,7 +88,7 @@ relativamente lunghi formati da alcuni caratteri difficilmente distinguibili
 si è deciso di generare i codici in maniera alternativa.
 
 Si è deciso di utilizzare un codice alfanumerico generato dalla conversione in
-base esadecimale di un numero intero generato randomicamente, tale che 
+base esadecimale di un numero intero generato randomicamente, tale che
 la stringa risultante dalla trasformazione del cambiamento di base rispetti
 l'espressione regolare \verb|[1-9A-F]{6}| in modo tale da essere ragionevolmente
 breve e formata da caratteri facilmente distinguibili.
@@ -100,33 +100,34 @@ operazioni di inserimento.
 Posto $X$ il numero di codici identici generati in $n$ tentativi, in quanto
 il fenomeno aleatorio equivale ad uno schema successo insuccesso con rimpiazzo
 formato da $n$ prove di Bernoulli indipendenti di parametro
-$p = \frac{1}{\left( 9 + 5 \right)^l} = 14^{-l}$,
+$p = \frac{1}{\left( 9 + 6 \right)^l} = 15^{-l}$,
 dove con $l$ indichiamo la lunghezza in caratteri del codice di prenotazione,
 possiamo affermare che la variabile aleatoria ha distribuzione binomiale
-$X \sim \mathrm{B}\left( n, 14^{-l} \right)$.
+$X \sim \mathrm{B}\left( n, 15^{-l} \right)$.
 
 Consideriamo ora un periodo temporale della durata di un mese, secondo il volume
 atteso dei dati il numero di prenotazioni generato è di un ordine di grandezza
 inferiore a $10^6$. Poniamo quindi $n = 10^6$ ed approssimiamo $X$ ad una
 variabile aleatoria con distribuzione di Poisson
 $\begin{aligned}[t]
-        X \sim \mathrm{Poisson}\left( \frac{10^6}{14^l} \right)
-    \end{aligned}$,
-la probabilità che avvengano dunque collisioni durante un mese è pari a
+        X \sim \mathrm{Poisson}\left( \frac{10^6}{15^l} \right)
+    \end{aligned}$.
+
+La probabilità che avvengano collisioni durante un mese sarà dunque inferiore a
 
 $\begin{aligned}
         \mathrm{P}\left( X \geq 2 \right)
          & = 1 - \mathrm{P}\left( X = 0 \right)
         - \mathrm{P}\left( X = 1 \right)           \\
-         & = 1 - e^{-\frac{10^6}{14^l}}
-        - \frac{10^6}{14^l} e^{-\frac{10^6}{14^l}} \\
+         & = 1 - e^{-\frac{10^6}{15^l}}
+        - \frac{10^6}{15^l} e^{-\frac{10^6}{15^l}} \\
     \end{aligned}$
 
 In particolare
 
-$\mathrm{P}\left( X \geq 2 \right) \leq 0.5546, \quad$ per $l = 5$
+$\mathrm{P}\left( X \geq 2 \right) \leq 0.3792, \quad$ per $l = 5$
 
-$\mathrm{P}\left( X \geq 2 \right) \leq 0.0081, \quad$ per $l = 6$
+$\mathrm{P}\left( X \geq 2 \right) \leq 0.0037, \quad$ per $l = 6$
 
 \subsection*{Strutture di memorizzazione}
 %
@@ -152,7 +153,7 @@ $\mathrm{P}\left( X \geq 2 \right) \leq 0.0081, \quad$ per $l = 6$
      & PK, NN, AI
     \\ \hline
     indirizzo
-     & VARCHAR(128)
+     & VARCHAR(127)
      & NN, UQ
     \\ \hline
     apertura
@@ -240,11 +241,11 @@ $\mathrm{P}\left( X \geq 2 \right) \leq 0.0081, \quad$ per $l = 6$
      & PK, NN, AI
     \\ \hline
     nome
-     & VARCHAR(45)
+     & VARCHAR(63)
      & NN
     \\ \hline
     cognome
-     & VARCHAR(45)
+     & VARCHAR(63)
      & NN
     \\ \hline
     ruolo
@@ -317,7 +318,7 @@ $\mathrm{P}\left( X \geq 2 \right) \leq 0.0081, \quad$ per $l = 6$
      & PK, NN, AI
     \\ \hline
     nome
-     & VARCHAR(45)
+     & VARCHAR(63)
      & NN
     \\ \hline
     durata
@@ -325,11 +326,11 @@ $\mathrm{P}\left( X \geq 2 \right) \leq 0.0081, \quad$ per $l = 6$
      & NN
     \\ \hline
     casa\_cinematografica
-     & VARCHAR(256)
+     & VARCHAR(255)
      &
     \\ \hline
     cast
-     & VARCHAR(1024)
+     & VARCHAR(1023)
      &
     \\ \hline
 \end{tabularx}
@@ -376,7 +377,7 @@ $\mathrm{P}\left( X \geq 2 \right) \leq 0.0081, \quad$ per $l = 6$
 \begin{tabularx}{\linewidth}{|X|X|X|}
     \hline
     \multicolumn{3}{|>{\columncolor{tblhdrcolor}}l|}{
-    \textbf{StatiPrenotazioni}}                    \\\hline
+    \textbf{Stati\_Prenotazione}}                    \\\hline
     \rowcolor{tblhdrcolor}
     \multicolumn{1}{|c|}{\textbf{Colonna}}
      & \multicolumn{1}{|c|}{\textbf{Tipo di dato}}
@@ -398,11 +399,11 @@ $\mathrm{P}\left( X \geq 2 \right) \leq 0.0081, \quad$ per $l = 6$
      & \multicolumn{1}{|c|}{\textbf{Attributi}}
     \\\hline
     codice
-     & INT
-     & PK, NN, AI
+     & CHAR(6)
+     & PK, NN
     \\ \hline
     transazione
-     & VARCHAR(256)
+     & VARCHAR(255)
      & UQ
     \\ \hline
     cinema
@@ -463,21 +464,25 @@ $\mathrm{P}\left( X \geq 2 \right) \leq 0.0081, \quad$ per $l = 6$
 \end{tabularx}
 
 Tramite un'indice mantenente l'ordinamento cronologico delle proiezioni è stato
-possibile ottimizzare le operazioni 7, 11 e 22 consentendo di effettuare
+possibile ottimizzare le operazioni \verb|mostra_proiezioni|,
+\verb|mostra_palinsesto|, \verb|mostra_proiezionisti_disponibili| e
+\verb|mostra_proiezioni_senza_proiezionista|
+consentendo di effettuare
 range join optimization.
 
 L'indice risulta particolarmente vantaggioso in quanto:
 \begin{itemize}
-    \item ottimizza l'operazione 11 avente per frequenza attesa il valore
-          massimo tra quelli stimati.
-    \item l'operazione 8 di inserimento di nuove proiezioni,
-          sebbene aggiunga un numero considerevole di proiezioni ogni settimana,
-          è un operazione che avviene in blocco in un breve periodo di tempo,
-          ammortizzando il costo di aggiornamento degli indici.
-    \item l'operazione 9 di cancellazione di una proiezione ha una frequenza
-          attesa trascurabile.
+    \item ottimizza l'operazione \verb|mostra_palinsesto| avente per frequenza
+          attesa il valore massimo tra quelli stimati.
+    \item l'operazione \verb|inserisci_proiezione|, sebbene aggiunga un numero
+          considerevole di proiezioni ogni settimana, è un operazione che
+          avviene in blocco in un breve periodo di tempo, ammortizzando il
+          costo di aggiornamento degli indici.
+    \item l'operazione \verb|elimina_proiezione| ha una frequenza attesa
+          trascurabile.
     \item l'evento giornaliero di cancellazione delle proiezioni terminate
-          avviene in blocco, ammortizzando il costo di aggiornamento degli indici.
+          avviene in blocco, ammortizzando il costo di aggiornamento degli
+          indici.
 \end{itemize}
 
 \pagebreak
@@ -589,13 +594,13 @@ implementare alcuna vista.
 \inputsqlfile{../server/cinemadb/procedures/inserisci_proiezione.sql}
 \pagebreak
 \inputsqlfile{../server/cinemadb/procedures/inserisci_sala.sql}
-\inputsqlfile{../server/cinemadb/procedures/inserisci_turno.sql}
 \pagebreak
+\inputsqlfile{../server/cinemadb/procedures/inserisci_turno.sql}
 \inputsqlfile{../server/cinemadb/procedures/mostra_cinema.sql}
 \inputsqlfile{../server/cinemadb/procedures/mostra_cinema_senza_maschere.sql}
+\pagebreak
 \inputsqlfile{../server/cinemadb/procedures/mostra_dipendenti.sql}
 \inputsqlfile{../server/cinemadb/procedures/mostra_film.sql}
-\pagebreak
 \inputsqlfile{../server/cinemadb/procedures/mostra_palinsesto.sql}
 \pagebreak
 \inputsqlfile{../server/cinemadb/procedures/mostra_posti_disponibili.sql}

@@ -9,7 +9,7 @@
 % schema E-R. I volumi devono essere stimati dallo studente in maniera
 % ragionevole rispetto all’operatività presunta dell’applicativo.
 %
-\begin{tabularx}{\linewidth}{|X|l|X|}
+\begin{tabularx}{\linewidth}{|l|c|X|}
     \hline
     \rowcolor{tblhdrcolor}
     \multicolumn{1}{|c|}{\textbf{Concetto nello schema}}
@@ -56,11 +56,11 @@
     \\ \hline
     Cliente
      & E
-     & 100 000
+     & 200 000
     \\ \hline
     Prenotazione
      & E
-     & 140 000 (in media la prenotazione del 20\% dei posti disponibili al
+     & 140 000 (in media la prenotazione del 12.5\% dei posti disponibili al
     giorno in un mese)
     \\ \hline
     Prenotazione in attesa
@@ -129,6 +129,7 @@
     \\ \hline
 \end{tabularx}
 
+\pagebreak
 \subsection*{Tavola delle operazioni}
 %
 % Rappresentare nella tabella sottostante tutte le operazioni sulla base
@@ -136,117 +137,135 @@
 % frequenza attesa.
 % Le operazioni da supportare devono essere desunte dalle specifiche raccolte.
 %
-\begin{tabularx}{\linewidth}{|l|X|X|}
+
+\begin{longtable}{|p{5.33cm}|p{7.66cm}|p{2.88cm}|}
     \hline
     \rowcolor{tblhdrcolor}
-    \multicolumn{1}{|c|}{\textbf{Cod.}}
-     & \multicolumn{1}{|c|}{\textbf{Descrizione}}
-     & \multicolumn{1}{|c|}{\textbf{Frequenza attesa}}
+    \multicolumn{1}{|c|}{\textbf{Nome}}                           &
+    \multicolumn{1}{|c|}{\textbf{Descrizione}}                    &
+    \multicolumn{1}{|c|}{\textbf{Frequenza attesa}}
     \\ \hline
-    Op. 1
-     & Mostra tutti i cinema e i loro relativi dati.
-     & 5000/giorno
+    \verb|annulla_prenotazione|                                   &
+    Effettua il rimborso ed annulla una prenotazione.             & % Op. 14
+    500/giorno
     \\ \hline
-    Op. 2
-     & Inserisci un nuovo cinema.
-     & 1/anno
+    \verb|assegna_proiezionista|                                  & % Op. 10
+    Assegna un proiezionista ad una proiezione in programma.      &
+    1400/settimana
     \\ \hline
-    Op. 3
-     & Rimuovi un cinema.
-     & 1/lustro
+    \verb|elimina_cinema|                                         & % Op. 3
+    Rimuovi un cinema.                                            &
+    1/anno
     \\ \hline
-    Op. 4
-     & Mostra le sale di un cinema e i loro relativi dati.
-     & 1/anno
+    \verb|elimina_dipendente|                                     & % Op. 18
+    Rimuovi un dipendente.                                        &
+    10/anno
     \\ \hline
-    Op. 5
-     & Inserisci una nuova sala.
-     & 1/anno
+    \verb|elimina_prenotazione|                                   &
+    Rimuovi una prenotazione in attesa.                           &
+    5 000/giorno
     \\ \hline
-    Op. 6
-     & Rimuovi una sala.
-     & 1/lustro
+    \verb|elimina_proiezione|                                     & % Op. 9
+    Elimina una proiezione in programma.                          &
+    1/mese
     \\ \hline
-    Op. 7
-     & Mostra tutte le proiezioni in programma ed i dati relativi al
-    proiezionista assegnato.
-     & 40/mese
+    \verb|elimina_sala|                                           & % Op. 6
+    Rimuovi una sala.                                             &
+    1/anno
     \\ \hline
-    Op. 8
-     & Inserisci una nuova proiezione in programma.
-     & 5600/mese
+    \verb|elimina_turno|                                          & % Op. 21
+    Elimina un turno assegnato ad un dipendente.                  &
+    50/settimana
     \\ \hline
-    Op. 9
-     & Elimina una proiezione in programma.
-     & 1/mese
+    \verb|finalizza_prenotazione|                                 & % Op. 13
+    Effettua un pagamento e conferma una prenotazione.            &
+    5 000/giorno
     \\ \hline
-    Op. 10
-     & Assegna un proiezionista ad una proiezione in programma.
-     & 1400/settimana
+    \verb|inizializza_prenotazione|                               &
+    Crea una prenotazione in attesa.                              &
+    10 000/giorno
     \\ \hline
-    Op. 11
-     & Mostra tutte le proiezioni in programma in un cinema e le informazioni
-    sui relativi film proiettati.
-     & 5000/giorno
+    \verb|inserisci_cinema|                                       & % Op.2
+    Inserisci un nuovo cinema.                                    &
+    1/anno
     \\ \hline
-    Op. 12
-     & Mostra tutti i posti disponibili per una proiezione.
-     & 5000/giorno
+    \verb|inserisci_dipendente|                                   & % Op. 17
+    Inserisci un nuovo dipendente.                                &
+    10/anno
     \\ \hline
-    Op. 13
-     & Effettua un pagamento ed inserisci una nuova prenotazione.
-     & 5000/giorno
+    \verb|inserisci_proiezione|                                   & % Op. 8
+    Inserisci una nuova proiezione in programma.                  &
+    1400/settimana
     \\ \hline
-    Op. 14
-     & Effettua un rimborso ed annulla una prenotazione.
-     & 500/giorno
+    \verb|inserisci_sala|                                         & % Op. 5
+    Inserisci una nuova sala.                                     &
+    5/anno
     \\ \hline
-    Op. 15
-     & Valida una prenotazione.
-     & 4500/giorno
+    \verb|inserisci_turno|                                        & % Op. 20
+    Inserisci un nuovo turno assegnato ad un dipendente.          &
+    50/settimana
     \\ \hline
-    Op. 16
-     & Mostra i dipendenti e i loro relativi dati.
-     & 50/settimana
+    \verb|mostra_cinema|                                          & % Op.1
+    Mostra tutti i cinema e i loro relativi dati.                 &
+    10 000/giorno
     \\ \hline
-    Op. 17
-     & Inserisci un nuovo dipendente.
-     & 10/anno
+    \verb|mostra_cinema_senza|\linebreak\verb|_maschere|          & % Op. 23
+    Mostra tutti i periodi temporali in cui un cinema è
+    sprovvisto di almeno due maschere durante la propria
+    fascia oraria d'apertura.                                     &
+    1/giorno
     \\ \hline
-    Op. 18
-     & Rimuovi un dipendente.
-     & 10/anno
+    \verb|mostra_dipendenti|                                      & % Op. 16
+    Mostra i dipendenti e i loro relativi dati.                   &
+    50/settimana
     \\ \hline
-    Op. 19
-     & Mostra i turni in programma.
-     & 50/settimana
+    \verb|mostra_film|                                            &
+    Mostra tutti i film.                                          &
+    1400/settimana
     \\ \hline
-    Op. 20
-     & Inserisci un nuovo turno assegnato ad un dipendente.
-     & 50/settimana
+    \verb|mostra_palinsesto|                                      & % Op. 11
+    Mostra tutte le proiezioni in programma in un cinema e le
+    informazioni sui relativi film proiettati.                    &
+    10 000/giorno
     \\ \hline
-    Op. 21
-     & Elimina un turno assegnato ad un dipendente.
-     & 50/settimana
+    \verb|mostra_posti_disponibili|                               & % Op. 12
+    Mostra tutti i posti disponibili per una proiezione.          &
+    10 000/giorno
     \\ \hline
-    Op. 22
-     & Mostra tutte le proiezioni che non sono associate ad un proiezionista.
-     & 1/giorno
+    \verb|mostra_proiezioni|                                      & % Op. 7
+    Mostra tutte le proiezioni in programma ed i dati relativi al
+    proiezionista assegnato.                                      &
+    40/mese
     \\ \hline
-    Op. 23
-     & Mostra tutti i periodi temporali in cui un cinema è sprovvisto di
-    almeno due maschere durante la propria fascia oraria d'apertura.
-     & 1/giorno
+    \verb|mostra_proiezionisti|\linebreak\verb|_disponibili|      &
+    Mostra tutti i proiezionisti disponibili per una proiezione.  &
+    1400/settimana
     \\ \hline
-    Op. 24
-     & Mostra per ogni cinema e per ogni sala il numero delle prenotazioni
-    confermate, il numero delle prenotazioni annullate ed il numero delle
-    prenotazioni scadute.
-     & 1/giorno
+    \verb|mostra_proiezioni_senza|\linebreak\verb|_proiezionista| & % Op. 22
+    Mostra tutte le proiezioni che non sono associate ad un
+    proiezionista.                                                &
+    1/giorno
     \\ \hline
-\end{tabularx}
+    \verb|mostra_sale|                                            & % Op. 4
+    Mostra le sale di un cinema e i loro relativi dati.           &
+    1/anno
+    \\ \hline
+    \verb|mostra_stato_prenotazioni|                              & % Op. 24
+    Mostra per ogni cinema e per ogni sala il numero delle
+    prenotazioni confermate, il numero delle prenotazioni
+    annullate ed il numero delle prenotazioni scadute.            &
+    1/giorno
+    \\ \hline
+    \verb|mostra_turni|                                           & % Op. 19
+    Mostra i turni in programma.                                  &
+    50/settimana
+    \\ \hline
+    \verb|valida_prenotazione|                                    & % Op. 15
+    Valida una prenotazione.                                      &
+    4500/giorno
+    \\ \hline
+\end{longtable}
 
-\pagebreak
 \subsection*{Costo delle operazioni}
 %
 % In riferimento a tutte le operazioni precedentemente indicate, calcolarne
@@ -254,297 +273,10 @@
 % scrittura di un dato sia doppio rispetto a quello in lettura.
 %
 
-\begin{tabularx}{\linewidth}{|X|X|X|X|}
+\begin{tabularx}{\linewidth}{|X|p{3.33cm}|p{3.33cm}|p{3.33cm}|}
     \hline
     \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
-    \textbf{Operazione 1}}                      \\\hline
-    \rowcolor{tblhdrcolor}
-    \multicolumn{1}{|c|}{\textbf{Concetto}}
-     & \multicolumn{1}{|c|}{\textbf{Costrutto}}
-     & \multicolumn{1}{|c|}{\textbf{Accessi}}
-     & \multicolumn{1}{|c|}{\textbf{Tipo}}
-    \\ \hline
-    Cinema
-     & E
-     & 1
-     & L
-    \\\hline
-    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
-    Costo: 5 000/giorno}                        \\\hline
-\end{tabularx}
-
-\begin{tabularx}{\linewidth}{|X|X|X|X|}
-    \hline
-    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
-    \textbf{Operazione 2}}                      \\\hline
-    \rowcolor{tblhdrcolor}
-    \multicolumn{1}{|c|}{\textbf{Concetto}}
-     & \multicolumn{1}{|c|}{\textbf{Costrutto}}
-     & \multicolumn{1}{|c|}{\textbf{Accessi}}
-     & \multicolumn{1}{|c|}{\textbf{Tipo}}
-    \\ \hline
-    Cinema
-     & E
-     & 1
-     & S
-    \\\hline
-    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
-    Costo: 2/anno}                              \\\hline
-\end{tabularx}
-
-\begin{tabularx}{\linewidth}{|X|X|X|X|}
-    \hline
-    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
-    \textbf{Operazione 3}}                      \\\hline
-    \rowcolor{tblhdrcolor}
-    \multicolumn{1}{|c|}{\textbf{Concetto}}
-     & \multicolumn{1}{|c|}{\textbf{Costrutto}}
-     & \multicolumn{1}{|c|}{\textbf{Accessi}}
-     & \multicolumn{1}{|c|}{\textbf{Tipo}}
-    \\ \hline
-    Cinema
-     & E
-     & 1
-     & S
-    \\\hline
-    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
-    Costo: 2/lustro}                            \\\hline
-\end{tabularx}
-
-\begin{tabularx}{\linewidth}{|X|X|X|X|}
-    \hline
-    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
-    \textbf{Operazione 4}}                      \\\hline
-    \rowcolor{tblhdrcolor}
-    \multicolumn{1}{|c|}{\textbf{Concetto}}
-     & \multicolumn{1}{|c|}{\textbf{Costrutto}}
-     & \multicolumn{1}{|c|}{\textbf{Accessi}}
-     & \multicolumn{1}{|c|}{\textbf{Tipo}}
-    \\ \hline
-    Cinema
-     & E
-     & 1
-     & L
-    \\\hline
-    Sala
-     & E
-     & 1
-     & L
-    \\\hline
-    Posto
-     & E
-     & 1
-     & L
-    \\\hline
-    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
-    Costo: 3/anno}                              \\\hline
-\end{tabularx}
-
-\begin{tabularx}{\linewidth}{|X|X|X|X|}
-    \hline
-    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
-    \textbf{Operazione 5}}                      \\\hline
-    \rowcolor{tblhdrcolor}
-    \multicolumn{1}{|c|}{\textbf{Concetto}}
-     & \multicolumn{1}{|c|}{\textbf{Costrutto}}
-     & \multicolumn{1}{|c|}{\textbf{Accessi}}
-     & \multicolumn{1}{|c|}{\textbf{Tipo}}
-    \\ \hline
-    Sala
-     & E
-     & 1
-     & S
-    \\\hline
-    Posto
-     & E
-     & 1
-     & S
-    \\\hline
-    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
-    Costo: 4/anno}                              \\\hline
-\end{tabularx}
-
-\begin{tabularx}{\linewidth}{|X|X|X|X|}
-    \hline
-    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
-    \textbf{Operazione 6}}                      \\\hline
-    \rowcolor{tblhdrcolor}
-    \multicolumn{1}{|c|}{\textbf{Concetto}}
-     & \multicolumn{1}{|c|}{\textbf{Costrutto}}
-     & \multicolumn{1}{|c|}{\textbf{Accessi}}
-     & \multicolumn{1}{|c|}{\textbf{Tipo}}
-    \\ \hline
-    Sala
-     & E
-     & 1
-     & S
-    \\\hline
-    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
-    Costo: 2/lustro}                            \\\hline
-\end{tabularx}
-
-\begin{tabularx}{\linewidth}{|X|X|X|X|}
-    \hline
-    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
-    \textbf{Operazione 7}}                      \\\hline
-    \rowcolor{tblhdrcolor}
-    \multicolumn{1}{|c|}{\textbf{Concetto}}
-     & \multicolumn{1}{|c|}{\textbf{Costrutto}}
-     & \multicolumn{1}{|c|}{\textbf{Accessi}}
-     & \multicolumn{1}{|c|}{\textbf{Tipo}}
-    \\ \hline
-    Proiezione
-     & E
-     & 1
-     & L
-    \\\hline
-    Film
-     & E
-     & 1
-     & L
-    \\\hline
-    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
-    Costo: 80/mese}                             \\\hline
-\end{tabularx}
-
-\begin{tabularx}{\linewidth}{|X|X|X|X|}
-    \hline
-    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
-    \textbf{Operazione 8}}                      \\\hline
-    \rowcolor{tblhdrcolor}
-    \multicolumn{1}{|c|}{\textbf{Concetto}}
-     & \multicolumn{1}{|c|}{\textbf{Costrutto}}
-     & \multicolumn{1}{|c|}{\textbf{Accessi}}
-     & \multicolumn{1}{|c|}{\textbf{Tipo}}
-    \\ \hline
-    Proiezione
-     & E
-     & 1
-     & S
-    \\\hline
-    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
-    Costo: 11 200/mese}                         \\\hline
-\end{tabularx}
-
-\begin{tabularx}{\linewidth}{|X|X|X|X|}
-    \hline
-    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
-    \textbf{Operazione 9}}                      \\\hline
-    \rowcolor{tblhdrcolor}
-    \multicolumn{1}{|c|}{\textbf{Concetto}}
-     & \multicolumn{1}{|c|}{\textbf{Costrutto}}
-     & \multicolumn{1}{|c|}{\textbf{Accessi}}
-     & \multicolumn{1}{|c|}{\textbf{Tipo}}
-    \\ \hline
-    Proiezione
-     & E
-     & 1
-     & S
-    \\\hline
-    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
-    Costo: 2/mese}                              \\\hline
-\end{tabularx}
-
-\begin{tabularx}{\linewidth}{|l|X|X|X|}
-    \hline
-    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
-    \textbf{Operazione 10}}                     \\\hline
-    \rowcolor{tblhdrcolor}
-    \multicolumn{1}{|c|}{\textbf{Concetto}}
-     & \multicolumn{1}{|c|}{\textbf{Costrutto}}
-     & \multicolumn{1}{|c|}{\textbf{Accessi}}
-     & \multicolumn{1}{|c|}{\textbf{Tipo}}
-    \\ \hline
-    Proiezione
-     & E
-     & 1
-     & S
-    \\\hline
-    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
-    Costo: 2 800/settimana}                     \\\hline
-\end{tabularx}
-
-\begin{tabularx}{\linewidth}{|X|X|X|X|}
-    \hline
-    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
-    \textbf{Operazione 11}}                     \\\hline
-    \rowcolor{tblhdrcolor}
-    \multicolumn{1}{|c|}{\textbf{Concetto}}
-     & \multicolumn{1}{|c|}{\textbf{Costrutto}}
-     & \multicolumn{1}{|c|}{\textbf{Accessi}}
-     & \multicolumn{1}{|c|}{\textbf{Tipo}}
-    \\ \hline
-    Proiezione
-     & E
-     & 1
-     & L
-    \\\hline
-    Film
-     & E
-     & 1
-     & L
-    \\\hline
-    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
-    Costo: 10 000/giorno}                       \\\hline
-\end{tabularx}
-
-\begin{tabularx}{\linewidth}{|l|X|X|X|}
-    \hline
-    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
-    \textbf{Operazione 12}}                     \\\hline
-    \rowcolor{tblhdrcolor}
-    \multicolumn{1}{|c|}{\textbf{Concetto}}
-     & \multicolumn{1}{|c|}{\textbf{Costrutto}}
-     & \multicolumn{1}{|c|}{\textbf{Accessi}}
-     & \multicolumn{1}{|c|}{\textbf{Tipo}}
-    \\ \hline
-    Prenotazione in attesa
-     & E
-     & 1
-     & L
-    \\\hline
-    Prenotazione confermata
-     & E
-     & 1
-     & L
-    \\\hline
-    Posto
-     & E
-     & 1
-     & L
-    \\\hline
-    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
-    Costo: 15 000/giorno}                       \\\hline
-\end{tabularx}
-
-\begin{tabularx}{\linewidth}{|l|X|X|X|}
-    \hline
-    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
-    \textbf{Operazione 13}}                     \\\hline
-    \rowcolor{tblhdrcolor}
-    \multicolumn{1}{|c|}{\textbf{Concetto}}
-     & \multicolumn{1}{|c|}{\textbf{Costrutto}}
-     & \multicolumn{1}{|c|}{\textbf{Accessi}}
-     & \multicolumn{1}{|c|}{\textbf{Tipo}}
-    \\ \hline
-    Prenotazione confermata
-     & E
-     & 1
-     & S
-    \\\hline
-    Prenotazione in attesa
-     & E
-     & 1
-     & S
-    \\\hline
-    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
-    Costo: 20 000/giorno}                       \\\hline
-\end{tabularx}
-
-\begin{tabularx}{\linewidth}{|l|X|X|X|}
-    \hline
-    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
-    \textbf{Operazione 14}}                     \\\hline
+    \textbf{\verb|annulla_prenotazione|}}       \\\hline
     \rowcolor{tblhdrcolor}
     \multicolumn{1}{|c|}{\textbf{Concetto}}
      & \multicolumn{1}{|c|}{\textbf{Costrutto}}
@@ -565,10 +297,143 @@
     Costo: 2 000/giorno}                        \\\hline
 \end{tabularx}
 
-\begin{tabularx}{\linewidth}{|l|X|X|X|}
+\begin{tabularx}{\linewidth}{|X|p{3.33cm}|p{3.33cm}|p{3.33cm}|}
     \hline
     \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
-    \textbf{Operazione 15}}                     \\\hline
+    \textbf{\verb|assegna_proiezionista|}}      \\\hline
+    \rowcolor{tblhdrcolor}
+    \multicolumn{1}{|c|}{\textbf{Concetto}}
+     & \multicolumn{1}{|c|}{\textbf{Costrutto}}
+     & \multicolumn{1}{|c|}{\textbf{Accessi}}
+     & \multicolumn{1}{|c|}{\textbf{Tipo}}
+    \\ \hline
+    Proiezione
+     & E
+     & 1
+     & S
+    \\\hline
+    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
+    Costo: 2 800/settimana}                     \\\hline
+\end{tabularx}
+
+\begin{tabularx}{\linewidth}{|X|p{3.33cm}|p{3.33cm}|p{3.33cm}|}
+    \hline
+    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
+    \textbf{\verb|elimina_cinema|}}             \\\hline
+    \rowcolor{tblhdrcolor}
+    \multicolumn{1}{|c|}{\textbf{Concetto}}
+     & \multicolumn{1}{|c|}{\textbf{Costrutto}}
+     & \multicolumn{1}{|c|}{\textbf{Accessi}}
+     & \multicolumn{1}{|c|}{\textbf{Tipo}}
+    \\ \hline
+    Cinema
+     & E
+     & 1
+     & S
+    \\\hline
+    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
+    Costo: 2/anno}                              \\\hline
+\end{tabularx}
+
+\begin{tabularx}{\linewidth}{|X|p{3.33cm}|p{3.33cm}|p{3.33cm}|}
+    \hline
+    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
+    \textbf{\verb|elimina_dipendente|}}         \\\hline
+    \rowcolor{tblhdrcolor}
+    \multicolumn{1}{|c|}{\textbf{Concetto}}
+     & \multicolumn{1}{|c|}{\textbf{Costrutto}}
+     & \multicolumn{1}{|c|}{\textbf{Accessi}}
+     & \multicolumn{1}{|c|}{\textbf{Tipo}}
+    \\ \hline
+    Dipendente
+     & E
+     & 1
+     & S
+    \\ \hline
+    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
+    Costo: 20/anno}                             \\\hline
+\end{tabularx}
+
+\begin{tabularx}{\linewidth}{|X|p{3.33cm}|p{3.33cm}|p{3.33cm}|}
+    \hline
+    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
+    \textbf{\verb|elimina_prenotazione|}}       \\\hline
+    \rowcolor{tblhdrcolor}
+    \multicolumn{1}{|c|}{\textbf{Concetto}}
+     & \multicolumn{1}{|c|}{\textbf{Costrutto}}
+     & \multicolumn{1}{|c|}{\textbf{Accessi}}
+     & \multicolumn{1}{|c|}{\textbf{Tipo}}
+    \\ \hline
+    Prenotazione in attesa
+     & E
+     & 1
+     & S
+    \\ \hline
+    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
+    Costo: 10 000/giorno}                       \\\hline
+\end{tabularx}
+
+\begin{tabularx}{\linewidth}{|X|p{3.33cm}|p{3.33cm}|p{3.33cm}|}
+    \hline
+    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
+    \textbf{\verb|elimina_proiezione|}}         \\\hline
+    \rowcolor{tblhdrcolor}
+    \multicolumn{1}{|c|}{\textbf{Concetto}}
+     & \multicolumn{1}{|c|}{\textbf{Costrutto}}
+     & \multicolumn{1}{|c|}{\textbf{Accessi}}
+     & \multicolumn{1}{|c|}{\textbf{Tipo}}
+    \\ \hline
+    Proiezione
+     & E
+     & 1
+     & S
+    \\\hline
+    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
+    Costo: 2/mese}                              \\\hline
+\end{tabularx}
+
+\begin{tabularx}{\linewidth}{|X|p{3.33cm}|p{3.33cm}|p{3.33cm}|}
+    \hline
+    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
+    \textbf{\verb|elimina_sala|}}               \\\hline
+    \rowcolor{tblhdrcolor}
+    \multicolumn{1}{|c|}{\textbf{Concetto}}
+     & \multicolumn{1}{|c|}{\textbf{Costrutto}}
+     & \multicolumn{1}{|c|}{\textbf{Accessi}}
+     & \multicolumn{1}{|c|}{\textbf{Tipo}}
+    \\ \hline
+    Sala
+     & E
+     & 1
+     & S
+    \\\hline
+    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
+    Costo: 2/anno}                              \\\hline
+\end{tabularx}
+
+\begin{tabularx}{\linewidth}{|X|p{3.33cm}|p{3.33cm}|p{3.33cm}|}
+    \hline
+    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
+    \textbf{\verb|elimina_turno|}}              \\\hline
+    \rowcolor{tblhdrcolor}
+    \multicolumn{1}{|c|}{\textbf{Concetto}}
+     & \multicolumn{1}{|c|}{\textbf{Costrutto}}
+     & \multicolumn{1}{|c|}{\textbf{Accessi}}
+     & \multicolumn{1}{|c|}{\textbf{Tipo}}
+    \\ \hline
+    Turno
+     & E
+     & 1
+     & S
+    \\\hline
+    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
+    Costo: 100/settimana}                       \\\hline
+\end{tabularx}
+
+\begin{tabularx}{\linewidth}{|X|p{3.33cm}|p{3.33cm}|p{3.33cm}|}
+    \hline
+    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
+    \textbf{\verb|finalizza_prenotazione|}}     \\\hline
     \rowcolor{tblhdrcolor}
     \multicolumn{1}{|c|}{\textbf{Concetto}}
      & \multicolumn{1}{|c|}{\textbf{Costrutto}}
@@ -579,39 +444,58 @@
      & E
      & 1
      & S
-    \\ \hline
-    Prenotazione validata
+    \\\hline
+    Prenotazione in attesa
      & E
      & 1
      & S
     \\\hline
     \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
-    Costo: 18 000/giorno}                       \\\hline
+    Costo: 20 000/giorno}                       \\\hline
 \end{tabularx}
 
-\begin{tabularx}{\linewidth}{|X|X|X|X|}
+\begin{tabularx}{\linewidth}{|X|p{3.33cm}|p{3.33cm}|p{3.33cm}|}
     \hline
     \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
-    \textbf{Operazione 16}}                     \\\hline
+    \textbf{\verb|inizializza_prenotazione|}}   \\\hline
     \rowcolor{tblhdrcolor}
     \multicolumn{1}{|c|}{\textbf{Concetto}}
      & \multicolumn{1}{|c|}{\textbf{Costrutto}}
      & \multicolumn{1}{|c|}{\textbf{Accessi}}
      & \multicolumn{1}{|c|}{\textbf{Tipo}}
     \\ \hline
-    Dipendente
+    Prenotazione in attesa
      & E
      & 1
-     & L
-    \\ \hline
+     & S
+    \\\hline
     \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
-    Costo: 50/settimana}                        \\\hline
+    Costo: 20 000/giorno}                       \\\hline
 \end{tabularx}
 
-\begin{tabularx}{\linewidth}{|X|X|X|X|}
+\begin{tabularx}{\linewidth}{|X|p{3.33cm}|p{3.33cm}|p{3.33cm}|}
     \hline
     \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
-    \textbf{Operazione 17}}                     \\\hline
+    \textbf{\verb|inserisci_cinema|}}           \\\hline
+    \rowcolor{tblhdrcolor}
+    \multicolumn{1}{|c|}{\textbf{Concetto}}
+     & \multicolumn{1}{|c|}{\textbf{Costrutto}}
+     & \multicolumn{1}{|c|}{\textbf{Accessi}}
+     & \multicolumn{1}{|c|}{\textbf{Tipo}}
+    \\ \hline
+    Cinema
+     & E
+     & 1
+     & S
+    \\\hline
+    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
+    Costo: 2/anno}                              \\\hline
+\end{tabularx}
+
+\begin{tabularx}{\linewidth}{|X|p{3.33cm}|p{3.33cm}|p{3.33cm}|}
+    \hline
+    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
+    \textbf{\verb|inserisci_dipendente|}}       \\\hline
     \rowcolor{tblhdrcolor}
     \multicolumn{1}{|c|}{\textbf{Concetto}}
      & \multicolumn{1}{|c|}{\textbf{Costrutto}}
@@ -627,91 +511,10 @@
     Costo: 20/anno}                             \\\hline
 \end{tabularx}
 
-\begin{tabularx}{\linewidth}{|X|X|X|X|}
+\begin{tabularx}{\linewidth}{|X|p{3.33cm}|p{3.33cm}|p{3.33cm}|}
     \hline
     \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
-    \textbf{Operazione 18}}                     \\\hline
-    \rowcolor{tblhdrcolor}
-    \multicolumn{1}{|c|}{\textbf{Concetto}}
-     & \multicolumn{1}{|c|}{\textbf{Costrutto}}
-     & \multicolumn{1}{|c|}{\textbf{Accessi}}
-     & \multicolumn{1}{|c|}{\textbf{Tipo}}
-    \\ \hline
-    Dipendente
-     & E
-     & 1
-     & S
-    \\ \hline
-    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
-    Costo: 20/anno}                             \\\hline
-\end{tabularx}
-
-\begin{tabularx}{\linewidth}{|l|X|X|X|}
-    \hline
-    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
-    \textbf{Operazione 19}}                     \\\hline
-    \rowcolor{tblhdrcolor}
-    \multicolumn{1}{|c|}{\textbf{Concetto}}
-     & \multicolumn{1}{|c|}{\textbf{Costrutto}}
-     & \multicolumn{1}{|c|}{\textbf{Accessi}}
-     & \multicolumn{1}{|c|}{\textbf{Tipo}}
-    \\ \hline
-    Turno
-     & E
-     & 1
-     & L
-    \\\hline
-    Dipendenti
-     & E
-     & 1
-     & L
-    \\\hline
-    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
-    Costo: 100/settimana}                        \\\hline
-\end{tabularx}
-
-\begin{tabularx}{\linewidth}{|X|X|X|X|}
-    \hline
-    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
-    \textbf{Operazione 20}}                     \\\hline
-    \rowcolor{tblhdrcolor}
-    \multicolumn{1}{|c|}{\textbf{Concetto}}
-     & \multicolumn{1}{|c|}{\textbf{Costrutto}}
-     & \multicolumn{1}{|c|}{\textbf{Accessi}}
-     & \multicolumn{1}{|c|}{\textbf{Tipo}}
-    \\ \hline
-    Turno
-     & E
-     & 1
-     & S
-    \\\hline
-    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
-    Costo: 100/settimana}                       \\\hline
-\end{tabularx}
-
-\begin{tabularx}{\linewidth}{|X|X|X|X|}
-    \hline
-    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
-    \textbf{Operazione 21}}                     \\\hline
-    \rowcolor{tblhdrcolor}
-    \multicolumn{1}{|c|}{\textbf{Concetto}}
-     & \multicolumn{1}{|c|}{\textbf{Costrutto}}
-     & \multicolumn{1}{|c|}{\textbf{Accessi}}
-     & \multicolumn{1}{|c|}{\textbf{Tipo}}
-    \\ \hline
-    Turno
-     & E
-     & 1
-     & S
-    \\\hline
-    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
-    Costo: 100/settimana}                       \\\hline
-\end{tabularx}
-
-\begin{tabularx}{\linewidth}{|l|X|X|X|}
-    \hline
-    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
-    \textbf{Operazione 22}}                     \\\hline
+    \textbf{\verb|inserisci_proiezione|}}       \\\hline
     \rowcolor{tblhdrcolor}
     \multicolumn{1}{|c|}{\textbf{Concetto}}
      & \multicolumn{1}{|c|}{\textbf{Costrutto}}
@@ -721,16 +524,78 @@
     Proiezione
      & E
      & 1
+     & S
+    \\\hline
+    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
+    Costo: 2 800/settimana}                         \\\hline
+\end{tabularx}
+
+\begin{tabularx}{\linewidth}{|X|p{3.33cm}|p{3.33cm}|p{3.33cm}|}
+    \hline
+    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
+    \textbf{\verb|inserisci_sala|}}             \\\hline
+    \rowcolor{tblhdrcolor}
+    \multicolumn{1}{|c|}{\textbf{Concetto}}
+     & \multicolumn{1}{|c|}{\textbf{Costrutto}}
+     & \multicolumn{1}{|c|}{\textbf{Accessi}}
+     & \multicolumn{1}{|c|}{\textbf{Tipo}}
+    \\ \hline
+    Sala
+     & E
+     & 1
+     & S
+    \\\hline
+    Posto
+     & E
+     & 1
+     & S
+    \\\hline
+    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
+    Costo: 20/anno}                             \\\hline
+\end{tabularx}
+
+\begin{tabularx}{\linewidth}{|X|p{3.33cm}|p{3.33cm}|p{3.33cm}|}
+    \hline
+    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
+    \textbf{\verb|inserisci_turno|}}            \\\hline
+    \rowcolor{tblhdrcolor}
+    \multicolumn{1}{|c|}{\textbf{Concetto}}
+     & \multicolumn{1}{|c|}{\textbf{Costrutto}}
+     & \multicolumn{1}{|c|}{\textbf{Accessi}}
+     & \multicolumn{1}{|c|}{\textbf{Tipo}}
+    \\ \hline
+    Turno
+     & E
+     & 1
+     & S
+    \\\hline
+    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
+    Costo: 100/settimana}                       \\\hline
+\end{tabularx}
+
+\begin{tabularx}{\linewidth}{|X|p{3.33cm}|p{3.33cm}|p{3.33cm}|}
+    \hline
+    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
+    \textbf{\verb|mostra_cinema|}}              \\\hline
+    \rowcolor{tblhdrcolor}
+    \multicolumn{1}{|c|}{\textbf{Concetto}}
+     & \multicolumn{1}{|c|}{\textbf{Costrutto}}
+     & \multicolumn{1}{|c|}{\textbf{Accessi}}
+     & \multicolumn{1}{|c|}{\textbf{Tipo}}
+    \\ \hline
+    Cinema
+     & E
+     & 1
      & L
     \\\hline
     \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
-    Costo: 1/giorno}                            \\\hline
+    Costo: 10 000/giorno}                        \\\hline
 \end{tabularx}
 
-\begin{tabularx}{\linewidth}{|X|X|X|X|}
+\begin{tabularx}{\linewidth}{|X|p{3.33cm}|p{3.33cm}|p{3.33cm}|}
     \hline
     \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
-    \textbf{Operazione 23}}                     \\\hline
+    \textbf{\verb|mostra_cinema_senza_maschere|}} \\\hline
     \rowcolor{tblhdrcolor}
     \multicolumn{1}{|c|}{\textbf{Concetto}}
      & \multicolumn{1}{|c|}{\textbf{Costrutto}}
@@ -753,30 +618,237 @@
      & L
     \\\hline
     \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
-    Costo: 7/giorno}                           \\\hline
+    Costo: 7/giorno}                              \\\hline
 \end{tabularx}
 
-\begin{tabularx}{\linewidth}{|l|X|X|X|}
+\begin{tabularx}{\linewidth}{|X|p{3.33cm}|p{3.33cm}|p{3.33cm}|}
     \hline
     \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
-    \textbf{Operazione 24}}                     \\\hline
+    \textbf{\verb|mostra_dipendenti|}}          \\\hline
     \rowcolor{tblhdrcolor}
     \multicolumn{1}{|c|}{\textbf{Concetto}}
      & \multicolumn{1}{|c|}{\textbf{Costrutto}}
      & \multicolumn{1}{|c|}{\textbf{Accessi}}
      & \multicolumn{1}{|c|}{\textbf{Tipo}}
     \\ \hline
-    Prenotazione Confermata
+    Dipendente
+     & E
+     & 1
+     & L
+    \\ \hline
+    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
+    Costo: 50/settimana}                        \\\hline
+\end{tabularx}
+
+\begin{tabularx}{\linewidth}{|X|p{3.33cm}|p{3.33cm}|p{3.33cm}|}
+    \hline
+    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
+    \textbf{\verb|mostra_film|}}                \\\hline
+    \rowcolor{tblhdrcolor}
+    \multicolumn{1}{|c|}{\textbf{Concetto}}
+     & \multicolumn{1}{|c|}{\textbf{Costrutto}}
+     & \multicolumn{1}{|c|}{\textbf{Accessi}}
+     & \multicolumn{1}{|c|}{\textbf{Tipo}}
+    \\ \hline
+    Film
+     & E
+     & 1
+     & L
+    \\ \hline
+    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
+    Costo: 1400/settimana}                      \\\hline
+\end{tabularx}
+
+\begin{tabularx}{\linewidth}{|X|p{3.33cm}|p{3.33cm}|p{3.33cm}|}
+    \hline
+    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
+    \textbf{\verb|mostra_palinsesto|}}          \\\hline
+    \rowcolor{tblhdrcolor}
+    \multicolumn{1}{|c|}{\textbf{Concetto}}
+     & \multicolumn{1}{|c|}{\textbf{Costrutto}}
+     & \multicolumn{1}{|c|}{\textbf{Accessi}}
+     & \multicolumn{1}{|c|}{\textbf{Tipo}}
+    \\ \hline
+    Proiezione
      & E
      & 1
      & L
     \\\hline
-    Prenotazione Validata
+    Film
      & E
      & 1
      & L
     \\\hline
-    Prenotazione Scaduta
+    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
+    Costo: 20 000/giorno}                       \\\hline
+\end{tabularx}
+
+\begin{tabularx}{\linewidth}{|X|p{3.33cm}|p{3.33cm}|p{3.33cm}|}
+    \hline
+    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
+    \textbf{\verb|mostra_posti_disponibili|}}   \\\hline
+    \rowcolor{tblhdrcolor}
+    \multicolumn{1}{|c|}{\textbf{Concetto}}
+     & \multicolumn{1}{|c|}{\textbf{Costrutto}}
+     & \multicolumn{1}{|c|}{\textbf{Accessi}}
+     & \multicolumn{1}{|c|}{\textbf{Tipo}}
+    \\ \hline
+    Prenotazione in attesa
+     & E
+     & 1
+     & L
+    \\\hline
+    Prenotazione confermata
+     & E
+     & 1
+     & L
+    \\\hline
+    Prenotazione validata
+     & E
+     & 1
+     & L
+    \\\hline
+    Posto
+     & E
+     & 1
+     & L
+    \\\hline
+    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
+    Costo: 40 000/giorno}                       \\\hline
+\end{tabularx}
+
+\begin{tabularx}{\linewidth}{|X|p{3.33cm}|p{3.33cm}|p{3.33cm}|}
+    \hline
+    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
+    \textbf{\verb|mostra_proiezioni|}}          \\\hline
+    \rowcolor{tblhdrcolor}
+    \multicolumn{1}{|c|}{\textbf{Concetto}}
+     & \multicolumn{1}{|c|}{\textbf{Costrutto}}
+     & \multicolumn{1}{|c|}{\textbf{Accessi}}
+     & \multicolumn{1}{|c|}{\textbf{Tipo}}
+    \\ \hline
+    Proiezione
+     & E
+     & 1
+     & L
+    \\\hline
+    Film
+     & E
+     & 1
+     & L
+    \\\hline
+    Proiezionista
+     & E
+     & 1
+     & L
+    \\\hline
+    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
+    Costo: 120/mese}                             \\\hline
+\end{tabularx}
+
+\begin{tabularx}{\linewidth}{|X|p{3.33cm}|p{3.33cm}|p{3.33cm}|}
+    \hline
+    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
+    \textbf{\verb|mostra_proiezionisti_disponibili|}} \\\hline
+    \rowcolor{tblhdrcolor}
+    \multicolumn{1}{|c|}{\textbf{Concetto}}
+     & \multicolumn{1}{|c|}{\textbf{Costrutto}}
+     & \multicolumn{1}{|c|}{\textbf{Accessi}}
+     & \multicolumn{1}{|c|}{\textbf{Tipo}}
+    \\ \hline
+    Proiezionista
+     & E
+     & 1
+     & L
+    \\\hline
+    Turno
+     & E
+     & 1
+     & L
+    \\\hline
+    Proiezione
+     & E
+     & 2
+     & L
+    \\\hline
+    Film
+     & E
+     & 2
+     & L
+    \\\hline
+    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
+    Costo: 8 400/settimana}                                          \\\hline
+\end{tabularx}
+
+\begin{tabularx}{\linewidth}{|X|p{3.33cm}|p{3.33cm}|p{3.33cm}|}
+    \hline
+    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
+    \textbf{\verb|mostra_proiezioni_senza_proiezionista|}}                     \\\hline
+    \rowcolor{tblhdrcolor}
+    \multicolumn{1}{|c|}{\textbf{Concetto}}
+     & \multicolumn{1}{|c|}{\textbf{Costrutto}}
+     & \multicolumn{1}{|c|}{\textbf{Accessi}}
+     & \multicolumn{1}{|c|}{\textbf{Tipo}}
+    \\ \hline
+    Proiezione
+     & E
+     & 1
+     & L
+    \\\hline
+    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
+    Costo: 1/giorno}                            \\\hline
+\end{tabularx}
+
+\begin{tabularx}{\linewidth}{|X|p{3.33cm}|p{3.33cm}|p{3.33cm}|}
+    \hline
+    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
+    \textbf{\verb|mostra_sale|}}                      \\\hline
+    \rowcolor{tblhdrcolor}
+    \multicolumn{1}{|c|}{\textbf{Concetto}}
+     & \multicolumn{1}{|c|}{\textbf{Costrutto}}
+     & \multicolumn{1}{|c|}{\textbf{Accessi}}
+     & \multicolumn{1}{|c|}{\textbf{Tipo}}
+    \\ \hline
+    Sala
+     & E
+     & 1
+     & L
+    \\\hline
+    Posto
+     & E
+     & 1
+     & L
+    \\\hline
+    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
+    Costo: 2/anno}                              \\\hline
+\end{tabularx}
+
+\begin{tabularx}{\linewidth}{|X|p{3.33cm}|p{3.33cm}|p{3.33cm}|}
+    \hline
+    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
+    \textbf{\verb|mostra_stato_prenotazioni|}}                     \\\hline
+    \rowcolor{tblhdrcolor}
+    \multicolumn{1}{|c|}{\textbf{Concetto}}
+     & \multicolumn{1}{|c|}{\textbf{Costrutto}}
+     & \multicolumn{1}{|c|}{\textbf{Accessi}}
+     & \multicolumn{1}{|c|}{\textbf{Tipo}}
+    \\ \hline
+    Prenotazione confermata
+     & E
+     & 1
+     & L
+    \\\hline
+    Prenotazione validata
+     & E
+     & 1
+     & L
+    \\\hline
+    Prenotazione scaduta
+     & E
+     & 1
+     & L
+    \\\hline
+    Prenotazione annullata
      & E
      & 1
      & L
@@ -787,7 +859,55 @@
      & L
     \\\hline
     \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
-    Costo: 4/giorno}                            \\\hline
+    Costo: 5/giorno}                            \\\hline
+\end{tabularx}
+
+\begin{tabularx}{\linewidth}{|X|p{3.33cm}|p{3.33cm}|p{3.33cm}|}
+    \hline
+    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
+    \textbf{\verb|mostra_turni|}}                     \\\hline
+    \rowcolor{tblhdrcolor}
+    \multicolumn{1}{|c|}{\textbf{Concetto}}
+     & \multicolumn{1}{|c|}{\textbf{Costrutto}}
+     & \multicolumn{1}{|c|}{\textbf{Accessi}}
+     & \multicolumn{1}{|c|}{\textbf{Tipo}}
+    \\ \hline
+    Turno
+     & E
+     & 1
+     & L
+    \\\hline
+    Dipendenti
+     & E
+     & 1
+     & L
+    \\\hline
+    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
+    Costo: 100/settimana}                       \\\hline
+\end{tabularx}
+
+\begin{tabularx}{\linewidth}{|X|p{3.33cm}|p{3.33cm}|p{3.33cm}|}
+    \hline
+    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}c|}{
+    \textbf{\verb|valida_prenotazione|}}                     \\\hline
+    \rowcolor{tblhdrcolor}
+    \multicolumn{1}{|c|}{\textbf{Concetto}}
+     & \multicolumn{1}{|c|}{\textbf{Costrutto}}
+     & \multicolumn{1}{|c|}{\textbf{Accessi}}
+     & \multicolumn{1}{|c|}{\textbf{Tipo}}
+    \\ \hline
+    Prenotazione confermata
+     & E
+     & 1
+     & S
+    \\ \hline
+    Prenotazione validata
+     & E
+     & 1
+     & S
+    \\\hline
+    \multicolumn{4}{|>{\columncolor{tblhdrcolor}}l|}{
+    Costo: 18 000/giorno}                       \\\hline
 \end{tabularx}
 
 \pagebreak
@@ -811,8 +931,8 @@ di prenotazione per per essere effettuate non è necessario richiedere ai client
 di identificarsi per interagire con il sistema, ciò implica che i dati
 contenuti nell'entità cliente e nella relazione ClientePrenotazione risultano
 superflui. Rimuovendo le due entità in questione è possibile ottenere un
-risparmio di memoria pari a %100 000 * (4 + 24 + 256) + 140 000 * 4 byte
-27.2 MB circa ed un iterazione con il sistema semplificata per i clienti.
+risparmio di memoria pari a %200 000 * (4 + 24 + 256) + 140 000 * 4 byte
+54.7 MB circa ed un interazione con il sistema semplificata per i clienti.
 
 Poiché non esistono operazioni riguardanti le prenotazioni validate che
 richiedono la maschera validante, i dati nella relazione Validazione risultano
@@ -828,58 +948,64 @@ genitore aggiungendo un attributo Ruolo all'entità Dipendente e collegando
 l'entità ProiezioneProiezionista a Dipendente.
 L'aggiunta dell'attributo Ruolo comporta uno spreco di memoria irrisorio pari a
 %200 * 1 byte 
-200 byte che non è considerabile come un reale svantaggio.
+circa 200 byte che non è considerabile come un reale svantaggio.
 
 %controllare il nuovo spreco di memoria
 
 Le entità figlie dell'entità Prenotazione confermata non hanno attributi
-specifici che le distinguono, le operazioni che le riguardano fanno distinzione 
+specifici che le distinguono, le operazioni che le riguardano fanno distinzione
 tra i diversi tipi ma il loro accorpamento comporterebbe una riduzione dei
 costi.
 Pertanto le entità figlie della generalizzazione verranno accorpate nel
 genitore aggiungendo un attributo Stato all'entità Prenotazione confermata.
-l'Operazione 14 consisterà in un'unica scrittura riguardante
-l'entità Prenotazione confermata ed il suo costo si ridurrà da 2000 a 1000
-accessi al giorno,
-l'Operazione 15 consisterà in un'unica scrittura riguardante
-l'entità Prenotazione confermata ed il suo costo si ridurrà da 18000 a 9000
-accessi al giorno,
+l'operazione \verb|annulla_prenotazione| consisterà in un'unica scrittura
+riguardante l'entità Prenotazione confermata ed il suo costo si ridurrà da
+2 000 a 1 000 accessi al giorno,
+l'operazione \verb|valida_prenotazione| consisterà in un'unica scrittura
+riguardante l'entità Prenotazione confermata ed il suo costo si ridurrà da
+18 000 a 9 000 accessi al giorno,
 per finire l'attributo Stato comporta uno spreco di memoria pari a
 % 133 000 * 1 byte
 130 kB circa che risulta accettabile se comparato al guadagno in termini di
 prestazioni.
 
-Le entità figlie dell'entità Prenotazione hanno ora attributi specifici 
+Le entità figlie dell'entità Prenotazione hanno ora attributi specifici
 distinti e le operazioni che le riguardano fanno distinzione tra i diversi
 tipi ma il loro accorpamento comporterebbe una riduzione dei costi in accesso.
 Pertanto le entità figlie della generalizzazione verranno accorpate nel
 genitore aggiungendo gli attributi Stato, Codice transazione e Timestamp
 all'entità Prenotazione.
-In questo modo il costo dell'Operazione 12 verrà ridotto di un terzo,
-passando da un costo di 15000 accessi a 10000 accessi al giorno mentre
-lo spreco di memoria sarà pari a
+In questo modo i costi delle operazioni \verb|finalizza_prenotazione|
+e \verb|mostra_posti_disponibili| verranno ridotti della metà, passando
+rispettivamente da un costo di 20 000 accessi ad un costo di 10 000 accessi
+al giorno e da un costo di 40 000 accessi ad uno di 20 000 accessi al giorno.
+Lo spreco di memoria sarà pari a
 % 7 000 * (1 + 4) byte + 133 000 * 4 byte
 554 kB circa che risulta accettabile se comparato al guadagno in termini di
 prestazioni.
 
-L'attributo multivalore Cast viene coinvolto unicamente durante l'Operazione 11,
+L'attributo multivalore Cast viene coinvolto unicamente durante l'operazione
+\verb|mostra_palinsesto|,
 pertanto anziché introdurre un'entità Cast ed una relazione CastFilm
 l'attributo multivalore verrà ridotto ad un semplice attributo Cast il cui
 dominio sarà quello di una stringa.
-In questo modo il costo dell'operazione 11 anziché incrementare a 15000
-rimarrà di 10000 accessi al giorno.
+In questo modo il costo dell'operazione \verb|mostra_palinsesto| anziché
+incrementare a 30 000 rimarrà di \linebreak 20 000 accessi al giorno.
 
-È possibile ridurre il costo dell'Operazione 12 introducendo una relazione
-PostoDisponibile tra le entità Proiezione e Posto con cardinalità (0,N)|(0,N)
-riducendo il costo da 15000 a 5000 accessi al giorno.
+\pagebreak
+È possibile ridurre il costo dell'operazione \verb|mostra_posti_disponibili|
+introducendo una relazione PostoDisponibile tra le entità Proiezione e Posto con
+cardinalità (0,N)|(0,N) riducendo il costo da 20 000 a 10 000 accessi al giorno.
 La ridondanza comporta uno spreco di memoria pari a
 % 1 400 * 200 * (4 + 1 + 4 + 4) byte
 3.5 MB circa che risulta accettabile.
 Tuttavia per poter mantenere coerenti i dati della relazione introdotta il costo
-delle operazioni 13 e 14 raddoppia, portando il costo delle operazioni totali a
-%10 000 + 1 000 - 10000
-1000 accessi accessi aggiuntivi al giorno rispetto alla soluzione originale.
-Pertanto non converrà introdurre la relazione PostoDisponibile
+delle operazioni \verb|inizializza_prenotazione|,
+\verb|elimina_prenotazione| e \verb|annulla_prenotazione|
+raddoppia, portando il costo delle operazioni totali a
+%10 000 + 10 000 + 1 000 - 10 000
+11 000 accessi accessi aggiuntivi al giorno rispetto alla soluzione originale.
+Pertanto non converrà introdurre la relazione PostoDisponibile.
 
 \includegraphics[width=\linewidth]{er_diagrams/restructuration.png}
 
