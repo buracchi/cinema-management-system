@@ -1,6 +1,7 @@
 import argparse
 import os
 import pathlib
+import re
 
 
 class SqlScriptGenerator:
@@ -69,7 +70,7 @@ class SqlScriptGenerator:
             result += source.read()
         result += '\n'
         if os.name != 'nt':
-            return result.replace('.dll', '.so')
+            return re.sub(r'"((.*)(.dll))"', r'"lib\2.so"', result)
         return result
 
     def _get_functions_section(self):

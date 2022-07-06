@@ -45,8 +45,8 @@
 *
 * Otherwise use the commands:
 *
-* CREATE FUNCTION EFFETTUA_PAGAMENTO RETURNS STRING SONAME "payment-service.so";
-* CREATE FUNCTION EFFETTUA_RIMBORSO RETURNS INTEGER SONAME "payment-service.so";
+* CREATE FUNCTION EFFETTUA_PAGAMENTO RETURNS STRING SONAME "libpayment-service.so";
+* CREATE FUNCTION EFFETTUA_RIMBORSO RETURNS INTEGER SONAME "libpayment-service.so";
 *
 * After this the functions will work exactly like native MySQL functions.
 * Functions should be created only once.
