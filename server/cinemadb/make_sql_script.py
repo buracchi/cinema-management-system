@@ -58,7 +58,7 @@ class SqlScriptGenerator:
                            'Proiezioni', 'Stati_Prenotazione', 'Prenotazioni']:
             result += self._get_comment_header('Table `' + self.dbname + '`.`' + table_name + '`')
             result += '\n'
-            with open(self._absolute_path_of('tables/' + table_name + '.sql'), 'r') as source:
+            with open(self._absolute_path_of('src/tables/' + table_name + '.sql'), 'r') as source:
                 result += source.read()
             result += '\n'
         return result
@@ -66,7 +66,7 @@ class SqlScriptGenerator:
     def _get_udf_section(self):
         result = self._get_comment_header('UDF Loadable Functions')
         result += '\n'
-        with open(self._absolute_path_of('udf/payment_service.sql'), 'r') as source:
+        with open(self._absolute_path_of('src/udf/payment_service.sql'), 'r') as source:
             result += source.read()
         result += '\n'
         if os.name != 'nt':
@@ -75,7 +75,7 @@ class SqlScriptGenerator:
 
     def _get_functions_section(self):
         result = ''
-        for function in self._absolute_path_of('functions').iterdir():
+        for function in self._absolute_path_of('src/functions').iterdir():
             result += self._get_comment_header('Function `' + self.dbname + '`.`' + function.stem + '`')
             result += '\n'
             result += 'DELIMITER $$\n'
@@ -90,7 +90,7 @@ class SqlScriptGenerator:
 
     def _get_procedures_section(self):
         result = ''
-        for procedure in self._absolute_path_of('procedures').iterdir():
+        for procedure in self._absolute_path_of('src/procedures').iterdir():
             result += self._get_comment_header('Procedure `' + self.dbname + '`.`' + procedure.stem + '`')
             result += '\n'
             result += 'DELIMITER $$\n'
@@ -105,7 +105,7 @@ class SqlScriptGenerator:
 
     def _get_triggers_section(self):
         result = ''
-        for trigger in self._absolute_path_of('triggers').iterdir():
+        for trigger in self._absolute_path_of('src/triggers').iterdir():
             result += self._get_comment_header('Trigger `' + self.dbname + '`.`' + trigger.stem + '`')
             result += '\n'
             result += 'DELIMITER $$\n'
@@ -120,7 +120,7 @@ class SqlScriptGenerator:
         result = self._get_comment_header('Privileges Grant')
         result += '\n'
         result += 'DELIMITER ;\n'
-        with open(self._absolute_path_of('grants/grants.sql'), 'r') as source:
+        with open(self._absolute_path_of('src/grants/grants.sql'), 'r') as source:
             result += source.read()
         result += '\n'
         return result
@@ -131,14 +131,14 @@ class SqlScriptGenerator:
                            'Dipendenti', 'Proiezioni', 'Turni']:
             result += self._get_comment_header('Data for table `' + self.dbname + '`.`' + table_name + '`')
             result += '\n'
-            with open(self._absolute_path_of('data/' + table_name + '.sql'), 'r') as source:
+            with open(self._absolute_path_of('src/data/' + table_name + '.sql'), 'r') as source:
                 result += source.read()
             result += '\n'
         return result
 
     def _get_events_section(self):
         result = ''
-        for event in pathlib.Path('events').iterdir():
+        for event in pathlib.Path('src/events').iterdir():
             result += '\n'
             result += self._get_comment_header('Event `' + self.dbname + '`.`' + event.stem + '`')
             result += '\n'

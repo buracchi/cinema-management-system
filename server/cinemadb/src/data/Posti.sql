@@ -13,7 +13,7 @@ WITH RECURSIVE
                 FROM lettere
                 WHERE ASCII(lettera) + 1 <= ASCII('A') + 9)
 SELECT cinema, Sale.numero, lettera, numeri.numero
-FROM Sale
+FROM `Sale`
          CROSS JOIN lettere
          CROSS JOIN numeri;
 COMMIT;

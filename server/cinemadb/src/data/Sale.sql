@@ -7,6 +7,6 @@ WITH RECURSIVE numeri AS (SELECT 1 AS numero
                           FROM numeri
                           WHERE numero + 1 <= 5)
 SELECT id, numero
-FROM cinema
+FROM `Cinema`
          CROSS JOIN numeri;
 COMMIT;
